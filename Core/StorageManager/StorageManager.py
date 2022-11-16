@@ -35,7 +35,17 @@ class UserHistoryEvent(enum.Enum):
     startModuleBikeCriteriaChoice = "Приступил к выбору критериев"
 
     startModuleTimeRequest = "Приступил к выбору времени"
+    startModuleTimeRequestDayWeekWhen = "Приступил к выбору даты начала аренды (длительность в днях/неделях)"
+    startModuleTimeRequestHowManyDays = "Приступил к выбору длительности аренды в днях"
+    startModuleTimeRequestHowManyMonths = "Приступил к выбору длительности аренды в месяцах"
+    startModuletimeRequestMonthWhen = "Приступил к выбору даты начала аренды (длительность в месяцах)"
 
+    startModuleBikeHelmet = "Приступил к выбору количества шлемов"
+
+    startModuleRequestGeoposition = "Приступил к указанию геопозиции"
+    startModuleCarSize = "Приступил к выбору размера машины"
+    startModuleCarTransmission = "Приступил к выбору коробки передач"
+    startModuleCarModels = "Приступил к выбору моделей"
 class PathConfig:
 
     baseDir = Path("./DataStorage")

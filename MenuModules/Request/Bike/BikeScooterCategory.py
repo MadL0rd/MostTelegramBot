@@ -76,8 +76,7 @@ class BikeScooterCategory(MenuModuleInterface):
         # if messageText not in self.menuDict:
         #     return self.canNotHandle(data)
 
-        return log.info("Модуль BikeScoterCategory завершён")
-        # self.complete(nextModuleName = MenuModuleName.bikeParameters.get)
+        return self.complete(nextModuleName = MenuModuleName.bikeParameters.get)
         
 
     async def handleCallback(self, ctx: CallbackQuery, data: dict, msg: MessageSender) -> Completion:

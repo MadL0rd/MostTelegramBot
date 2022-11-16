@@ -40,6 +40,28 @@ class UniqueMessagesKeys(enum.Enum):
     timeButtonRequestWeek = "timeButtonRequestWeek"
     timeButtonRequestMonth = "timeButtonRequestMonth"
 
+    timeRequestDayWeekWhen = "timeRequestDayWeekWhen"
+    timeButtonRequestWhenToday = "timeButtonRequestWhenToday"
+    timeButtonRequestWhenTomorrow = "timeButtonRequestWhenTomorrow"
+    timeButtonRequestWhenSetDate = "timeButtonRequestWhenSetDate"
+    timeRequestHowManyDays = "timeRequestHowManyDays"
+    timeRequestHowManyMonths = "timeRequestHowManyMonths"
+    timeRequestMonthWhen = "timeRequestMonthWhen"
+    bikeHelmet = "bikeHelmet"
+    requestGeoposition = "requestGeoposition"
+
+    carSize = "carSize"
+    carButtonSizeSmall = "carButtonSizeSmall"
+    carButtonSizeBig = "carButtonSizeBig"
+    carButtonSizeMinivan = "carButtonSizeMinivan"
+    carButtonSizePremium = "carButtonSizePremium"
+    carButtonSizeShowAll = "carButtonSizeShowAll"
+    carTransmission = "carTransmission"
+    carButtonTransmissionAutomatic = "carButtonTransmissionAutomatic"
+    carButtonTransmissionManual = "carButtonTransmissionManual"
+    carButtonTransmissionShowAll = "carButtonTransmissionShowAll"
+    carModels = "carModels"
+    carModelsFurther = "carModelsFurther"
 
 
 

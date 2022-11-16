@@ -40,10 +40,8 @@
   "timeButtonRequestWhenSetDate": "Указать дату",
   "timeButtonRequestWhenTodayTomorrow": "В ближайшие дни, можно сегодня или завтра",
   "timeRequestHowManyDays": "На сколько дней?",
-  "timeRequestHowManyMonths": "На сколько месяцев?",
-  "timeButtonRequestHowManyMonthsMore": "Больше 3 месяцев",
-  "timeRequestMonthWhen": "Когда нужен байк/авто?",
+  "timeRequestHowManyMonths": "На сколько месяцев? Выбери количество или укажи в сообщении",
+  "timeRequestMonthWhen": "Когда нужен байк/авто? Выбери день или укажи дату в сообщении",
   "bikeHelmet": "Сколько шлемов тебе понадобятся?",
-  "requestGeoposition": "Пришли адрес доставки в формате ссылки на гугл карты",
-  "requestButtonGeoposition": "Поделиться местоположением"
+  "requestGeoposition": "Пришли адрес доставки в формате ссылки на гугл карты"
 }

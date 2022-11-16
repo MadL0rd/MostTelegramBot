@@ -28,6 +28,26 @@ class MenuModuleName(enum.Enum):
     timeButtonRequestDay: str = "timeButtonRequestDay"
     timeButtonRequestWeek: str = "timeButtonRequestWeek"
     timeButtonRequestMonth: str = "timeButtonRequestMonth"
+    timeRequestDayWeekWhen: str = "timeRequestDayWeekWhen"
+    timeRequestHowManyDays: str = "timeRequestHowManyDays"
+    timeRequestHowManyMonths: str = "timeRequestHowManyMonths"
+    timeRequestMonthWhen: str = "timeRequestMonthWhen"
+
+    bikeHelmet: str = "bikeHelmet"
+
+    requestGeoposition: str = "requestGeoposition"
+
+    carSize: str = "carSize"
+    carButtonSizeSmall: str = "carButtonSizeSmall"
+    carButtonSizeBig: str = "carButtonSizeBig"
+    carButtonSizeMinivan: str = "carButtonSizeMinivan"
+    carButtonSizePremium: str = "carButtonSizePremium"
+    carButtonSizeShowAll: str = "carButtonSizeShowAll"
+    carTransmission: str = "carTransmission"
+    carButtonTransmissionAutomatic: str = "carButtonTransmissionAutomatic"
+    carButtonTransmissionManual: str = "carButtonTransmissionManual"
+    carButtonTransmissionShowAll: str = "carButtonTransmissionShowAll"
+    carModels: str = "carModels"
 
 
 

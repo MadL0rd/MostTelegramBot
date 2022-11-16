@@ -61,7 +61,7 @@ class MainMenu(MenuModuleInterface):
             return self.complete(nextModuleName = MenuModuleName.bikeCommitment.get)
 
         if messageText == textConstant.menuButtonRentCar.get:
-            return self.complete(nextModuleName = MenuModuleName.mainMenu.get)
+            return self.complete(nextModuleName = MenuModuleName.carSize.get)
 
         if messageText == textConstant.menuButtonMyOrders.get:
             return self.complete(nextModuleName = MenuModuleName.mainMenu.get)
