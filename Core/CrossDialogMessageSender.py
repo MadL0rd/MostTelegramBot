@@ -45,7 +45,7 @@ class CrossDialogMessageSender:
         channelMessage: Message = orderPosts[userTg.id]
         del orderPosts[userTg.id]
         await channelMessage.edit_text(
-            text=f"*id{orderId}*\n{userTg.full_name} @{userTg.username}\n{text}",
+            text=f"*id{orderId}*\n{text}",
             parse_mode=ParseMode.MARKDOWN
         )
 

@@ -66,6 +66,8 @@ class RequestGeoposition(MenuModuleInterface):
         for line in userRequest:
             userRequestString += f"{line}\n"
 
+        userRequestString = f"{ctx.from_user.full_name} @{ctx.from_user.username}\n{userRequestString}"
+
         await crossDialogMessageSender.setWaitingForOrder(ctx.from_user, userRequestString)
 
         storage.updateUserRequest(ctx.from_user, [])
