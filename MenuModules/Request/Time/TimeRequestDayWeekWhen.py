@@ -55,6 +55,7 @@ class TimeRequestDayWeekWhen(MenuModuleInterface):
             return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
+        storage.logToUserRequest(ctx.from_user, f"Когда нужен транспорт: {messageText}")
 
         if messageText == textConstant.timeButtonRequestWhenToday.get:
             log.info("Транспорт нужен сегодня")

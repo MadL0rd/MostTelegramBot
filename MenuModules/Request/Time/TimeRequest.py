@@ -55,6 +55,7 @@ class TimeRequest(MenuModuleInterface):
             return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
+        storage.logToUserRequest(ctx.from_user, f"Вид аренды: {messageText}")
 
         if messageText == textConstant.timeButtonRequestDay.get:
             log.info("Юзер решил выбирать по дням")

@@ -29,8 +29,6 @@ class RequestGeoposition(MenuModuleInterface):
             resize_keyboard=True
         )
         
-
-        
         userTg = ctx.from_user
         userInfo = storage.getUserInfo(userTg)
 
@@ -54,17 +52,16 @@ class RequestGeoposition(MenuModuleInterface):
             return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
-
+        storage.logToUserRequest(ctx.from_user, f"Геопозиция: {messageText}")
+        
         log.info(messageText)
         
-            
-            
+        # TODO: НАдо заебашить сраку
 
         # if messageText not in self.menuDict:
         #     return self.canNotHandle(data)
 
-        return self.complete(nextModuleName = MenuModuleName.mainMenu.get)
-        
+        return self.complete(nextModuleName = MenuModuleName.mainMenu.get)        
 
     async def handleCallback(self, ctx: CallbackQuery, data: dict, msg: MessageSender) -> Completion:
 

@@ -53,6 +53,7 @@ class BikeCriteriaChoice(MenuModuleInterface):
             return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
+        storage.logToUserRequest(ctx.from_user, f"Критерии байка: {messageText}")
 
         if messageText == "Далее":
             log.info("Юзер выбрал критерии")

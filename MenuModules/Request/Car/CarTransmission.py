@@ -55,9 +55,8 @@ class CarTransmission(MenuModuleInterface):
             return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
-
+        storage.logToUserRequest(ctx.from_user, f"Трансмиссия: {messageText}")
         if messageText in self.menuDict:
-            log.info(messageText)
             return self.complete(nextModuleName = MenuModuleName.carModels.get)
         
             

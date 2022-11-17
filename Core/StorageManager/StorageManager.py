@@ -51,6 +51,7 @@ class PathConfig:
     baseDir = Path("./DataStorage")
 
     usersDir = baseDir / "Users"
+    # userRequestFile = usersDir
 
     botContentDir = baseDir / "BotContent"
     botContentOnboarding = botContentDir/ "Onboarding.json"
@@ -69,8 +70,8 @@ class PathConfig:
     def userInfoFile(self, user: User):
         return self.userFolder(user) / "info.json"
     
-    def userNewsFile(self, user: User):
-        return self.userFolder(user) / "news.json"
+    def userRequestFile(self, user: User):
+        return self.userFolder(user) / "request.json"
 
     def userHistoryFile(self, user: User):
         return self.userFolder(user) / "history.json"
@@ -107,18 +108,23 @@ def getUserInfo(user: User):
 
     return getJsonData(userInfoFile)
 
-def getUserNews(user: User)->list: 
+def getUserRequest(user: User)->list: 
     
-    userNewsFile = path.userNewsFile(user)
+    userRequestFile = path.userRequestFile(user)
 
     # If user file does not exist
-    if not userNewsFile.exists():
+    if not userRequestFile.exists():
         log.info(f"User {user.id} dir does not exist")
         generateUserStorage(user)
 
-    userNewsFile = path.userNewsFile(user)
+    userRequestFile = path.userRequestFile(user)
 
-    return getJsonData(userNewsFile)
+    return getJsonData(userRequestFile)
+
+def logToUserRequest(user: User, text: str):
+    request = getUserRequest(user)
+    request.append(text)
+    updateUserRequest(user, request)
 
 def generateUserStorage(user: User):
 
@@ -134,7 +140,7 @@ def generateUserStorage(user: User):
         "state": {},
         # "notifications": notoficationsConfig["userDefault"]
     }
-    updateUserNews(user,[])
+    updateUserRequest(user,[])
     updateUserData(user, userData)
     logToUserHistory(user, UserHistoryEvent.start, "Начало сохранения истории пользователя")
 
@@ -154,10 +160,10 @@ def updateUserData(user: User, userData):
     userData["updateTime"] = getTimestamp()
     writeJsonData(userInfoFile, userData)
 
-def updateUserNews(user: User, userNews):
+def updateUserRequest(user: User, userRequest):
     
-    userNewsFile = path.userNewsFile(user)
-    writeJsonData(userNewsFile, userNews)
+    userRequestFile = path.userRequestFile(user)
+    writeJsonData(userRequestFile, userRequest)
 
 def logToUserHistory(user: User, event: UserHistoryEvent, content: string):
 

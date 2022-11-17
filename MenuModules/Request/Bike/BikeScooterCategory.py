@@ -4,12 +4,12 @@ import Core.StorageManager.StorageManager as storage
 from Core.StorageManager.StorageManager import UserHistoryEvent as event
 from Core.MessageSender import MessageSender
 from Core.StorageManager.UniqueMessagesKeys import textConstant
+from Core.Utils.Utils import dictToList
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
 from logger import logger as log
 
-from Core.Utils.Utils import dictToList
 
 class BikeScooterCategory(MenuModuleInterface):
 
@@ -66,6 +66,7 @@ class BikeScooterCategory(MenuModuleInterface):
             return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
+        storage.logToUserRequest(ctx.from_user, f"Категория скутера: {messageText}")
 
         if messageText in data["categoryList"]:
             log.info(f"Пользователь выбрал {messageText}")

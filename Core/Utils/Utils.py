@@ -1,5 +1,5 @@
 import Core.StorageManager.StorageManager as storage
-from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton
+from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton, User
 
 def dictToList(source: dict):
     result = []

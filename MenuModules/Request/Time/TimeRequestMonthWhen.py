@@ -57,6 +57,7 @@ class TimeRequestMonthWhen(MenuModuleInterface):
             return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
+        storage.logToUserRequest(ctx.from_user, f"Когда начнётся помесячная аренда: {messageText}")
 
         if messageText in ("Сегодня" ,"Завтра" ,"В ближайшие дни, можно сегодня или завтра" ):
             log.info(f"Транспорт нужен {messageText}")
