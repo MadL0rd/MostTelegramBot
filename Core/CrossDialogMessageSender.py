@@ -45,7 +45,7 @@ class CrossDialogMessageSender:
         channelMessage: Message = orderPosts[userTg.id]
         del orderPosts[userTg.id]
         await channelMessage.edit_text(
-            text=f"*id{orderId}*\n{text}",
+            text=f"*id{orderId}*\n{userTg.full_name} @{userTg.username}\n{text}",
             parse_mode=ParseMode.MARKDOWN
         )
 
@@ -79,7 +79,7 @@ class CrossDialogMessageSender:
 
         await self.bot.send_message(
             chat_id = userTg.id,
-            text=f"Заказ *{orderId}* успешно отправлен на обработку!",
+            text=f"Заказ *{orderId}* успешно отправлен на обработку!\nЯ пришлю тебе варианты в течение нескольких часов 😊",
             parse_mode=ParseMode.MARKDOWN
         )
 
