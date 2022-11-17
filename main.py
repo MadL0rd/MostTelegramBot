@@ -1,3 +1,4 @@
+import asyncio
 import sys
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.types import Message, CallbackQuery
@@ -95,16 +96,18 @@ async def default_message_handler(ctx: Message):
             channelChatMessageId=channelChatMessageId
         )
 
-    if ctx.chat.id != chat:
-        return
+    # if ctx.chat.id != chat:
+    #     return
 
     # Fetch automatic telegram message for channel order from bot
     elif ctx.from_user.first_name == "Telegram":
 
         # If ctx is order message from channel chat
+        await asyncio.sleep(3)
         if crossDialogMessageSender.getUserWaitingForOrder(ctx.text) == None:
+            log.info("ZalupaZalupaZalupaZalupaZalupaZalupa")
             return
-        await crossDialogMessageSender.makeAnOrderWithChannelChatMessageCtx(ctx)        
+        await crossDialogMessageSender.makeAnOrderWithChannelChatMessageCtx(ctx)
     
     # Manager message to user
     order = {}

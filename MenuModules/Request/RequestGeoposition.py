@@ -9,6 +9,10 @@ from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandl
 from MenuModules.MenuModuleName import MenuModuleName
 from logger import logger as log
 
+from main import crossDialogMessageSender
+
+# from Core.CrossDialogMessageSender import crossDialogMessageSenderShared
+
 class RequestGeoposition(MenuModuleInterface):
 
     # =====================
@@ -57,6 +61,14 @@ class RequestGeoposition(MenuModuleInterface):
         log.info(messageText)
         
         # TODO: НАдо заебашить сраку
+        userRequest = storage.getUserRequest(user=ctx.from_user)
+        userRequestString = ""
+        for line in userRequest:
+            userRequestString += f"{line}\n"
+
+        await crossDialogMessageSender.setWaitingForOrder(ctx.from_user, userRequestString)
+
+        storage.updateUserRequest(ctx.from_user, [])
 
         # if messageText not in self.menuDict:
         #     return self.canNotHandle(data)
