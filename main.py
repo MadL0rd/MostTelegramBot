@@ -107,10 +107,11 @@ async def default_message_handler(ctx: Message):
     elif ctx.from_user.first_name == "Telegram":
 
         # If ctx is order message from channel chat
-        await asyncio.sleep(1)
-        if crossDialogMessageSender.getUserWaitingForOrder(ctx.text) == None:
-            return
-        await crossDialogMessageSender.makeAnOrderWithChannelChatMessageCtx(ctx)
+        for i in range(0, 10):
+            await asyncio.sleep(2)
+            if crossDialogMessageSender.getUserWaitingForOrder(ctx.text) != None:
+                await crossDialogMessageSender.makeAnOrderWithChannelChatMessageCtx(ctx)
+                return
     
     # Manager message to user
     order = {}
