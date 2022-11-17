@@ -55,18 +55,19 @@ class TimeRequest(MenuModuleInterface):
             return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
+        storage.logToUserRequest(ctx.from_user, f"Вид аренды: {messageText}")
 
         if messageText == textConstant.timeButtonRequestDay.get:
             log.info("Юзер решил выбирать по дням")
-            return self.complete(nextModuleName = MenuModuleName.mainMenu.get)
+            return self.complete(nextModuleName = MenuModuleName.timeRequestDayWeekWhen.get)
         
         if messageText == textConstant.timeButtonRequestWeek.get:
             log.info("Юзер решил выбирать по неделям")
-            return self.complete(nextModuleName = MenuModuleName.mainMenu.get)
+            return self.complete(nextModuleName = MenuModuleName.timeRequestDayWeekWhen.get)
 
         if messageText == textConstant.timeButtonRequestMonth.get:
             log.info("Юзер решил выбирать по месяцам")
-            return self.complete(nextModuleName = MenuModuleName.mainMenu.get)
+            return self.complete(nextModuleName = MenuModuleName.timeRequestHowManyMonths.get)
 
         if messageText not in self.menuDict:
             return self.canNotHandle(data)

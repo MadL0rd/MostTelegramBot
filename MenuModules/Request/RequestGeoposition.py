@@ -1,4 +1,4 @@
-from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton
+from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
 
 import Core.StorageManager.StorageManager as storage
 from Core.StorageManager.StorageManager import UserHistoryEvent as event
@@ -9,13 +9,13 @@ from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandl
 from MenuModules.MenuModuleName import MenuModuleName
 from logger import logger as log
 
-class TimeRequestDayWeekWhen(MenuModuleInterface):
+class RequestGeoposition(MenuModuleInterface):
 
     # =====================
     # Interface implementation
     # =====================
 
-    namePrivate = MenuModuleName.timeRequestDayWeekWhen
+    namePrivate = MenuModuleName.requestGeoposition
 
     # Use default implementation
     # def callbackData(self, data: dict, msg: MessageSender) -> str:
@@ -23,13 +23,10 @@ class TimeRequestDayWeekWhen(MenuModuleInterface):
     async def handleModuleStart(self, ctx: Message, msg: MessageSender) -> Completion:
 
         log.debug(f"User: {ctx.from_user.id}")
-        storage.logToUserHistory(ctx.from_user, event.startModuleTimeRequestDayWeekWhen, "")
+        storage.logToUserHistory(ctx.from_user, event.startModuleRequestGeoposition, "")
 
         keyboardMarkup = ReplyKeyboardMarkup(
             resize_keyboard=True
-        ).add(KeyboardButton(textConstant.timeButtonRequestWhenToday.get),
-        ).add(KeyboardButton(textConstant.timeButtonRequestWhenTomorrow.get),
-        ).add(KeyboardButton(textConstant.timeButtonRequestWhenSetDate.get)
         )
         
         userTg = ctx.from_user
@@ -37,43 +34,34 @@ class TimeRequestDayWeekWhen(MenuModuleInterface):
 
         await msg.answer(
             ctx = ctx,
-            text = textConstant.timeRequestDayWeekWhen.get,
-            keyboardMarkup = keyboardMarkup
+            text = textConstant.requestGeoposition.get,
+            keyboardMarkup = ReplyKeyboardRemove()
         )
 
         return Completion(
             inProgress=True,
             didHandledUserInteraction=True,
-            moduleData={ "timeRequestDayWeekWhenMessageDidSent" : True }
+            moduleData={ "requestGeopositionMessageDidSent" : True }
         )
 
     async def handleUserMessage(self, ctx: Message, msg: MessageSender, data: dict) -> Completion:
 
         log.debug(f"User: {ctx.from_user.id}")
 
-        if "timeRequestDayWeekWhenMessageDidSent" not in data or data["timeRequestDayWeekWhenMessageDidSent"] != True:
+        if "requestGeopositionMessageDidSent" not in data or data["requestGeopositionMessageDidSent"] != True:
             return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
-        storage.logToUserRequest(ctx.from_user, f"Когда нужен транспорт: {messageText}")
-
-        if messageText == textConstant.timeButtonRequestWhenToday.get:
-            log.info("Транспорт нужен сегодня")
-            return self.complete(nextModuleName = MenuModuleName.timeRequestHowManyDays.get)
+        storage.logToUserRequest(ctx.from_user, f"Геопозиция: {messageText}")
         
-        if messageText == textConstant.timeButtonRequestWhenTomorrow.get:
-            log.info("Транспорт нужен завтра")
-            return self.complete(nextModuleName = MenuModuleName.timeRequestHowManyDays.get)
-
-        if messageText == textConstant.timeButtonRequestWhenSetDate.get:
-            log.info("Выбрал дату")
-            return self.complete(nextModuleName = MenuModuleName.timeRequestHowManyDays.get)
+        log.info(messageText)
+        
+        # TODO: НАдо заебашить сраку
 
         # if messageText not in self.menuDict:
         #     return self.canNotHandle(data)
 
-        return self.complete(nextModuleName = MenuModuleName.timeRequestHowManyDays.get)
-        
+        return self.complete(nextModuleName = MenuModuleName.mainMenu.get)        
 
     async def handleCallback(self, ctx: CallbackQuery, data: dict, msg: MessageSender) -> Completion:
 

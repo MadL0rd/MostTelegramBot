@@ -1,23 +1,21 @@
-from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton
+from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
 
 import Core.StorageManager.StorageManager as storage
 from Core.StorageManager.StorageManager import UserHistoryEvent as event
 from Core.MessageSender import MessageSender
 from Core.StorageManager.UniqueMessagesKeys import textConstant
-from Core.Utils.Utils import dictToList
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
 from logger import logger as log
 
-
-class BikeScooterCategory(MenuModuleInterface):
+class BikeHelmet(MenuModuleInterface):
 
     # =====================
     # Interface implementation
     # =====================
 
-    namePrivate = MenuModuleName.bikeScooterCategory
+    namePrivate = MenuModuleName.bikeHelmet
 
     # Use default implementation
     # def callbackData(self, data: dict, msg: MessageSender) -> str:
@@ -25,59 +23,54 @@ class BikeScooterCategory(MenuModuleInterface):
     async def handleModuleStart(self, ctx: Message, msg: MessageSender) -> Completion:
 
         log.debug(f"User: {ctx.from_user.id}")
-        storage.logToUserHistory(ctx.from_user, event.startModuleBikeScooterCategory, "")
-
-        categoryListSmall = dictToList(storage.getJsonData(storage.path.botContentScooterCategoriesSmallList))
-        categoryListBig = dictToList(storage.getJsonData(storage.path.botContentScooterCategoriesBigList))
-        categoryList = categoryListSmall + categoryListBig
-        categoryMaxLen = max(len(categoryListSmall), len(categoryListBig))
+        storage.logToUserHistory(ctx.from_user, event.startModuleBikeHelmet, "")
 
         keyboardMarkup = ReplyKeyboardMarkup(
-        resize_keyboard=True
+            resize_keyboard=True
+        ).add(KeyboardButton("Один шлем"),
+        ).add(KeyboardButton("Два шлема"),
+        ).add(KeyboardButton("Шлемы не нужны")
         )
-        categoryCounter = 0
-        while categoryCounter < categoryMaxLen:
-            keyboardMarkup.row(KeyboardButton(categoryListSmall[categoryCounter]),KeyboardButton(categoryListBig[categoryCounter]))
-            categoryCounter+=1
+        
+
         
         userTg = ctx.from_user
         userInfo = storage.getUserInfo(userTg)
 
         await msg.answer(
             ctx = ctx,
-            text = textConstant.bikeScooterCategory.get,
+            text = textConstant.bikeHelmet.get,
             keyboardMarkup = keyboardMarkup
         )
 
         return Completion(
             inProgress=True,
             didHandledUserInteraction=True,
-            moduleData={ 
-                "bikeScooterCategoryDidSent" : True,
-                "categoryList" : categoryList
-            }
+            moduleData={ "bikeHelmetMessageDidSent" : True }
         )
 
     async def handleUserMessage(self, ctx: Message, msg: MessageSender, data: dict) -> Completion:
 
         log.debug(f"User: {ctx.from_user.id}")
 
-        if "bikeScooterCategoryDidSent" not in data or data["bikeScooterCategoryDidSent"] != True:
+        if "bikeHelmetMessageDidSent" not in data or data["bikeHelmetMessageDidSent"] != True:
             return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
-        storage.logToUserRequest(ctx.from_user, f"Категория скутера: {messageText}")
+        storage.logToUserRequest(ctx.from_user, f"Сколько шлемов нужно: {messageText}")
 
-        if messageText in data["categoryList"]:
-            log.info(f"Пользователь выбрал {messageText}")
-            return self.complete(nextModuleName = MenuModuleName.bikeParameters.get)
 
-        # TODO: При выборе варианта "другое" надо запрашивать модель и сохранять
+        if messageText in ("Один шлем","Два шлема","Шлемы не нужны"):
+            log.info(messageText)
+            return self.complete(nextModuleName = MenuModuleName.timeRequest.get)
         
+            
+            
+
         # if messageText not in self.menuDict:
         #     return self.canNotHandle(data)
 
-        return self.complete(nextModuleName = MenuModuleName.bikeParameters.get)
+        return self.complete(nextModuleName = MenuModuleName.timeRequest.get)
         
 
     async def handleCallback(self, ctx: CallbackQuery, data: dict, msg: MessageSender) -> Completion:
@@ -92,6 +85,5 @@ class BikeScooterCategory(MenuModuleInterface):
     @property
     def menuDict(self) -> dict:
         return {
-            
-            
+
         }

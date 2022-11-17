@@ -54,6 +54,8 @@ class BikeScooterOrMoto(MenuModuleInterface):
             return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
+        storage.logToUserRequest(ctx.from_user, f"Вид байка: {messageText}")
+
 
         if messageText == textConstant.bikeButtonScooterOrMotoMoto.get:
             log.info("Юзер выбрал скутер")

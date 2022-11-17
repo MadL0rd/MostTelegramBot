@@ -1,4 +1,4 @@
-from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton
+from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton, User
 
 import Core.StorageManager.StorageManager as storage
 from Core.StorageManager.StorageManager import UserHistoryEvent as event
@@ -40,6 +40,8 @@ class BikeCommitment(MenuModuleInterface):
             keyboardMarkup = keyboardMarkup
         )
 
+        storage.updateUserRequest(userTg, [])
+
         return Completion(
             inProgress=True,
             didHandledUserInteraction=True,
@@ -54,6 +56,8 @@ class BikeCommitment(MenuModuleInterface):
             return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
+
+        storage.logToUserRequest(ctx.from_user, "Тип: Байк")
 
         if messageText == textConstant.bikeButtonCommitmentNo.get:
             log.info("Юзер запросил описание байков")

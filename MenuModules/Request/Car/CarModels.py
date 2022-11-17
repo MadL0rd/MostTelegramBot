@@ -1,4 +1,4 @@
-from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton
+from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
 
 import Core.StorageManager.StorageManager as storage
 from Core.StorageManager.StorageManager import UserHistoryEvent as event
@@ -9,13 +9,13 @@ from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandl
 from MenuModules.MenuModuleName import MenuModuleName
 from logger import logger as log
 
-class MainMenu(MenuModuleInterface):
+class CarModels(MenuModuleInterface):
 
     # =====================
     # Interface implementation
     # =====================
 
-    namePrivate = MenuModuleName.mainMenu
+    namePrivate = MenuModuleName.carModels
 
     # Use default implementation
     # def callbackData(self, data: dict, msg: MessageSender) -> str:
@@ -23,56 +23,47 @@ class MainMenu(MenuModuleInterface):
     async def handleModuleStart(self, ctx: Message, msg: MessageSender) -> Completion:
 
         log.debug(f"User: {ctx.from_user.id}")
-        storage.logToUserHistory(ctx.from_user, event.startModuleMainMenu, "")
+        storage.logToUserHistory(ctx.from_user, event.startModuleCarModels, "")
 
         keyboardMarkup = ReplyKeyboardMarkup(
             resize_keyboard=True
-        )
-        for buttonText in self.menuDict:
-            keyboardMarkup.add(KeyboardButton(buttonText))
+        ).add(KeyboardButton(textConstant.carModelsFurther.get))
+        
 
+        
         userTg = ctx.from_user
         userInfo = storage.getUserInfo(userTg)
 
-        if "isAdmin" in userInfo and userInfo["isAdmin"] == True:
-            keyboardMarkup.add(KeyboardButton(textConstant.menuButtonAdmin.get))
-
         await msg.answer(
             ctx = ctx,
-            text = textConstant.mainMenuText.get,
+            text = textConstant.carModels.get,
             keyboardMarkup = keyboardMarkup
         )
 
         return Completion(
             inProgress=True,
             didHandledUserInteraction=True,
-            moduleData={ "startMessageDidSent" : True }
+            moduleData={ "carModelsMessageDidSent" : True }
         )
 
     async def handleUserMessage(self, ctx: Message, msg: MessageSender, data: dict) -> Completion:
 
         log.debug(f"User: {ctx.from_user.id}")
 
-        if "startMessageDidSent" not in data or data["startMessageDidSent"] != True:
+        if "carModelsMessageDidSent" not in data or data["carModelsMessageDidSent"] != True:
             return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
-        if messageText == textConstant.menuButtonRentBike.get:
-            return self.complete(nextModuleName = MenuModuleName.bikeCommitment.get)
+        storage.logToUserRequest(ctx.from_user, f"Модель авто: {messageText}")
+        if messageText == textConstant.carModelsFurther.get:
+            log.info("Юзер закончил выбирать модель")
+            return self.complete(nextModuleName = MenuModuleName.timeRequest.get)
+        
+        log.info(messageText)
+        
+    
 
-        if messageText == textConstant.menuButtonRentCar.get:
-            return self.complete(nextModuleName = MenuModuleName.carSize.get)
-
-        if messageText == textConstant.menuButtonMyOrders.get:
-            return self.complete(nextModuleName = MenuModuleName.mainMenu.get)
-
-        if messageText == textConstant.menuButtonAdmin.get:
-            return self.complete(nextModuleName = MenuModuleName.mainMenu.get)
-
-        if messageText not in self.menuDict:
-            return self.canNotHandle(data)
-
-        return self.complete(nextModuleName = self.menuDict[messageText])
+        return self.complete(nextModuleName = MenuModuleName.timeRequest.get)
         
 
     async def handleCallback(self, ctx: CallbackQuery, data: dict, msg: MessageSender) -> Completion:
@@ -87,10 +78,5 @@ class MainMenu(MenuModuleInterface):
     @property
     def menuDict(self) -> dict:
         return {
-            textConstant.menuButtonRentBike.get: MenuModuleName.rentBike.get,
-            textConstant.menuButtonRentCar.get: MenuModuleName.rentCar.get,
-            textConstant.menuButtonMyOrders.get: MenuModuleName.myOrders.get,
-            textConstant.menuButtonAdmin.get: MenuModuleName.menuButtonAdmin.get
-
             
         }

@@ -61,7 +61,7 @@ class BikeParameters(MenuModuleInterface):
         
         if messageText == textConstant.bikeButtonShowAll.get:
             log.info("Юзер решил не выбирать критерии")
-            return self.complete(nextModuleName = MenuModuleName.TimeRequest.get)
+            return self.complete(nextModuleName = MenuModuleName.bikeHelmet.get)
 
         if messageText not in self.menuDict:
             return self.canNotHandle(data)
