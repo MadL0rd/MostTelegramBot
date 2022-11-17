@@ -63,6 +63,10 @@ class PathConfig:
     botContentScooterCategoriesBigList = botContentDir / "ScooterCategoriesBig.json"
     botContentMotoCategoriesList = botContentDir / "MotoCategories.json"
 
+    channelOrdersDir = baseDir / "Orders"
+
+    def orderDir(self, orderId: int):
+        return self.channelOrdersDir / f"{orderId}.json"
 
     def userFolder(self, user: User):
         return self.usersDir / f"{user.id}"
@@ -94,6 +98,24 @@ def writeJsonData(filePath: Path, content):
 # =====================
 # Public interaction
 # =====================
+
+
+def getOrder(orderId: int) -> dict:
+    orderFile = path.orderDir(orderId)
+
+    # If user file does not exist
+    if not orderFile.exists():
+        log.info(f"Order {orderId} file does not exist")
+        updateOrderData(orderId, {})
+        return {}
+    
+    return getJsonData(orderFile)
+
+def updateOrderData(orderId: int, data: dict):
+    
+    orderFile = path.orderDir(orderId)
+    data["updateTime"] = getTimestamp()
+    writeJsonData(orderFile, data)
 
 def getUserInfo(user: User):
     
