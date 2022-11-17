@@ -29,7 +29,7 @@ log.info(sys.argv)
 apiKey = "5278616125:AAH65CfKVC7pCiWZyPTGQQY442l4C4tBB8E"
 channel = "-1001443864958"
 chat = -1001886206503
-allMessagesChat = -721123169
+allMessagesChat = -1001505950222
 
 # =====================
 #       Test env
