@@ -62,10 +62,10 @@ class BikeCommitment(MenuModuleInterface):
         if messageText == textConstant.bikeButtonCommitmentNo.get:
             log.info("Юзер запросил описание байков")
             await msg.answer(
-            ctx = ctx,
-            text = textConstant.bikeModelsDescription.get,
-            keyboardMarkup=ReplyKeyboardMarkup(
-            resize_keyboard=True)
+                ctx = ctx,
+                text = textConstant.bikeModelsDescription.get,
+                keyboardMarkup=ReplyKeyboardMarkup(
+                resize_keyboard=True)
             )
             return self.complete(nextModuleName = MenuModuleName.bikeScooterOrMoto.get)
 
