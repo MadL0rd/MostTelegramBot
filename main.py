@@ -59,14 +59,18 @@ async def send_welcome_message_handler(ctx: types.Message):
     await dispatcher.handleUserStart(ctx)
 
     # Here is test post creation
-    userTg = ctx.from_user
-    msgText = f"Created an order for {userTg.full_name} @{userTg.username}"
-    await crossDialogMessageSender.setWaitingForOrder(userTg, msgText)
+    # userTg = ctx.from_user
+    # msgText = f"Created an order for {userTg.full_name} @{userTg.username}"
+    # await crossDialogMessageSender.setWaitingForOrder(userTg, msgText)
 
 @dp.message_handler(content_types=["text", "sticker", "voice", "photo", "audio", "video", "document"])
 async def default_message_handler(ctx: Message):
     log.info(f"From {ctx.from_user.full_name} receive: {ctx}")
 
+    if ctx.text == "/start":
+        await dispatcher.handleUserStart(ctx)
+        return
+        
     # Message from private chat with user
     if ctx.chat.type == "private":
 
@@ -103,9 +107,8 @@ async def default_message_handler(ctx: Message):
     elif ctx.from_user.first_name == "Telegram":
 
         # If ctx is order message from channel chat
-        await asyncio.sleep(3)
+        await asyncio.sleep(1)
         if crossDialogMessageSender.getUserWaitingForOrder(ctx.text) == None:
-            log.info("ZalupaZalupaZalupaZalupaZalupaZalupa")
             return
         await crossDialogMessageSender.makeAnOrderWithChannelChatMessageCtx(ctx)
     

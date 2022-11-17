@@ -27,9 +27,8 @@ class BikeParameters(MenuModuleInterface):
 
         keyboardMarkup = ReplyKeyboardMarkup(
             resize_keyboard=True
-        ).add(KeyboardButton(textConstant.bikeButtonCriteria.get),
-        ).add(KeyboardButton(textConstant.bikeButtonShowAll.get)
-        )
+        # ).add(KeyboardButton(textConstant.bikeButtonCriteria.get)
+        ).add(KeyboardButton(textConstant.bikeButtonShowAll.get))
         
         userTg = ctx.from_user
         userInfo = storage.getUserInfo(userTg)
@@ -55,9 +54,9 @@ class BikeParameters(MenuModuleInterface):
         
         messageText = ctx.text
 
-        if messageText == textConstant.bikeButtonCriteria.get:
-            log.info("Юзер выбрал выбор критериев")
-            return self.complete(nextModuleName = MenuModuleName.bikeCriteriaChoice.get)
+        # if messageText == textConstant.bikeButtonCriteria.get:
+        #     log.info("Юзер выбрал выбор критериев")
+        #     return self.complete(nextModuleName = MenuModuleName.bikeCriteriaChoice.get)
         
         if messageText == textConstant.bikeButtonShowAll.get:
             log.info("Юзер решил не выбирать критерии")

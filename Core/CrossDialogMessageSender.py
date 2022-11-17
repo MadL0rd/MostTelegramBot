@@ -5,30 +5,30 @@ from Core.StorageManager.UniqueMessagesKeys import textConstant
 import Core.StorageManager.StorageManager as storage
 from logger import logger as log
 
+waitingForOrder = {}
+orderPosts = {}
+
 class CrossDialogMessageSender:
 
     bot: Bot
-    waitingForOrder: dict
-    orderPosts: dict
     channel: str
 
     def __init__(self, bot: Bot, channel: str):
         self.bot = bot
-        self.waitingForOrder = {}
-        self.orderPosts = {}
         self.channel = channel
 
     async def setWaitingForOrder(self, userTg: User, msgText):
-        self.waitingForOrder[msgText] = userTg
         message = await self.bot.send_message(
             chat_id = self.channel,
             text=msgText
         )
-        self.orderPosts[userTg.id] = message
+        waitingForOrder[message.text] = userTg
+        orderPosts[userTg.id] = message
 
     def getUserWaitingForOrder(self, text: str) -> User:
         try:
-            userTg = self.waitingForOrder[text]
+            print(waitingForOrder)
+            userTg = waitingForOrder[text]
             return userTg
         except:
             return None
@@ -41,9 +41,9 @@ class CrossDialogMessageSender:
 
         text = ctx.text
         userTg = self.getUserWaitingForOrder(text)
-        del self.waitingForOrder[text]
-        channelMessage: Message = self.orderPosts[userTg.id]
-        del self.orderPosts[userTg.id]
+        del waitingForOrder[text]
+        channelMessage: Message = orderPosts[userTg.id]
+        del orderPosts[userTg.id]
         await channelMessage.edit_text(
             text=f"*id{orderId}*\n{text}",
             parse_mode=ParseMode.MARKDOWN
@@ -79,9 +79,9 @@ class CrossDialogMessageSender:
 
         await self.bot.send_message(
             chat_id = userTg.id,
-            text=f"Заказ {orderId} успешно отправлен на обработку"
+            text=f"Заказ *{orderId}* успешно отправлен на обработку!",
+            parse_mode=ParseMode.MARKDOWN
         )
-
 
     async def forwardMessageFromManagerToUser(self, ctx, order):
 
@@ -90,7 +90,7 @@ class CrossDialogMessageSender:
         if ctx.text != None:
             await self.bot.send_message(
                 chat_id = channelChatId,
-                text=f"*Заказ {orderId}*\n{ctx.text}",
+                text=f"*Сообщение по заказу {orderId}*\n{ctx.text}",
                 parse_mode=ParseMode.MARKDOWN
             )
 

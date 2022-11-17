@@ -16,26 +16,21 @@ callbackMsg = CallbackMessageSender()
 async def handleUserStart(ctx: Message):
 
     userTg = ctx.from_user
-    log.debug(f"Did handle User{userTg.id} start message {ctx.text}")
+    log.info(f"Did handle User{userTg.id} start message {ctx.text}")
 
     userInfo = storage.getUserInfo(userTg)
 
-    menuState = userInfo["state"]
-    if not "module" in menuState:
-        module: MenuModuleInterface = menu.onboarding.get
-        log.debug(module.name)
-        completion: Completion = await module.handleModuleStart(ctx, msg)
-        if completion.inProgress == True:
-            userInfo["state"] = {
-                "module": module.name,
-                "data": completion.moduleData 
-            }
-        else:
-            userInfo["state"] = {}
-        storage.updateUserData(userTg, userInfo)
+    module: MenuModuleInterface = menu.onboarding.get
+    log.debug(module.name)
+    completion: Completion = await module.handleModuleStart(ctx, msg)
+    if completion.inProgress == True:
+        userInfo["state"] = {
+            "module": module.name,
+            "data": completion.moduleData 
+        }
     else:
-        await handleUserMessage(ctx)
-        return
+        userInfo["state"] = {}
+    storage.updateUserData(userTg, userInfo)
 
 async def handleUserMessage(ctx: Message):
 

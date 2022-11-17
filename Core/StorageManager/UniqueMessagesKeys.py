@@ -63,9 +63,6 @@ class UniqueMessagesKeys(enum.Enum):
     carModels = "carModels"
     carModelsFurther = "carModelsFurther"
 
-
-
-
     @property
     def get(self) -> str:
         messagesKeys = storage.getJsonData(storage.path.botContentUniqueMessages)
