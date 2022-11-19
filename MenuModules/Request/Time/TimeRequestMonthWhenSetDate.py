@@ -9,17 +9,13 @@ from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandl
 from MenuModules.MenuModuleName import MenuModuleName
 from logger import logger as log
 
-from main import crossDialogMessageSender
-
-# from Core.CrossDialogMessageSender import crossDialogMessageSenderShared
-
-class RequestGeoposition(MenuModuleInterface):
+class TimeRequestMonthWhenSetDate(MenuModuleInterface):
 
     # =====================
     # Interface implementation
     # =====================
 
-    namePrivate = MenuModuleName.requestGeoposition
+    namePrivate = MenuModuleName.timeRequestMonthWhenSetDate
 
     # Use default implementation
     # def callbackData(self, data: dict, msg: MessageSender) -> str:
@@ -27,59 +23,40 @@ class RequestGeoposition(MenuModuleInterface):
     async def handleModuleStart(self, ctx: Message, msg: MessageSender) -> Completion:
 
         log.debug(f"User: {ctx.from_user.id}")
-        storage.logToUserHistory(ctx.from_user, event.startModuleRequestGeoposition, "")
-
-        keyboardMarkup = ReplyKeyboardMarkup(
-            resize_keyboard=True
-        )
+        storage.logToUserHistory(ctx.from_user, event.startModuleTimeRequestMonthWhenSetDate, "")
         
         userTg = ctx.from_user
         userInfo = storage.getUserInfo(userTg)
 
         await msg.answer(
             ctx = ctx,
-            text = textConstant.requestGeoposition.get,
+            text = textConstant.timeRequestMonthWhenSetDate.get,
             keyboardMarkup = ReplyKeyboardRemove()
         )
 
         return Completion(
             inProgress=True,
             didHandledUserInteraction=True,
-            moduleData={ "requestGeopositionMessageDidSent" : True }
+            moduleData={ "timeRequestMonthWhenSetDateMessageDidSent" : True }
         )
 
     async def handleUserMessage(self, ctx: Message, msg: MessageSender, data: dict) -> Completion:
 
         log.debug(f"User: {ctx.from_user.id}")
 
-        if "requestGeopositionMessageDidSent" not in data or data["requestGeopositionMessageDidSent"] != True:
+        if "timeRequestMonthWhenSetDateMessageDidSent" not in data or data["timeRequestMonthWhenSetDateMessageDidSent"] != True:
             return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
-        storage.logToUserRequest(ctx.from_user, f"Геопозиция: {messageText}")
-        
-        log.info(messageText)
-        
-        # TODO: НАдо заебашить сраку
-        userRequest = storage.getUserRequest(user=ctx.from_user)
-        userRequestString = ""
-        for line in userRequest:
-            userRequestString += f"{line}\n"
-
-        userRequestString = f"{ctx.from_user.full_name} @{ctx.from_user.username}\n{userRequestString}"
-
-        await crossDialogMessageSender.setWaitingForOrder(ctx.from_user, userRequestString)
-
-        storage.updateUserRequest(ctx.from_user, [])
+        storage.logToUserRequest(ctx.from_user, f"Когда начнётся помесячная аренда: {messageText}")
+        log.info(f"Транспорт нужен на {messageText}")
+        return self.complete(nextModuleName = MenuModuleName.requestGeoposition.get)
 
         # if messageText not in self.menuDict:
         #     return self.canNotHandle(data)
-        await msg.answer(
-                    ctx = ctx,
-                    text = "Идёт создание заказа",
-                    keyboardMarkup = ReplyKeyboardRemove()
-                )
-        return self.complete(nextModuleName = MenuModuleName.mainMenu.get)        
+
+  
+        
 
     async def handleCallback(self, ctx: CallbackQuery, data: dict, msg: MessageSender) -> Completion:
 

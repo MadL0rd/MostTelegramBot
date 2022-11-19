@@ -31,14 +31,17 @@ class UserHistoryEvent(enum.Enum):
     startModuleBikeScooterOrMoto = "Приступил к выбору скутера или мотоцикла"
     startModuleBikeMotoCategory = "Приступил к выбору категории мотоцикла"
     startModuleBikeScooterCategory = "Приступил к выбору категории скутера"
+    startModuleBikeScooterCategoryChoice = "Приступил к точному указанию желаемой модели скутера"
     startModuleBikeParameters = "Приступил к выбору параметров байка"
     startModuleBikeCriteriaChoice = "Приступил к выбору критериев"
 
     startModuleTimeRequest = "Приступил к выбору времени"
     startModuleTimeRequestDayWeekWhen = "Приступил к выбору даты начала аренды (длительность в днях/неделях)"
+    startModuleTimeRequestDayWeekWhenSetDate = "Приступил к указанию точной даты начала аренды (длительность в днях/неделях)"
     startModuleTimeRequestHowManyDays = "Приступил к выбору длительности аренды в днях"
     startModuleTimeRequestHowManyMonths = "Приступил к выбору длительности аренды в месяцах"
     startModuletimeRequestMonthWhen = "Приступил к выбору даты начала аренды (длительность в месяцах)"
+    startModuleTimeRequestMonthWhenSetDate = "Приступил к указанию точной даты начала аредны (длительность в месяцах)"
 
     startModuleBikeHelmet = "Приступил к выбору количества шлемов"
 
@@ -89,10 +92,10 @@ def getJsonData(filePath: Path):
 
 def writeJsonData(filePath: Path, content):
     # log.debug(content)
-    data = json.dumps(content, ensure_ascii=False, indent=2)
-    with filePath.open('w') as file:
-    # data = json.dumps(content, indent=2)
-    # with filePath.open('w', encoding= 'utf-8') as file:
+    # data = json.dumps(content, ensure_ascii=False, indent=2)
+    # with filePath.open('w') as file:
+    data = json.dumps(content, indent=2)
+    with filePath.open('w', encoding= 'utf-8') as file:
         file.write(data)
 
 # =====================

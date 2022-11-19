@@ -29,6 +29,7 @@ class UniqueMessagesKeys(enum.Enum):
 
     bikeMotoCategory = "bikeMotoCategory"
     bikeScooterCategory = "bikeScooterCategory"
+    bikeScooterCategoryChoice = "bikeScooterCategoryChoice"
 
     bikeParameters = "bikeParameters"
     bikeButtonCriteria = "bikeButtonCriteria"
@@ -44,9 +45,11 @@ class UniqueMessagesKeys(enum.Enum):
     timeButtonRequestWhenToday = "timeButtonRequestWhenToday"
     timeButtonRequestWhenTomorrow = "timeButtonRequestWhenTomorrow"
     timeButtonRequestWhenSetDate = "timeButtonRequestWhenSetDate"
+    timeRequestDayWeekWhenSetDate = "timeRequestDayWeekWhenSetDate"
     timeRequestHowManyDays = "timeRequestHowManyDays"
     timeRequestHowManyMonths = "timeRequestHowManyMonths"
     timeRequestMonthWhen = "timeRequestMonthWhen"
+    timeRequestMonthWhenSetDate = "timeRequestMonthWhenSetDate"
     bikeHelmet = "bikeHelmet"
     requestGeoposition = "requestGeoposition"
 
