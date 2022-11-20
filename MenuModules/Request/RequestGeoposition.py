@@ -76,7 +76,7 @@ class RequestGeoposition(MenuModuleInterface):
         #     return self.canNotHandle(data)
         await msg.answer(
                     ctx = ctx,
-                    text = "Идёт создание заказа",
+                    text = textConstant.messageAfterFillingOutForm.get,
                     keyboardMarkup = ReplyKeyboardRemove()
                 )
         return self.complete(nextModuleName = MenuModuleName.mainMenu.get)        

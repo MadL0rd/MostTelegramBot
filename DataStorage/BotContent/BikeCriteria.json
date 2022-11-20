@@ -1,0 +1,38 @@
+[
+  {
+    "type": "\u0413\u043e\u0434 \u0432\u044b\u043f\u0443\u0441\u043a\u0430",
+    "criteria1": "\u043b\u044e\u0431\u043e\u0439",
+    "criteria2": "2022",
+    "criteria3": "\u043e\u0442 2021",
+    "criteria4": "\u043e\u0442 2020",
+    "criteria5": "\u043e\u0442 2018"
+  },
+  {
+    "type": "\u0426\u0432\u0435\u0442",
+    "criteria1": "\u043b\u044e\u0431\u043e\u0439",
+    "criteria2": "\u0447\u0451\u0440\u043d\u044b\u0439",
+    "criteria3": "\u0431\u0435\u043b\u044b\u0439",
+    "criteria4": "\u044f\u0440\u043a\u0438\u0439",
+    "criteria5": "\u0434\u0440\u0443\u0433\u043e\u0439"
+  },
+  {
+    "type": "\u0414\u043b\u044f \u043c\u043e\u0434\u0435\u043b\u0435\u0439 NMax",
+    "criteria1": "PCX",
+    "criteria2": "XMax",
+    "criteria3": "Vespa",
+    "criteria4": "ADV",
+    "criteria5": "Lexi"
+  },
+  {
+    "type": "ABS",
+    "criteria1": "\u043b\u044e\u0431\u043e\u0439",
+    "criteria2": "\u0435\u0441\u0442\u044c",
+    "criteria3": "\u043d\u0435\u0442"
+  },
+  {
+    "type": "Keyless",
+    "criteria1": "\u043b\u044e\u0431\u043e\u0439",
+    "criteria2": "\u0435\u0441\u0442\u044c",
+    "criteria3": "\u043d\u0435\u0442"
+  }
+]
