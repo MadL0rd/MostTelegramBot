@@ -16,6 +16,7 @@ class PageNames(enum.Enum):
     ScooterCategoriesSmallList = "СкутерыМалые"
     ScooterCategoriesBigList = "СкутерыБольшие"
     MotoCategoriesList = "Мотоциклы"
+    bikeCriteria = "КритерииБайка"
 
     onboarding = "onboarding"
 
@@ -88,6 +89,25 @@ def updateOnboarding():
 
     storage.writeJsonData(
         storage.path.botContentOnboarding, 
+        content
+    )
+
+def updateBikeCriteria():
+
+    values = getContent(pages.bikeCriteria, "A1:Z100")
+    if len(values) > 0:
+        del values[0]
+
+    content = []
+    for line in values:
+        criteria = {}
+        criteria["type"] = line[0]
+        for i in range(len(line)-1):
+            criteria[f"criteria{i+1}"] = line[i+1]
+        content.append(criteria)
+
+    storage.writeJsonData(
+        storage.path.botContentBikeCriteria, 
         content
     )
 

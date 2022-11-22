@@ -55,19 +55,20 @@ class TimeRequestDayWeekWhen(MenuModuleInterface):
             return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
-        storage.logToUserRequest(ctx.from_user, f"Когда нужен транспорт: {messageText}")
 
         if messageText == textConstant.timeButtonRequestWhenToday.get:
             log.info("Транспорт нужен сегодня")
+            storage.logToUserRequest(ctx.from_user, f"Когда нужен транспорт: {messageText}")
             return self.complete(nextModuleName = MenuModuleName.timeRequestHowManyDays.get)
         
         if messageText == textConstant.timeButtonRequestWhenTomorrow.get:
             log.info("Транспорт нужен завтра")
+            storage.logToUserRequest(ctx.from_user, f"Когда нужен транспорт: {messageText}")
             return self.complete(nextModuleName = MenuModuleName.timeRequestHowManyDays.get)
 
         if messageText == textConstant.timeButtonRequestWhenSetDate.get:
             log.info("Выбрал дату")
-            return self.complete(nextModuleName = MenuModuleName.timeRequestHowManyDays.get)
+            return self.complete(nextModuleName = MenuModuleName.timeRequestDayWeekWhenSetDate.get)
 
         # if messageText not in self.menuDict:
         #     return self.canNotHandle(data)

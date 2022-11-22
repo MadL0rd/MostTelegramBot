@@ -2,7 +2,7 @@ import asyncio
 import sys
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.types import Message, CallbackQuery
-from Core.GoogleSheetsService import UpdateMotoCategoriesList, UpdateScooterCategoriesBigList, UpdateScooterCategoriesSmallList, updateOnboarding, updateUniqueMessages
+from Core.GoogleSheetsService import UpdateMotoCategoriesList, UpdateScooterCategoriesBigList, UpdateScooterCategoriesSmallList, updateBikeCriteria, updateOnboarding, updateUniqueMessages
 
 from logger import logger as log
 
@@ -133,6 +133,7 @@ async def on_startup(_):
     UpdateScooterCategoriesSmallList()
     UpdateScooterCategoriesBigList()
     UpdateMotoCategoriesList()
+    updateBikeCriteria()
     print("LETS GO")
 
 if __name__ == "__main__":

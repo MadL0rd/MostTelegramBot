@@ -1,4 +1,4 @@
-from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton
+from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
 
 import Core.StorageManager.StorageManager as storage
 from Core.StorageManager.StorageManager import UserHistoryEvent as event
@@ -24,11 +24,6 @@ class BikeCriteriaChoice(MenuModuleInterface):
 
         log.debug(f"User: {ctx.from_user.id}")
         storage.logToUserHistory(ctx.from_user, event.startModuleBikeCriteriaChoice, "")
-
-        keyboardMarkup = ReplyKeyboardMarkup(
-            resize_keyboard=True
-        ).add(KeyboardButton("Далее")
-        )
         
         userTg = ctx.from_user
         userInfo = storage.getUserInfo(userTg)
@@ -36,13 +31,17 @@ class BikeCriteriaChoice(MenuModuleInterface):
         await msg.answer(
             ctx = ctx,
             text = textConstant.bikeCriteriaChoice.get,
-            keyboardMarkup = keyboardMarkup
+            keyboardMarkup = ReplyKeyboardMarkup(
+        resize_keyboard=True
+        ).add(KeyboardButton("Приступим"))
         )
 
         return Completion(
             inProgress=True,
             didHandledUserInteraction=True,
-            moduleData={ "bikeCriteriaChoiceMessageDidSent" : True }
+            moduleData={ 
+                "bikeCriteriaChoiceMessageDidSent" : True
+                }
         )
 
     async def handleUserMessage(self, ctx: Message, msg: MessageSender, data: dict) -> Completion:
@@ -53,20 +52,32 @@ class BikeCriteriaChoice(MenuModuleInterface):
             return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
-        storage.logToUserRequest(ctx.from_user, f"Критерии байка: {messageText}")
-
-        if messageText == "Далее":
-            log.info("Юзер выбрал критерии")
-            return self.complete(nextModuleName = MenuModuleName.bikeHelmet.get)
-
-        # TODO: Сделать выбор критериев поиска
-        
-
-        # if messageText not in self.menuDict:
-        #     return self.canNotHandle(data)
-
-        return log.info("Модуль BikeCriteriaChoice завершён")
-        # self.complete(nextModuleName = self.menuDict[messageText])
+        pull = storage.getJsonData(storage.PathConfig.botContentBikeCriteria)
+        for line in pull:
+            if line["type"] not in data:
+                keyboardMarkup = ReplyKeyboardMarkup(
+                    resize_keyboard=True
+                    )
+                for i in range(1,len(line)):
+                    keyboardMarkup.add(KeyboardButton(line[f"criteria{i}"]))
+                await msg.answer(
+                    ctx = ctx,
+                    text = line["type"],
+                    keyboardMarkup = keyboardMarkup
+                    )
+                criteriaName = line["type"]
+                if messageText != "Приступим":
+                    storage.logToUserRequest(ctx.from_user, f"Критерий байка {data['prevCriteria']}: {messageText}")
+                data[f"{criteriaName}"] = True
+                data["prevCriteria"] = criteriaName
+                log.info(data)
+                return Completion(
+                    inProgress=True,
+                    didHandledUserInteraction= True,
+                    moduleData=data
+                    )
+        storage.logToUserRequest(ctx.from_user, f"Критерий байка {data['prevCriteria']}: {messageText}")
+        return self.complete(nextModuleName = MenuModuleName.bikeHelmet.get)
         
 
     async def handleCallback(self, ctx: CallbackQuery, data: dict, msg: MessageSender) -> Completion:
