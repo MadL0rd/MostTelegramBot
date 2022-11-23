@@ -9,13 +9,13 @@ from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandl
 from MenuModules.MenuModuleName import MenuModuleName
 from logger import logger as log
 
-class CarModels(MenuModuleInterface):
+class TimeRequestHowManyMonthsSet(MenuModuleInterface):
 
     # =====================
     # Interface implementation
     # =====================
 
-    namePrivate = MenuModuleName.carModels
+    namePrivate = MenuModuleName.timeRequestHowManyMonthsSet
 
     # Use default implementation
     # def callbackData(self, data: dict, msg: MessageSender) -> str:
@@ -23,46 +23,38 @@ class CarModels(MenuModuleInterface):
     async def handleModuleStart(self, ctx: Message, msg: MessageSender) -> Completion:
 
         log.debug(f"User: {ctx.from_user.id}")
-        storage.logToUserHistory(ctx.from_user, event.startModuleCarModels, "")
-
-        keyboardMarkup = ReplyKeyboardMarkup(
-            resize_keyboard=True
-        ).add(KeyboardButton(textConstant.carModelsFurther.get))
-        
-
+        storage.logToUserHistory(ctx.from_user, event.startModuleTimeRequestHowManyMonthsSet, "")
         
         userTg = ctx.from_user
         userInfo = storage.getUserInfo(userTg)
 
         await msg.answer(
             ctx = ctx,
-            text = textConstant.carModels.get,
-            keyboardMarkup = keyboardMarkup
+            text = textConstant.timeRequestHowManyMonthsSet.get,
+            keyboardMarkup = ReplyKeyboardRemove()
         )
 
         return Completion(
             inProgress=True,
             didHandledUserInteraction=True,
-            moduleData={ "carModelsMessageDidSent" : True }
+            moduleData={ "timeRequestHowManyMonthsSetMessageDidSent" : True }
         )
 
     async def handleUserMessage(self, ctx: Message, msg: MessageSender, data: dict) -> Completion:
 
         log.debug(f"User: {ctx.from_user.id}")
 
-        if "carModelsMessageDidSent" not in data or data["carModelsMessageDidSent"] != True:
+        if "timeRequestHowManyMonthsSetMessageDidSent" not in data or data["timeRequestHowManyMonthsSetMessageDidSent"] != True:
             return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
-        if messageText == textConstant.carModelsFurther.get:
-            log.info("Юзер закончил выбирать модель")
-            storage.logToUserRequest(ctx.from_user, f"Модель авто: не выбрана")
-        else:
-            storage.logToUserRequest(ctx.from_user, f"Модель авто: {messageText}")
-      
-        log.info(messageText)   
+        storage.logToUserRequest(ctx.from_user, f"На сколько месяцев аренда: {messageText}")
+        log.info(f"Транспорт нужен на {messageText} месяцев")
 
-        return self.complete(nextModuleName = MenuModuleName.timeRequest.get)
+        # if messageText not in self.menuDict:
+        #     return self.canNotHandle(data)
+
+        return self.complete(nextModuleName = MenuModuleName.timeRequestMonthWhen.get)
         
 
     async def handleCallback(self, ctx: CallbackQuery, data: dict, msg: MessageSender) -> Completion:
@@ -77,5 +69,5 @@ class CarModels(MenuModuleInterface):
     @property
     def menuDict(self) -> dict:
         return {
-            
+
         }

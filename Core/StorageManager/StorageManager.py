@@ -32,6 +32,7 @@ class UserHistoryEvent(enum.Enum):
     startModuleBikeMotoCategory = "Приступил к выбору категории мотоцикла"
     startModuleBikeScooterCategory = "Приступил к выбору категории скутера"
     startModuleBikeScooterCategoryChoice = "Приступил к точному указанию желаемой модели скутера"
+    strartModuleBikeMotoCategoryChoice = "Приступил к точному указанию желаемой модели мотоцикла"
     startModuleBikeParameters = "Приступил к выбору параметров байка"
     startModuleBikeCriteriaChoice = "Приступил к выбору критериев"
 
@@ -40,6 +41,7 @@ class UserHistoryEvent(enum.Enum):
     startModuleTimeRequestDayWeekWhenSetDate = "Приступил к указанию точной даты начала аренды (длительность в днях/неделях)"
     startModuleTimeRequestHowManyDays = "Приступил к выбору длительности аренды в днях"
     startModuleTimeRequestHowManyMonths = "Приступил к выбору длительности аренды в месяцах"
+    startModuleTimeRequestHowManyMonthsSet = "Приступил к указанию точного количества месяцев аренды"
     startModuletimeRequestMonthWhen = "Приступил к выбору даты начала аренды (длительность в месяцах)"
     startModuleTimeRequestMonthWhenSetDate = "Приступил к указанию точной даты начала аредны (длительность в месяцах)"
 
