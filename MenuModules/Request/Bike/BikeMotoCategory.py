@@ -65,13 +65,15 @@ class BikeMotoCategory(MenuModuleInterface):
             return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
-        storage.logToUserRequest(ctx.from_user, f"Категория мотоцикла: {messageText}")
 
-        if messageText in data["categoryList"]:
+        if messageText in data["categoryList"] and messageText != "Другое":
             log.info(f"Пользователь выбрал {messageText}")
+            storage.logToUserRequest(ctx.from_user, f"Категория мотоцикла: {messageText}")
             return self.complete(nextModuleName = MenuModuleName.bikeParameters.get)
 
-        # TODO: При выборе варианта "другое" надо запрашивать модель и сохранять
+        if messageText == "Другое":
+            log.info(f"Пользователь решил указать свою модель мотоцилка")
+            return self.complete(nextModuleName= MenuModuleName.bikeMotoCategoryChoice.get)
 
         # if messageText not in self.menuDict:
         #     return self.canNotHandle(data)

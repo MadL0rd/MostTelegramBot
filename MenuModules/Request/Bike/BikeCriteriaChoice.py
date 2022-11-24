@@ -28,20 +28,26 @@ class BikeCriteriaChoice(MenuModuleInterface):
         userTg = ctx.from_user
         userInfo = storage.getUserInfo(userTg)
 
+        pull = storage.getJsonData(storage.PathConfig.botContentBikeCriteria)
+        firstCriteria = pull[0]
+        keyboardMarkup = ReplyKeyboardMarkup(
+                    resize_keyboard=True
+                    )
+        for i in range(1,len(firstCriteria)):
+                    keyboardMarkup.add(KeyboardButton(firstCriteria[f"criteria{i}"]))
         await msg.answer(
-            ctx = ctx,
-            text = textConstant.bikeCriteriaChoice.get,
-            keyboardMarkup = ReplyKeyboardMarkup(
-        resize_keyboard=True
-        ).add(KeyboardButton("Приступим"))
-        )
+                    ctx = ctx,
+                    text = firstCriteria["type"],
+                    keyboardMarkup = keyboardMarkup
+                    )
+        data = {
+            "bikeCriteriaChoiceMessageDidSent" : True
+        }
 
         return Completion(
             inProgress=True,
             didHandledUserInteraction=True,
-            moduleData={ 
-                "bikeCriteriaChoiceMessageDidSent" : True
-                }
+            moduleData=data
         )
 
     async def handleUserMessage(self, ctx: Message, msg: MessageSender, data: dict) -> Completion:
@@ -53,6 +59,13 @@ class BikeCriteriaChoice(MenuModuleInterface):
         
         messageText = ctx.text
         pull = storage.getJsonData(storage.PathConfig.botContentBikeCriteria)
+
+        firstCriteria = pull[0]
+        firstText = firstCriteria["type"]
+        if len(data) == 1:
+            log.info(firstText)
+            storage.logToUserRequest(ctx.from_user, f"Критерий байка {firstText}: {messageText}")
+            data[firstText] = True
         for line in pull:
             if line["type"] not in data:
                 keyboardMarkup = ReplyKeyboardMarkup(
@@ -66,7 +79,7 @@ class BikeCriteriaChoice(MenuModuleInterface):
                     keyboardMarkup = keyboardMarkup
                     )
                 criteriaName = line["type"]
-                if messageText != "Приступим":
+                if len(data) > 2:
                     storage.logToUserRequest(ctx.from_user, f"Критерий байка {data['prevCriteria']}: {messageText}")
                 data[f"{criteriaName}"] = True
                 data["prevCriteria"] = criteriaName

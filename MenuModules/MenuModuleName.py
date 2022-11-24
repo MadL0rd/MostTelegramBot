@@ -19,6 +19,7 @@ class MenuModuleName(enum.Enum):
     bikeMotoCategory: str = "bikeMotoCategory"
     bikeScooterCategory: str = "bikeScooterCategory"
     bikeScooterCategoryChoice: str = "bikeScooterCategoryChoice"
+    bikeMotoCategoryChoice: str = "bikeMotoCategoryChoice"
 
     bikeParameters: str = "bikeParameters"
     bikeButtonCriteria: str = "bikeButtonCriteria"
@@ -33,6 +34,7 @@ class MenuModuleName(enum.Enum):
     timeRequestDayWeekWhenSetDate: str = "timeRequestDayWeekWhenSetDate"
     timeRequestHowManyDays: str = "timeRequestHowManyDays"
     timeRequestHowManyMonths: str = "timeRequestHowManyMonths"
+    timeRequestHowManyMonthsSet: str = "timeRequestHowManyMonthsSet"
     timeRequestMonthWhen: str = "timeRequestMonthWhen"
     timeRequestMonthWhenSetDate: str = "timeRequestMonthWhenSetDate"
 

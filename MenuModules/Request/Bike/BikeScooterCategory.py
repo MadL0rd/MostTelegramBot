@@ -32,6 +32,8 @@ class BikeScooterCategory(MenuModuleInterface):
         categoryList = categoryListSmall + categoryListBig
         categoryMaxLen = max(len(categoryListSmall), len(categoryListBig))
 
+        # TODO: Если количество моделей в списках неодинаково, ты мы огребаем IndexError. Надо что-то с этим придумать.
+
         keyboardMarkup = ReplyKeyboardMarkup(
         resize_keyboard=True
         )
@@ -69,7 +71,7 @@ class BikeScooterCategory(MenuModuleInterface):
 
         if messageText in data["categoryList"] and messageText != "Другое":
             log.info(f"Пользователь выбрал {messageText}")
-            storage.logToUserRequest(ctx.from_user, f"Категория скутера: {messageText}")
+            storage.logToUserRequest(ctx.from_user, f"Модель скутера: {messageText}")
             return self.complete(nextModuleName = MenuModuleName.bikeParameters.get)
         
         if messageText == "Другое":
