@@ -2,7 +2,6 @@ import string
 import httplib2
 from googleapiclient.discovery import build
 from oauth2client.service_account import ServiceAccountCredentials
-from google.oauth2.credentials import Credentials
 from datetime import datetime
 import json
 import enum
@@ -12,17 +11,14 @@ from logger import logger as log
 
 class PageNames(enum.Enum):
 
-    list1 = "uniqueMessages"
-    ScooterCategoriesSmallList = "СкутерыМалые"
-    ScooterCategoriesBigList = "СкутерыБольшие"
-    MotoCategoriesList = "Мотоциклы"
+    uniqueMessages = "УникальныеСообщения"
+    scooterCategoriesSmallList = "СкутерыМалые"
+    scooterCategoriesBigList = "СкутерыБольшие"
+    motoCategoriesList = "Мотоциклы"
     bikeCriteria = "КритерииБайка"
-
-    onboarding = "onboarding"
-
+    onboarding = "Онбординг"
 
 pages = PageNames
-
 
 CREDENTIALS_FILE = 'creds.json'
 
@@ -56,9 +52,7 @@ def getContent(page: PageNames, range: string):
 
 def updateUniqueMessages():
 
-    values = getContent(pages.list1, "A1:B200")
-    if len(values) > 0:
-        del values[0]
+    values = getContent(pages.uniqueMessages, "A2:B200")
 
     content = {}
     #log.debug(values)
@@ -76,9 +70,7 @@ def updateUniqueMessages():
     
 def updateOnboarding():
 
-    values = getContent(pages.onboarding, "A1:B100")
-    if len(values) > 0:
-        del values[0]
+    values = getContent(pages.onboarding, "A2:B100")
 
     content = []
     for line in values:
@@ -94,16 +86,14 @@ def updateOnboarding():
 
 def updateBikeCriteria():
 
-    values = getContent(pages.bikeCriteria, "A1:Z100")
-    if len(values) > 0:
-        del values[0]
+    values = getContent(pages.bikeCriteria, "A2:Z100")
 
     content = []
     for line in values:
         criteria = {}
         criteria["type"] = line[0]
-        for i in range(len(line)-1):
-            criteria[f"criteria{i+1}"] = line[i+1]
+        del line[0]
+        criteria["values"] = line
         content.append(criteria)
 
     storage.writeJsonData(
@@ -113,9 +103,7 @@ def updateBikeCriteria():
 
 def updateScooterCategoriesSmallList():
 
-    values = getContent(pages.ScooterCategoriesSmallList, "A1:A200")
-    if len(values) > 0:
-        del values[0]
+    values = getContent(pages.scooterCategoriesSmallList, "A2:A200")
 
     content = {}
     #log.debug(values)
@@ -133,9 +121,7 @@ def updateScooterCategoriesSmallList():
 
 def updateScooterCategoriesBigList():
 
-    values = getContent(pages.ScooterCategoriesBigList, "A1:A200")
-    if len(values) > 0:
-        del values[0]
+    values = getContent(pages.scooterCategoriesBigList, "A2:A200")
 
     content = {}
     #log.debug(values)
@@ -152,9 +138,7 @@ def updateScooterCategoriesBigList():
     )
 def updateMotoCategoriesList():
 
-    values = getContent(pages.MotoCategoriesList, "A1:A200")
-    if len(values) > 0:
-        del values[0]
+    values = getContent(pages.motoCategoriesList, "A2:A200")
 
     content = {}
     #log.debug(values)
@@ -169,36 +153,3 @@ def updateMotoCategoriesList():
         storage.path.botContentMotoCategoriesList, 
         content
     )
-# def updateNews():
-
-#     values = getContent(pages.news, "A2:C100")
-    
-#     content = []
-#     for line in values:
-#         exercise = {}
-#         try:
-#             if line[0] != "":
-#                 exercise["ID"] = line[0]
-#             else: 
-#                 continue
-#         except:
-#             continue
-
-#         try:
-#             if line[1] != "":
-#                 exercise["text"] = line[1]
-#         except:
-#             log.debug("Argument text not found")
-
-#         try:
-#             if line[2] != "":
-#                 exercise["picture"] = line[2]
-#         except:
-#             log.debug("Argument picture not found")            
-#         content.append(exercise)
-
-#     storage.writeJsonData(
-#         storage.path.botContentNews, 
-#         content
-#     )
-

@@ -75,10 +75,10 @@ class RequestGeoposition(MenuModuleInterface):
         # if messageText not in self.menuDict:
         #     return self.canNotHandle(data)
         await msg.answer(
-                    ctx = ctx,
-                    text = textConstant.messageAfterFillingOutForm.get,
-                    keyboardMarkup = ReplyKeyboardRemove()
-                )
+            ctx = ctx,
+            text = textConstant.messageAfterFillingOutForm.get,
+            keyboardMarkup = ReplyKeyboardRemove()
+        )
         return self.complete(nextModuleName = MenuModuleName.mainMenu.get)        
 
     async def handleCallback(self, ctx: CallbackQuery, data: dict, msg: MessageSender) -> Completion:

@@ -24,9 +24,6 @@ class UserHistoryEvent(enum.Enum):
     becomeAdmin = "Стал администратором"
     startModuleOnboarding = "Начал смотреть онбординг"
     startModuleMainMenu = "Перешел в главное меню" 
-    sessionGenerated = "Сессия создана"
-    sessionReload = "Перезапустил сессию"
-    sessionComplete = "Завершил сессию"
 
     startModuleBikeCommitment = "Приступил к выбору байка"
     startModuleBikeScooterOrMoto = "Приступил к выбору скутера или мотоцикла"

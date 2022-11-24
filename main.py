@@ -99,9 +99,6 @@ async def default_message_handler(ctx: Message):
             channelChatMessageId=channelChatMessageId
         )
 
-    # if ctx.chat.id != chat:
-    #     return
-
     # Fetch automatic telegram message for channel order from bot
     elif ctx.from_user.first_name == "Telegram":
 
@@ -120,7 +117,6 @@ async def default_message_handler(ctx: Message):
         return
 
     await crossDialogMessageSender.forwardMessageFromManagerToUser(ctx, order)
-
 
 @dp.callback_query_handler()
 async def default_callback_handler(ctx: CallbackQuery):
