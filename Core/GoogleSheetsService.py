@@ -105,12 +105,12 @@ def updateScooterCategoriesSmallList():
 
     values = getContent(pages.scooterCategoriesSmallList, "A2:A200")
 
-    content = {}
+    content = list()
     #log.debug(values)
     for line in values:
         try:
             if line[0] not in content and line[0] != "":
-                content[line[0]] = line[0]
+                content.append(line[0])
         except:
             continue
 
@@ -123,12 +123,12 @@ def updateScooterCategoriesBigList():
 
     values = getContent(pages.scooterCategoriesBigList, "A2:A200")
 
-    content = {}
+    content = list()
     #log.debug(values)
     for line in values:
         try:
             if line[0] not in content and line[0] != "":
-                content[line[0]] = line[0]
+                content.append(line[0])
         except:
             continue
 
@@ -140,12 +140,12 @@ def updateMotoCategoriesList():
 
     values = getContent(pages.motoCategoriesList, "A2:A200")
 
-    content = {}
+    content = list()
     #log.debug(values)
     for line in values:
         try:
             if line[0] not in content and line[0] != "":
-                content[line[0]] = line[0]
+                content.append(line[0])
         except:
             continue
 

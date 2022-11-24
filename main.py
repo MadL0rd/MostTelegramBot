@@ -1,4 +1,5 @@
 import asyncio
+import platform
 import sys
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.types import Message, CallbackQuery
@@ -8,6 +9,7 @@ from logger import logger as log
 import MenuModules.MenuDispatcher as dispatcher
 import Core.StorageManager.StorageManager as storage
 from Core.CrossDialogMessageSender import CrossDialogMessageSender, crossDialogMessageSenderShared
+import Core.GoogleSheetsService as sheets
 
 # =====================
 # Version 1.0.3
@@ -124,6 +126,13 @@ async def default_callback_handler(ctx: CallbackQuery):
 
 async def on_startup(_):
     log.info("Bot just started")
+    if platform.system() == 'Windows':
+        sheets.updateUniqueMessages()
+        sheets.updateOnboarding()
+        sheets.updateScooterCategoriesSmallList()
+        sheets.updateScooterCategoriesBigList()
+        sheets.updateMotoCategoriesList()
+        sheets.updateBikeCriteria()
 
 if __name__ == "__main__":
     executor.start_polling(dp, skip_updates=True, on_startup=on_startup)
