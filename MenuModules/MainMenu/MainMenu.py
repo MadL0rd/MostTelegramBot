@@ -66,8 +66,8 @@ class MainMenu(MenuModuleInterface):
         if messageText == textConstant.menuButtonMyOrders.get:
             return self.complete(nextModuleName = MenuModuleName.mainMenu.get)
 
-        # if messageText == textConstant.menuButtonAdmin.get:
-        #     return self.complete(nextModuleName = MenuModuleName.mainMenu.get)
+        if messageText == textConstant.menuButtonAdmin.get:
+            return self.complete(nextModuleName = MenuModuleName.admin.get)
 
         if messageText not in self.menuDict:
             return self.canNotHandle(data)

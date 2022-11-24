@@ -2,7 +2,6 @@ import asyncio
 import sys
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.types import Message, CallbackQuery
-from Core.GoogleSheetsService import UpdateMotoCategoriesList, UpdateScooterCategoriesBigList, UpdateScooterCategoriesSmallList, updateBikeCriteria, updateOnboarding, updateUniqueMessages
 
 from logger import logger as log
 
@@ -128,13 +127,7 @@ async def default_callback_handler(ctx: CallbackQuery):
     await dispatcher.handleCallback(ctx)
 
 async def on_startup(_):
-    updateUniqueMessages()
-    updateOnboarding()
-    UpdateScooterCategoriesSmallList()
-    UpdateScooterCategoriesBigList()
-    UpdateMotoCategoriesList()
-    updateBikeCriteria()
-    print("LETS GO")
+    log.info("Bot just started")
 
 if __name__ == "__main__":
     executor.start_polling(dp, skip_updates=True, on_startup=on_startup)

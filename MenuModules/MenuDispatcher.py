@@ -93,7 +93,7 @@ async def handleUserMessage(ctx: Message):
             msg=msg
         )
 
-    adminPassword = "cSBun38QAw5rhKBB86YsP5suBVk52Ff7"
+    adminPassword = "siBkdnPm4jpZASeuyct98F6rMQ7gDhwb"
     if ctx.text == adminPassword:
         if "isAdmin" not in userInfo or userInfo["isAdmin"] == False:
             userInfo = storage.getUserInfo(userTg)

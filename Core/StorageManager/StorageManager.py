@@ -220,25 +220,21 @@ def generateStatisticTable():
     log.info("Statistic table generation start")
 
     statisticEvents = [
-        UserHistoryEvent.start,
-        UserHistoryEvent.questionAnswer,
-        UserHistoryEvent.sessionGenerated,
-        UserHistoryEvent.sessionReload,
-        UserHistoryEvent.sessionComplete
+        UserHistoryEvent.start
     ]
 
     dateConfig = getJsonData(path.botContentPrivateConfig)["startDate"]
     startDate = date(dateConfig["year"], dateConfig["month"], dateConfig["day"])
-
+    
     workbook = xlsxwriter.Workbook(path.statisticHistoryTableFile)
 
-    event = UserHistoryEvent.assessmentDelta
-    generateStatisticPageForEvent(workbook, event.value, startDate, StatisticPageOperation.sum)
+    # event = UserHistoryEvent.assessmentDelta
+    # generateStatisticPageForEvent(workbook, event.value, startDate, StatisticPageOperation.sum)
 
-    event = UserHistoryEvent.assessmentBefore
-    generateStatisticPageForEvent(workbook, event.value, startDate, StatisticPageOperation.average)
-    event = UserHistoryEvent.assessmentAfter
-    generateStatisticPageForEvent(workbook, event.value, startDate, StatisticPageOperation.average)
+    # event = UserHistoryEvent.assessmentBefore
+    # generateStatisticPageForEvent(workbook, event.value, startDate, StatisticPageOperation.average)
+    # event = UserHistoryEvent.assessmentAfter
+    # generateStatisticPageForEvent(workbook, event.value, startDate, StatisticPageOperation.average)
 
     for event in statisticEvents:
         generateStatisticPageForEvent(workbook, event.value, startDate)

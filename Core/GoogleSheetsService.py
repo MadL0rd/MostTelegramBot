@@ -111,7 +111,7 @@ def updateBikeCriteria():
         content
     )
 
-def UpdateScooterCategoriesSmallList():
+def updateScooterCategoriesSmallList():
 
     values = getContent(pages.ScooterCategoriesSmallList, "A1:A200")
     if len(values) > 0:
@@ -131,7 +131,7 @@ def UpdateScooterCategoriesSmallList():
         content
     )
 
-def UpdateScooterCategoriesBigList():
+def updateScooterCategoriesBigList():
 
     values = getContent(pages.ScooterCategoriesBigList, "A1:A200")
     if len(values) > 0:
@@ -150,7 +150,7 @@ def UpdateScooterCategoriesBigList():
         storage.path.botContentScooterCategoriesBigList, 
         content
     )
-def UpdateMotoCategoriesList():
+def updateMotoCategoriesList():
 
     values = getContent(pages.MotoCategoriesList, "A1:A200")
     if len(values) > 0:
