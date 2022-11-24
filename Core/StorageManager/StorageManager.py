@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 import string
 import pytz
+import platform
 import xlsxwriter
 
 from aiogram.types import User
@@ -23,22 +24,24 @@ class UserHistoryEvent(enum.Enum):
     becomeAdmin = "Стал администратором"
     startModuleOnboarding = "Начал смотреть онбординг"
     startModuleMainMenu = "Перешел в главное меню" 
-    sessionGenerated = "Сессия создана"
-    sessionReload = "Перезапустил сессию"
-    sessionComplete = "Завершил сессию"
 
     startModuleBikeCommitment = "Приступил к выбору байка"
     startModuleBikeScooterOrMoto = "Приступил к выбору скутера или мотоцикла"
     startModuleBikeMotoCategory = "Приступил к выбору категории мотоцикла"
     startModuleBikeScooterCategory = "Приступил к выбору категории скутера"
+    startModuleBikeScooterCategoryChoice = "Приступил к точному указанию желаемой модели скутера"
+    strartModuleBikeMotoCategoryChoice = "Приступил к точному указанию желаемой модели мотоцикла"
     startModuleBikeParameters = "Приступил к выбору параметров байка"
     startModuleBikeCriteriaChoice = "Приступил к выбору критериев"
 
     startModuleTimeRequest = "Приступил к выбору времени"
     startModuleTimeRequestDayWeekWhen = "Приступил к выбору даты начала аренды (длительность в днях/неделях)"
+    startModuleTimeRequestDayWeekWhenSetDate = "Приступил к указанию точной даты начала аренды (длительность в днях/неделях)"
     startModuleTimeRequestHowManyDays = "Приступил к выбору длительности аренды в днях"
     startModuleTimeRequestHowManyMonths = "Приступил к выбору длительности аренды в месяцах"
+    startModuleTimeRequestHowManyMonthsSet = "Приступил к указанию точного количества месяцев аренды"
     startModuletimeRequestMonthWhen = "Приступил к выбору даты начала аренды (длительность в месяцах)"
+    startModuleTimeRequestMonthWhenSetDate = "Приступил к указанию точной даты начала аредны (длительность в месяцах)"
 
     startModuleBikeHelmet = "Приступил к выбору количества шлемов"
 
@@ -55,6 +58,7 @@ class PathConfig:
 
     botContentDir = baseDir / "BotContent"
     botContentOnboarding = botContentDir/ "Onboarding.json"
+    botContentBikeCriteria = botContentDir/ "BikeCriteria.json"
     botContentUniqueMessages = botContentDir/ "UniqueTextMessages.json"
     botContentPrivateConfig = botContentDir / "PrivateConfig.json"
     totalHistoryTableFile = baseDir / "TotalHistory.xlsx"
@@ -82,6 +86,8 @@ class PathConfig:
 
 path = PathConfig()
 
+isWindows = platform.system() == 'Windows'
+
 def getJsonData(filePath: Path):
     with filePath.open() as json_file:
         data = json.load(json_file)
@@ -89,11 +95,14 @@ def getJsonData(filePath: Path):
 
 def writeJsonData(filePath: Path, content):
     # log.debug(content)
-    data = json.dumps(content, ensure_ascii=False, indent=2)
-    with filePath.open('w') as file:
-    # data = json.dumps(content, indent=2)
-    # with filePath.open('w', encoding= 'utf-8') as file:
-        file.write(data)
+    if isWindows:
+        data = json.dumps(content, indent=2)
+        with filePath.open('w', encoding= 'utf-8') as file:
+            file.write(data)
+    else:
+        data = json.dumps(content, ensure_ascii=False, indent=2)
+        with filePath.open('w') as file:
+            file.write(data)
 
 # =====================
 # Public interaction
@@ -214,25 +223,21 @@ def generateStatisticTable():
     log.info("Statistic table generation start")
 
     statisticEvents = [
-        UserHistoryEvent.start,
-        UserHistoryEvent.questionAnswer,
-        UserHistoryEvent.sessionGenerated,
-        UserHistoryEvent.sessionReload,
-        UserHistoryEvent.sessionComplete
+        UserHistoryEvent.start
     ]
 
     dateConfig = getJsonData(path.botContentPrivateConfig)["startDate"]
     startDate = date(dateConfig["year"], dateConfig["month"], dateConfig["day"])
-
+    
     workbook = xlsxwriter.Workbook(path.statisticHistoryTableFile)
 
-    event = UserHistoryEvent.assessmentDelta
-    generateStatisticPageForEvent(workbook, event.value, startDate, StatisticPageOperation.sum)
+    # event = UserHistoryEvent.assessmentDelta
+    # generateStatisticPageForEvent(workbook, event.value, startDate, StatisticPageOperation.sum)
 
-    event = UserHistoryEvent.assessmentBefore
-    generateStatisticPageForEvent(workbook, event.value, startDate, StatisticPageOperation.average)
-    event = UserHistoryEvent.assessmentAfter
-    generateStatisticPageForEvent(workbook, event.value, startDate, StatisticPageOperation.average)
+    # event = UserHistoryEvent.assessmentBefore
+    # generateStatisticPageForEvent(workbook, event.value, startDate, StatisticPageOperation.average)
+    # event = UserHistoryEvent.assessmentAfter
+    # generateStatisticPageForEvent(workbook, event.value, startDate, StatisticPageOperation.average)
 
     for event in statisticEvents:
         generateStatisticPageForEvent(workbook, event.value, startDate)

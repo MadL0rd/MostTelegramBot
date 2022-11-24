@@ -54,14 +54,13 @@ class CarModels(MenuModuleInterface):
             return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
-        storage.logToUserRequest(ctx.from_user, f"Модель авто: {messageText}")
         if messageText == textConstant.carModelsFurther.get:
             log.info("Юзер закончил выбирать модель")
-            return self.complete(nextModuleName = MenuModuleName.timeRequest.get)
-        
-        log.info(messageText)
-        
-    
+            storage.logToUserRequest(ctx.from_user, f"Модель авто: не выбрана")
+        else:
+            storage.logToUserRequest(ctx.from_user, f"Модель авто: {messageText}")
+      
+        log.info(messageText)   
 
         return self.complete(nextModuleName = MenuModuleName.timeRequest.get)
         

@@ -32,6 +32,8 @@ class BikeScooterCategory(MenuModuleInterface):
         categoryList = categoryListSmall + categoryListBig
         categoryMaxLen = max(len(categoryListSmall), len(categoryListBig))
 
+        # TODO: Если количество моделей в списках неодинаково, ты мы огребаем IndexError. Надо что-то с этим придумать.
+
         keyboardMarkup = ReplyKeyboardMarkup(
         resize_keyboard=True
         )
@@ -66,13 +68,15 @@ class BikeScooterCategory(MenuModuleInterface):
             return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
-        storage.logToUserRequest(ctx.from_user, f"Категория скутера: {messageText}")
 
-        if messageText in data["categoryList"]:
+        if messageText in data["categoryList"] and messageText != "Другое":
             log.info(f"Пользователь выбрал {messageText}")
+            storage.logToUserRequest(ctx.from_user, f"Модель скутера: {messageText}")
             return self.complete(nextModuleName = MenuModuleName.bikeParameters.get)
-
-        # TODO: При выборе варианта "другое" надо запрашивать модель и сохранять
+        
+        if messageText == "Другое":
+            log.info(f"Пользователь решил указать другую модель скутера")
+            return self.complete(nextModuleName = MenuModuleName.bikeScooterCategoryChoice.get)
         
         # if messageText not in self.menuDict:
         #     return self.canNotHandle(data)

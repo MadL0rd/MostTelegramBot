@@ -29,11 +29,10 @@ class TimeRequestHowManyMonths(MenuModuleInterface):
             resize_keyboard=True
         ).add(KeyboardButton("Один месяц"),
         ).add(KeyboardButton("Два месяца"),
-        ).add(KeyboardButton("Три месяца")
+        ).add(KeyboardButton("Три месяца"),
+        ).add(KeyboardButton("Больше трёх месяцев")
         )
-        
-
-        
+            
         userTg = ctx.from_user
         userInfo = storage.getUserInfo(userTg)
 
@@ -57,16 +56,16 @@ class TimeRequestHowManyMonths(MenuModuleInterface):
             return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
-        storage.logToUserRequest(ctx.from_user, f"На сколько месяцев аренда: {messageText}")
 
         if messageText in ("Один месяц","Два месяца","Три месяца"):
+            storage.logToUserRequest(ctx.from_user, f"На сколько месяцев аренда: {messageText}")
             log.info(f"Транспорт нужен на {messageText}")
             return self.complete(nextModuleName = MenuModuleName.timeRequestMonthWhen.get)
-        
-        log.info(f"Транспорт нужен на {messageText}")
-            
-            
 
+        if messageText in ("Больше трёх месяцев"):
+            log.info(f"Транспорт нужен больше чем на три месяца")
+            return self.complete(nextModuleName = MenuModuleName.timeRequestHowManyMonthsSet.get)    
+            
         # if messageText not in self.menuDict:
         #     return self.canNotHandle(data)
 

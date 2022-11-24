@@ -2,7 +2,6 @@ import asyncio
 import sys
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.types import Message, CallbackQuery
-from Core.GoogleSheetsService import UpdateMotoCategoriesList, UpdateScooterCategoriesBigList, UpdateScooterCategoriesSmallList, updateOnboarding, updateUniqueMessages
 
 from logger import logger as log
 
@@ -11,7 +10,7 @@ import Core.StorageManager.StorageManager as storage
 from Core.CrossDialogMessageSender import CrossDialogMessageSender, crossDialogMessageSenderShared
 
 # =====================
-# Version 1.0.2
+# Version 1.0.3
 # MostBaliBot
 # https://api.telegram.org/bot5278616125:AAH65CfKVC7pCiWZyPTGQQY442l4C4tBB8E/sendMessage?chat_id=@MadL0rdTest&text=Text
 # =====================
@@ -100,9 +99,6 @@ async def default_message_handler(ctx: Message):
             channelChatMessageId=channelChatMessageId
         )
 
-    # if ctx.chat.id != chat:
-    #     return
-
     # Fetch automatic telegram message for channel order from bot
     elif ctx.from_user.first_name == "Telegram":
 
@@ -122,18 +118,12 @@ async def default_message_handler(ctx: Message):
 
     await crossDialogMessageSender.forwardMessageFromManagerToUser(ctx, order)
 
-
 @dp.callback_query_handler()
 async def default_callback_handler(ctx: CallbackQuery):
     await dispatcher.handleCallback(ctx)
 
 async def on_startup(_):
-    updateUniqueMessages()
-    updateOnboarding()
-    UpdateScooterCategoriesSmallList()
-    UpdateScooterCategoriesBigList()
-    UpdateMotoCategoriesList()
-    print("LETS GO")
+    log.info("Bot just started")
 
 if __name__ == "__main__":
     executor.start_polling(dp, skip_updates=True, on_startup=on_startup)

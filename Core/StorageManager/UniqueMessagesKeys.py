@@ -29,6 +29,8 @@ class UniqueMessagesKeys(enum.Enum):
 
     bikeMotoCategory = "bikeMotoCategory"
     bikeScooterCategory = "bikeScooterCategory"
+    bikeScooterCategoryChoice = "bikeScooterCategoryChoice"
+    bikeMotoCategoryChoice = "bikeMotoCategoryChoice"
 
     bikeParameters = "bikeParameters"
     bikeButtonCriteria = "bikeButtonCriteria"
@@ -44,9 +46,12 @@ class UniqueMessagesKeys(enum.Enum):
     timeButtonRequestWhenToday = "timeButtonRequestWhenToday"
     timeButtonRequestWhenTomorrow = "timeButtonRequestWhenTomorrow"
     timeButtonRequestWhenSetDate = "timeButtonRequestWhenSetDate"
+    timeRequestDayWeekWhenSetDate = "timeRequestDayWeekWhenSetDate"
     timeRequestHowManyDays = "timeRequestHowManyDays"
     timeRequestHowManyMonths = "timeRequestHowManyMonths"
+    timeRequestHowManyMonthsSet = "timeRequestHowManyMonthsSet"
     timeRequestMonthWhen = "timeRequestMonthWhen"
+    timeRequestMonthWhenSetDate = "timeRequestMonthWhenSetDate"
     bikeHelmet = "bikeHelmet"
     requestGeoposition = "requestGeoposition"
 
@@ -62,6 +67,8 @@ class UniqueMessagesKeys(enum.Enum):
     carButtonTransmissionShowAll = "carButtonTransmissionShowAll"
     carModels = "carModels"
     carModelsFurther = "carModelsFurther"
+    
+    messageAfterFillingOutForm = "messageAfterFillingOutForm"
 
     @property
     def get(self) -> str:
