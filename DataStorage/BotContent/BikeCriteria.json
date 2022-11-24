@@ -1,30 +1,30 @@
 [
   {
-    "type": "\u0413\u043e\u0434 \u0432\u044b\u043f\u0443\u0441\u043a\u0430",
-    "criteria1": "\u043b\u044e\u0431\u043e\u0439",
+    "type": "Год выпуска",
+    "criteria1": "любой",
     "criteria2": "2022",
-    "criteria3": "\u043e\u0442 2021",
-    "criteria4": "\u043e\u0442 2020",
-    "criteria5": "\u043e\u0442 2018"
+    "criteria3": "от 2021",
+    "criteria4": "от 2020",
+    "criteria5": "от 2018"
   },
   {
-    "type": "\u0426\u0432\u0435\u0442",
-    "criteria1": "\u043b\u044e\u0431\u043e\u0439",
-    "criteria2": "\u0447\u0451\u0440\u043d\u044b\u0439",
-    "criteria3": "\u0431\u0435\u043b\u044b\u0439",
-    "criteria4": "\u044f\u0440\u043a\u0438\u0439",
-    "criteria5": "\u0434\u0440\u0443\u0433\u043e\u0439"
+    "type": "Цвет",
+    "criteria1": "любой",
+    "criteria2": "чёрный",
+    "criteria3": "белый",
+    "criteria4": "яркий",
+    "criteria5": "другой"
   },
   {
     "type": "ABS",
-    "criteria1": "\u043b\u044e\u0431\u043e\u0439",
-    "criteria2": "\u0435\u0441\u0442\u044c",
-    "criteria3": "\u043d\u0435\u0442"
+    "criteria1": "любой",
+    "criteria2": "есть",
+    "criteria3": "нет"
   },
   {
     "type": "Keyless",
-    "criteria1": "\u043b\u044e\u0431\u043e\u0439",
-    "criteria2": "\u0435\u0441\u0442\u044c",
-    "criteria3": "\u043d\u0435\u0442"
+    "criteria1": "любой",
+    "criteria2": "есть",
+    "criteria3": "нет"
   }
 ]
