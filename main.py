@@ -10,7 +10,7 @@ import Core.StorageManager.StorageManager as storage
 from Core.CrossDialogMessageSender import CrossDialogMessageSender, crossDialogMessageSenderShared
 
 # =====================
-# Version 1.0.2
+# Version 1.0.3
 # MostBaliBot
 # https://api.telegram.org/bot5278616125:AAH65CfKVC7pCiWZyPTGQQY442l4C4tBB8E/sendMessage?chat_id=@MadL0rdTest&text=Text
 # =====================
