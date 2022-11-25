@@ -49,6 +49,7 @@ class UserHistoryEvent(enum.Enum):
     startModuleCarSize = "Приступил к выбору размера машины"
     startModuleCarTransmission = "Приступил к выбору коробки передач"
     startModuleCarModels = "Приступил к выбору моделей"
+    startModuleComment = "Приступил к написанию комментария к заказу"
 class PathConfig:
 
     baseDir = Path("./DataStorage")
@@ -150,9 +151,10 @@ def getUserRequest(user: User)->list:
 
     return getJsonData(userRequestFile)
 
-def logToUserRequest(user: User, text: str):
+def logToUserRequest(user: User, moduleName: str,text: str):
     request = getUserRequest(user)
-    request.append(text)
+    log.info(type(request))
+    request[moduleName] = text
     updateUserRequest(user, request)
 
 def generateUserStorage(user: User):

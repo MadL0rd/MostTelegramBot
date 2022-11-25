@@ -56,21 +56,10 @@ class RequestGeoposition(MenuModuleInterface):
             return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
-        storage.logToUserRequest(ctx.from_user, f"Геопозиция: {messageText}")
+        storage.logToUserRequest(ctx.from_user,"requestGeoposition", f"Геопозиция: {messageText}")
         
         log.info(messageText)
         
-        userRequest = storage.getUserRequest(user=ctx.from_user)
-        userRequestString = ""
-        for line in userRequest:
-            userRequestString += f"{line}\n"
-
-        userRequestString = f"{ctx.from_user.full_name} @{ctx.from_user.username}\n{userRequestString}"
-
-        await crossDialogMessageSender.setWaitingForOrder(ctx.from_user, userRequestString)
-
-        storage.updateUserRequest(ctx.from_user, [])
-
         # if messageText not in self.menuDict:
         #     return self.canNotHandle(data)
         await msg.answer(
@@ -78,7 +67,7 @@ class RequestGeoposition(MenuModuleInterface):
             text = textConstant.messageAfterFillingOutForm.get,
             keyboardMarkup = ReplyKeyboardRemove()
         )
-        return self.complete(nextModuleName = MenuModuleName.mainMenu.get)        
+        return self.complete(nextModuleName = MenuModuleName.comment.get)        
 
     async def handleCallback(self, ctx: CallbackQuery, data: dict, msg: MessageSender) -> Completion:
 

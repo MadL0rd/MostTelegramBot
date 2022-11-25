@@ -47,7 +47,7 @@ class BikeScooterCategory(MenuModuleInterface):
             inProgress=True,
             didHandledUserInteraction=True,
             moduleData={ 
-                "bikeScooterCategoryDidSent" : True,
+                "bikeScooterCategoryMessageDidSent" : True,
                 "textAnything" : textAnything,
                 "categoryList" : categoryList
             }
@@ -57,14 +57,14 @@ class BikeScooterCategory(MenuModuleInterface):
 
         log.debug(f"User: {ctx.from_user.id}")
 
-        if "bikeScooterCategoryDidSent" not in data or data["bikeScooterCategoryDidSent"] != True:
+        if "bikeScooterCategoryMessageDidSent" not in data or data["bikeScooterCategoryMessageDidSent"] != True:
             return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
 
         if messageText in data["categoryList"] and messageText != data["textAnything"]:
             log.info(f"Пользователь выбрал {messageText}")
-            storage.logToUserRequest(ctx.from_user, f"Модель скутера: {messageText}")
+            storage.logToUserRequest(ctx.from_user,"bikeScooterCategory" ,f"Модель скутера: {messageText}")
             return self.complete(nextModuleName = MenuModuleName.bikeParameters.get)
         
         if messageText == data["textAnything"]:

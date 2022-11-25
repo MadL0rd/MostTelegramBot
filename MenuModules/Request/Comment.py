@@ -9,13 +9,17 @@ from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandl
 from MenuModules.MenuModuleName import MenuModuleName
 from logger import logger as log
 
-class TimeRequestDayWeekWhenSetDate(MenuModuleInterface):
+from main import crossDialogMessageSender
+
+# from Core.CrossDialogMessageSender import crossDialogMessageSenderShared
+
+class Comment(MenuModuleInterface):
 
     # =====================
     # Interface implementation
     # =====================
 
-    namePrivate = MenuModuleName.timeRequestDayWeekWhenSetDate
+    namePrivate = MenuModuleName.comment
 
     # Use default implementation
     # def callbackData(self, data: dict, msg: MessageSender) -> str:
@@ -23,7 +27,7 @@ class TimeRequestDayWeekWhenSetDate(MenuModuleInterface):
     async def handleModuleStart(self, ctx: Message, msg: MessageSender) -> Completion:
 
         log.debug(f"User: {ctx.from_user.id}")
-        storage.logToUserHistory(ctx.from_user, event.startModuleTimeRequestDayWeekWhenSetDate, "")
+        storage.logToUserHistory(ctx.from_user, event.startModuleComment, "")
 
         keyboardMarkup = ReplyKeyboardMarkup(
             resize_keyboard=True
@@ -32,33 +36,58 @@ class TimeRequestDayWeekWhenSetDate(MenuModuleInterface):
         userTg = ctx.from_user
         userInfo = storage.getUserInfo(userTg)
 
+        userRequest = storage.getUserRequest(user=ctx.from_user)
+        userRequestString = textConstant.commentStart.get + "\n"
+        for line in userRequest:
+            userRequestString += f"{userRequest[line]}\n"
+        userRequestString += textConstant.comment.get
+
         await msg.answer(
             ctx = ctx,
-            text = textConstant.timeRequestDayWeekWhenSetDate.get,
-            keyboardMarkup = ReplyKeyboardRemove()
+            text = userRequestString,
+            keyboardMarkup = keyboardMarkup.add(KeyboardButton("Закончить"))
         )
 
         return Completion(
             inProgress=True,
             didHandledUserInteraction=True,
-            moduleData={ "timeRequestDayWeekWhenSetDateMessageDidSent" : True }
+            moduleData={ "commentMessageDidSent" : True }
         )
 
     async def handleUserMessage(self, ctx: Message, msg: MessageSender, data: dict) -> Completion:
 
         log.debug(f"User: {ctx.from_user.id}")
 
-        if "timeRequestDayWeekWhenSetDateMessageDidSent" not in data or data["timeRequestDayWeekWhenSetDateMessageDidSent"] != True:
+        if "commentMessageDidSent" not in data or data["commentMessageDidSent"] != True:
             return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
-        storage.logToUserRequest(ctx.from_user,"timeRequestDayWeekWhenSetDate", f"Когда нужен транспорт: {messageText}")
+
+        if messageText != "Закончить":
+            storage.logToUserRequest(ctx.from_user,"comment", f"Комментарий: {messageText}")
+        
+        log.info(messageText)
+        
+        userRequest = storage.getUserRequest(user=ctx.from_user)
+        userRequestString = ""
+        for line in userRequest:
+            userRequestString += f"{userRequest[line]}\n"
+
+
+        userRequestString = f"{ctx.from_user.full_name} @{ctx.from_user.username}\n{userRequestString}"
+
+        await crossDialogMessageSender.setWaitingForOrder(ctx.from_user, userRequestString)
+
+        storage.updateUserRequest(ctx.from_user, {})
 
         # if messageText not in self.menuDict:
         #     return self.canNotHandle(data)
-
-        return self.complete(nextModuleName = MenuModuleName.timeRequestHowManyDays.get)
-        
+        await msg.answer(
+            ctx = ctx,
+            text = textConstant.messageAfterFillingOutForm.get,
+            keyboardMarkup = ReplyKeyboardRemove()
+        )
+        return self.complete(nextModuleName = MenuModuleName.mainMenu.get)        
 
     async def handleCallback(self, ctx: CallbackQuery, data: dict, msg: MessageSender) -> Completion:
 

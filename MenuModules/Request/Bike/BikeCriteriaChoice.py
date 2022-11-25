@@ -45,7 +45,7 @@ class BikeCriteriaChoice(MenuModuleInterface):
             prevCriteriaName = prevCriteria["type"]
 
             if prevCriteria["customTextEnable"] == True or messageText in prevCriteria["values"]:
-                storage.logToUserRequest(ctx.from_user, f"Критерий байка {prevCriteriaName}: {messageText}")
+                storage.logToUserRequest(ctx.from_user, f"bikeCriteriaChoice.{prevCriteriaName}",f"Критерий байка {prevCriteriaName}: {messageText}")
                 # Ставим критерию True, т.к. критерий обработан и данные внесены в request.json
                 data[prevCriteriaName] = True
             else:

@@ -48,7 +48,7 @@ class TimeRequestMonthWhenSetDate(MenuModuleInterface):
             return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
-        storage.logToUserRequest(ctx.from_user, f"Когда начнётся помесячная аренда: {messageText}")
+        storage.logToUserRequest(ctx.from_user,"timeRequestMonthWhenSetDate" ,f"Когда начнётся помесячная аренда: {messageText}")
         log.info(f"Транспорт нужен на {messageText}")
         return self.complete(nextModuleName = MenuModuleName.requestGeoposition.get)
 

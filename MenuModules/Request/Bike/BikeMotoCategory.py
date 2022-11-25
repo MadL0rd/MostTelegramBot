@@ -44,7 +44,7 @@ class BikeMotoCategory(MenuModuleInterface):
             inProgress=True,
             didHandledUserInteraction=True,
             moduleData={ 
-                "bikeMotoCategoryDidSent" : True,
+                "bikeMotoCategoryMessageDidSent" : True,
                 "categoryList" : categoryList
             }
         )
@@ -54,14 +54,14 @@ class BikeMotoCategory(MenuModuleInterface):
         log.debug(f"User: {ctx.from_user.id}")
         log.info(data["categoryList"])
 
-        if "bikeMotoCategoryDidSent" not in data or data["bikeMotoCategoryDidSent"] != True:
+        if "bikeMotoCategoryMessageDidSent" not in data or data["bikeMotoCategoryMessageDidSent"] != True:
             return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
 
         if messageText in data["categoryList"] and messageText != "Другое":
             log.info(f"Пользователь выбрал {messageText}")
-            storage.logToUserRequest(ctx.from_user, f"Категория мотоцикла: {messageText}")
+            storage.logToUserRequest(ctx.from_user,"bikeMotoCategory", f"Категория мотоцикла: {messageText}")
             return self.complete(nextModuleName = MenuModuleName.bikeParameters.get)
 
         if messageText == "Другое":

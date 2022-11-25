@@ -57,7 +57,7 @@ class BikeHelmet(MenuModuleInterface):
             return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
-        storage.logToUserRequest(ctx.from_user, f"Сколько шлемов нужно: {messageText}")
+        storage.logToUserRequest(ctx.from_user,"bikeHelmet", f"Сколько шлемов нужно: {messageText}")
 
 
         if messageText in ("Один шлем","Два шлема","Шлемы не нужны"):

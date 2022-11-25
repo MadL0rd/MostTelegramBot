@@ -15,6 +15,7 @@ from MenuModules.Request.BikeHelmet import BikeHelmet
 from MenuModules.Request.Car.CarModels import CarModels
 from MenuModules.Request.Car.CarSize import CarSize
 from MenuModules.Request.Car.CarTransmission import CarTransmission
+from MenuModules.Request.Comment import Comment
 from MenuModules.Request.RequestGeoposition import RequestGeoposition
 from MenuModules.Request.Time.TimeRequest import TimeRequest
 from MenuModules.Request.Time.TimeRequestDayWeekWhen import TimeRequestDayWeekWhen
@@ -55,7 +56,7 @@ class MenuModules(enum.Enum):
     carSize: MenuModuleInterface = CarSize()
     carTransmission: MenuModuleInterface = CarTransmission()
     carModels: MenuModuleInterface = CarModels()
-
+    comment: MenuModuleInterface = Comment()
     
     @property
     def get(self) -> MenuModuleInterface:

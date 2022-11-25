@@ -40,7 +40,7 @@ class BikeCommitment(MenuModuleInterface):
             keyboardMarkup = keyboardMarkup
         )
 
-        storage.updateUserRequest(userTg, [])
+        storage.updateUserRequest(userTg, {})
 
         return Completion(
             inProgress=True,
@@ -57,7 +57,7 @@ class BikeCommitment(MenuModuleInterface):
         
         messageText = ctx.text
 
-        storage.logToUserRequest(ctx.from_user, "Тип: Байк")
+        storage.logToUserRequest(ctx.from_user,"bikeCommitment", "Тип: Байк")
 
         if messageText == textConstant.bikeButtonCommitmentNo.get:
             log.info("Юзер запросил описание байков")

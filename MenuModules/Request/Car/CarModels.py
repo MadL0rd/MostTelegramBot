@@ -56,9 +56,9 @@ class CarModels(MenuModuleInterface):
         messageText = ctx.text
         if messageText == textConstant.carModelsFurther.get:
             log.info("Юзер закончил выбирать модель")
-            storage.logToUserRequest(ctx.from_user, f"Модель авто: не выбрана")
+            storage.logToUserRequest(ctx.from_user,"carModels", f"Модель авто: не выбрана")
         else:
-            storage.logToUserRequest(ctx.from_user, f"Модель авто: {messageText}")
+            storage.logToUserRequest(ctx.from_user,"carModels", f"Модель авто: {messageText}")
       
         log.info(messageText)   
 

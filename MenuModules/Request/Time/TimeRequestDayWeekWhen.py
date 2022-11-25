@@ -58,12 +58,12 @@ class TimeRequestDayWeekWhen(MenuModuleInterface):
 
         if messageText == textConstant.timeButtonRequestWhenToday.get:
             log.info("Транспорт нужен сегодня")
-            storage.logToUserRequest(ctx.from_user, f"Когда нужен транспорт: {messageText}")
+            storage.logToUserRequest(ctx.from_user,"timeRequestDayWeekWhen", f"Когда нужен транспорт: {messageText}")
             return self.complete(nextModuleName = MenuModuleName.timeRequestHowManyDays.get)
         
         if messageText == textConstant.timeButtonRequestWhenTomorrow.get:
             log.info("Транспорт нужен завтра")
-            storage.logToUserRequest(ctx.from_user, f"Когда нужен транспорт: {messageText}")
+            storage.logToUserRequest(ctx.from_user,"timeRequestDayWeekWhen", f"Когда нужен транспорт: {messageText}")
             return self.complete(nextModuleName = MenuModuleName.timeRequestHowManyDays.get)
 
         if messageText == textConstant.timeButtonRequestWhenSetDate.get:

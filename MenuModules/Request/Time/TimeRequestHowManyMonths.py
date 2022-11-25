@@ -58,7 +58,7 @@ class TimeRequestHowManyMonths(MenuModuleInterface):
         messageText = ctx.text
 
         if messageText in ("Один месяц","Два месяца","Три месяца"):
-            storage.logToUserRequest(ctx.from_user, f"На сколько месяцев аренда: {messageText}")
+            storage.logToUserRequest(ctx.from_user, "timeRequestHowManyMonths",f"На сколько месяцев аренда: {messageText}")
             log.info(f"Транспорт нужен на {messageText}")
             return self.complete(nextModuleName = MenuModuleName.timeRequestMonthWhen.get)
 
