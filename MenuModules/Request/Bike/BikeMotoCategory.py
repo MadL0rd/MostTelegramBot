@@ -30,7 +30,7 @@ class BikeMotoCategory(MenuModuleInterface):
 
         categoryDict = storage.getJsonData(storage.path.botContentMotoCategoriesList)
         log.info(categoryDict)
-        categoryList = utils.dictToList(categoryDict)
+        categoryList = categoryDict
         log.info(categoryList)
         keyboardMarkup = utils.replyMarkupFromListOfButtons(categoryList)
 

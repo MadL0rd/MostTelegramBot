@@ -5,12 +5,12 @@ import json
 from pathlib import Path
 import string
 import pytz
-import platform
 import xlsxwriter
 
 from aiogram.types import User
 
 from logger import logger as log
+import Core.Utils.Utils as utils
 
 # =====================
 # Base
@@ -86,8 +86,6 @@ class PathConfig:
 
 path = PathConfig()
 
-isWindows = platform.system() == 'Windows'
-
 def getJsonData(filePath: Path):
     with filePath.open() as json_file:
         data = json.load(json_file)
@@ -95,7 +93,7 @@ def getJsonData(filePath: Path):
 
 def writeJsonData(filePath: Path, content):
     # log.debug(content)
-    if isWindows:
+    if utils.isWindows:
         data = json.dumps(content, indent=2)
         with filePath.open('w', encoding= 'utf-8') as file:
             file.write(data)

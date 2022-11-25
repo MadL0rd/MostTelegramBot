@@ -10,6 +10,7 @@ import MenuModules.MenuDispatcher as dispatcher
 import Core.StorageManager.StorageManager as storage
 from Core.CrossDialogMessageSender import CrossDialogMessageSender, crossDialogMessageSenderShared
 import Core.GoogleSheetsService as sheets
+import Core.Utils.Utils as utils
 
 # =====================
 # Version 1.0.3
@@ -126,11 +127,10 @@ async def default_callback_handler(ctx: CallbackQuery):
 
 async def on_startup(_):
     log.info("Bot just started")
-    if platform.system() == 'Windows':
+    if utils.isWindows:
         sheets.updateUniqueMessages()
         sheets.updateOnboarding()
-        sheets.updateScooterCategoriesSmallList()
-        sheets.updateScooterCategoriesBigList()
+        sheets.updateScooterCategoriesList()
         sheets.updateMotoCategoriesList()
         sheets.updateBikeCriteria()
 

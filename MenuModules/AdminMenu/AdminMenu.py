@@ -64,8 +64,7 @@ class AdminMenu(MenuModuleInterface):
             functions = [
                 sheets.updateUniqueMessages,
                 sheets.updateOnboarding,
-                sheets.updateScooterCategoriesSmallList,
-                sheets.updateScooterCategoriesBigList,
+                sheets.updateScooterCategoriesList,
                 sheets.updateMotoCategoriesList,
                 sheets.updateBikeCriteria
             ]
@@ -119,8 +118,7 @@ def updateStateReloadDataMessage(stateIndex: int) -> str:
     tablePageNames = [
         "УникальныеСообщения",
         "Онбординг",
-        "Категории скутер маленький",
-        "Категории скутер большой",
+        "Категории скутеры",
         "Категории мотоциклы",
         'Критерии байк'
     ]

@@ -60,7 +60,6 @@ class RequestGeoposition(MenuModuleInterface):
         
         log.info(messageText)
         
-        # TODO: НАдо заебашить сраку
         userRequest = storage.getUserRequest(user=ctx.from_user)
         userRequestString = ""
         for line in userRequest:
