@@ -99,6 +99,12 @@ class CrossDialogMessageSender:
                 parse_mode=ParseMode.MARKDOWN
             )
 
+        if ctx.caption != None:
+            await self.bot.send_message(
+                chat_id = channelChatId,
+                text = ctx.caption
+            )
+
         if ctx.sticker != None:
             await self.bot.send_sticker(
                 chat_id = channelChatId,
@@ -129,7 +135,7 @@ class CrossDialogMessageSender:
                 document=ctx.document.file_id
             )
 
-    async def forwardMessageFromUserToManager(self, ctx, channelChatId, channelChatMessageId):
+    async def forwardMessageFromUserToManager(self, ctx: Message, channelChatId, channelChatMessageId):
 
         userTg = ctx.from_user
 
@@ -137,6 +143,13 @@ class CrossDialogMessageSender:
             await self.bot.send_message(
                 chat_id = channelChatId,
                 text=f"{userTg.full_name} @{userTg.username}:\n{ctx.text}",
+                reply_to_message_id=channelChatMessageId
+            )
+
+        if ctx.caption != None:
+            await self.bot.send_message(
+                chat_id = channelChatId,
+                text=f"{userTg.full_name} @{userTg.username}:\n{ctx.caption}",
                 reply_to_message_id=channelChatMessageId
             )
 
