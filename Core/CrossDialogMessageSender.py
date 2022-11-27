@@ -3,6 +3,7 @@ from aiogram.types import User, Message, ParseMode
 
 from Core.StorageManager.UniqueMessagesKeys import textConstant
 import Core.StorageManager.StorageManager as storage
+import Core.TrelloService as trello
 from logger import logger as log
 
 waitingForOrder = {}
@@ -24,6 +25,10 @@ class CrossDialogMessageSender:
         )
         waitingForOrder[message.text] = userTg
         orderPosts[userTg.id] = message
+        trello.createCard(
+            title = f"@{userTg.username}",
+            description = msgText
+        )
 
     def getUserWaitingForOrder(self, text: str) -> User:
         try:
