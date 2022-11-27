@@ -7,6 +7,7 @@ from Core.StorageManager.UniqueMessagesKeys import textConstant
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
+from MenuModules.Request.RequestCodingKeys import RequestCodingKeys
 from logger import logger as log
 
 class TimeRequest(MenuModuleInterface):
@@ -55,7 +56,7 @@ class TimeRequest(MenuModuleInterface):
             return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
-        storage.logToUserRequest(ctx.from_user, "timeRequest",f"Вид аренды: {messageText}")
+        storage.logToUserRequest(ctx.from_user, RequestCodingKeys.timeRequest, messageText)
 
         if messageText == textConstant.timeButtonRequestDay.get:
             log.info("Юзер решил выбирать по дням")

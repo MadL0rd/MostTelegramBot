@@ -7,6 +7,7 @@ from Core.StorageManager.UniqueMessagesKeys import textConstant
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
+from MenuModules.Request.RequestCodingKeys import RequestCodingKeys
 from logger import logger as log
 
 class TimeRequestMonthWhen(MenuModuleInterface):
@@ -60,7 +61,7 @@ class TimeRequestMonthWhen(MenuModuleInterface):
         messageText = ctx.text
         if messageText in ("Сегодня" ,"Завтра" ,"В ближайшие дни, можно сегодня или завтра" ):
             log.info(f"Транспорт нужен {messageText}")
-            storage.logToUserRequest(ctx.from_user, "timeRequestMonthWhen",f"Когда начнётся помесячная аренда: {messageText}")
+            storage.logToUserRequest(ctx.from_user, RequestCodingKeys.timeRequestMonthWhen, messageText)
             return self.complete(nextModuleName = MenuModuleName.requestGeoposition.get)
 
         if messageText in ("Указать дату" ):

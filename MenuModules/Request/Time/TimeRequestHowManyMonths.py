@@ -7,6 +7,7 @@ from Core.StorageManager.UniqueMessagesKeys import textConstant
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
+from MenuModules.Request.RequestCodingKeys import RequestCodingKeys
 from logger import logger as log
 
 class TimeRequestHowManyMonths(MenuModuleInterface):
@@ -58,7 +59,7 @@ class TimeRequestHowManyMonths(MenuModuleInterface):
         messageText = ctx.text
 
         if messageText in ("Один месяц","Два месяца","Три месяца"):
-            storage.logToUserRequest(ctx.from_user, "timeRequestHowManyMonths",f"На сколько месяцев аренда: {messageText}")
+            storage.logToUserRequest(ctx.from_user, RequestCodingKeys.timeRequestHowManyMonths, messageText)
             log.info(f"Транспорт нужен на {messageText}")
             return self.complete(nextModuleName = MenuModuleName.timeRequestMonthWhen.get)
 

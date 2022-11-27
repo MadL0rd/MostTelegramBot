@@ -8,6 +8,7 @@ from Core.Utils.Utils import dictToList
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
+from MenuModules.Request.RequestCodingKeys import RequestCodingKeys
 from logger import logger as log
 
 
@@ -49,7 +50,7 @@ class BikeMotoCategoryChoice(MenuModuleInterface):
             return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
-        storage.logToUserRequest(ctx.from_user,"bikeMotoCategoryChoice" ,f"Категория мотоцикла: {messageText}")
+        storage.logToUserRequest(ctx.from_user,RequestCodingKeys.bikeMotoCategoryChoice , messageText)
         log.info(f"Пользователь выбрал свою модель мотоцикла: {messageText}")       
         
         # if messageText not in self.menuDict:

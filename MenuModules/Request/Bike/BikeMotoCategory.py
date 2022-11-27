@@ -8,6 +8,7 @@ import Core.Utils.Utils as utils
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
+from MenuModules.Request.RequestCodingKeys import RequestCodingKeys
 from logger import logger as log
 
 
@@ -61,7 +62,7 @@ class BikeMotoCategory(MenuModuleInterface):
 
         if messageText in data["categoryList"] and messageText != "Другое":
             log.info(f"Пользователь выбрал {messageText}")
-            storage.logToUserRequest(ctx.from_user,"bikeMotoCategory", f"Категория мотоцикла: {messageText}")
+            storage.logToUserRequest(ctx.from_user, RequestCodingKeys.bikeMotoCategory, messageText)
             return self.complete(nextModuleName = MenuModuleName.bikeParameters.get)
 
         if messageText == "Другое":

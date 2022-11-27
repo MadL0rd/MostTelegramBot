@@ -8,6 +8,7 @@ import Core.Utils.Utils as utils
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
+from MenuModules.Request.RequestCodingKeys import RequestCodingKeys
 from logger import logger as log
 
 class BikeCriteriaChoice(MenuModuleInterface):
@@ -45,7 +46,7 @@ class BikeCriteriaChoice(MenuModuleInterface):
             prevCriteriaName = prevCriteria["type"]
 
             if prevCriteria["customTextEnable"] == True or messageText in prevCriteria["values"]:
-                storage.logToUserRequest(ctx.from_user, f"bikeCriteriaChoice.{prevCriteriaName}",f"Критерий байка {prevCriteriaName}: {messageText}")
+                storage.logToUserRequest(ctx.from_user, f"{RequestCodingKeys.bikeCriteriaChoice}.{prevCriteria}" , messageText)
                 # Ставим критерию True, т.к. критерий обработан и данные внесены в request.json
                 data[prevCriteriaName] = True
             else:

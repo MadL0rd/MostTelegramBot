@@ -8,6 +8,7 @@ from Core.Utils.Utils import doubleListToButton
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
+from MenuModules.Request.RequestCodingKeys import RequestCodingKeys
 from logger import logger as log
 
 
@@ -64,7 +65,7 @@ class BikeScooterCategory(MenuModuleInterface):
 
         if messageText in data["categoryList"] and messageText != data["textAnything"]:
             log.info(f"Пользователь выбрал {messageText}")
-            storage.logToUserRequest(ctx.from_user,"bikeScooterCategory" ,f"Модель скутера: {messageText}")
+            storage.logToUserRequest(ctx.from_user,RequestCodingKeys.bikeScooterCategory, messageText)
             return self.complete(nextModuleName = MenuModuleName.bikeParameters.get)
         
         if messageText == data["textAnything"]:

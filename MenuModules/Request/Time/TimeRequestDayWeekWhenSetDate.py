@@ -7,6 +7,7 @@ from Core.StorageManager.UniqueMessagesKeys import textConstant
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
+from MenuModules.Request.RequestCodingKeys import RequestCodingKeys
 from logger import logger as log
 
 class TimeRequestDayWeekWhenSetDate(MenuModuleInterface):
@@ -52,7 +53,7 @@ class TimeRequestDayWeekWhenSetDate(MenuModuleInterface):
             return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
-        storage.logToUserRequest(ctx.from_user,"timeRequestDayWeekWhenSetDate", f"Когда нужен транспорт: {messageText}")
+        storage.logToUserRequest(ctx.from_user,RequestCodingKeys.timeRequestDayWeekWhenSetDate, messageText)
 
         # if messageText not in self.menuDict:
         #     return self.canNotHandle(data)
