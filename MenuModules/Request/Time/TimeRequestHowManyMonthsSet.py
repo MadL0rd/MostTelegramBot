@@ -48,7 +48,7 @@ class TimeRequestHowManyMonthsSet(MenuModuleInterface):
             return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
-        storage.logToUserRequest(ctx.from_user, f"На сколько месяцев аренда: {messageText}")
+        storage.logToUserRequest(ctx.from_user,"timeRequestHowManyMonthsSet" ,f"На сколько месяцев аренда: {messageText}")
         log.info(f"Транспорт нужен на {messageText} месяцев")
 
         # if messageText not in self.menuDict:

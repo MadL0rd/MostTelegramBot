@@ -52,7 +52,7 @@ class TimeRequestHowManyDays(MenuModuleInterface):
             return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
-        storage.logToUserRequest(ctx.from_user, f"На сколько дней нужен транспорт: {messageText}")
+        storage.logToUserRequest(ctx.from_user,"timeRequestHowManyDays", f"На сколько дней нужен транспорт: {messageText}")
         log.info(f"Байк нужен на {messageText} дней")
 
         # if messageText not in self.menuDict:

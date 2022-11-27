@@ -54,6 +54,8 @@ class MenuModuleName(enum.Enum):
     carButtonTransmissionShowAll: str = "carButtonTransmissionShowAll"
     carModels: str = "carModels"
 
+    comment: str = "comment"
+
 
 
 

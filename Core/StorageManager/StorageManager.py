@@ -5,12 +5,12 @@ import json
 from pathlib import Path
 import string
 import pytz
-import platform
 import xlsxwriter
 
 from aiogram.types import User
 
 from logger import logger as log
+import Core.Utils.Utils as utils
 
 # =====================
 # Base
@@ -49,6 +49,7 @@ class UserHistoryEvent(enum.Enum):
     startModuleCarSize = "Приступил к выбору размера машины"
     startModuleCarTransmission = "Приступил к выбору коробки передач"
     startModuleCarModels = "Приступил к выбору моделей"
+    startModuleComment = "Приступил к написанию комментария к заказу"
 class PathConfig:
 
     baseDir = Path("./DataStorage")
@@ -86,8 +87,6 @@ class PathConfig:
 
 path = PathConfig()
 
-isWindows = platform.system() == 'Windows'
-
 def getJsonData(filePath: Path):
     with filePath.open() as json_file:
         data = json.load(json_file)
@@ -95,7 +94,7 @@ def getJsonData(filePath: Path):
 
 def writeJsonData(filePath: Path, content):
     # log.debug(content)
-    if isWindows:
+    if utils.isWindows:
         data = json.dumps(content, indent=2)
         with filePath.open('w', encoding= 'utf-8') as file:
             file.write(data)
@@ -152,9 +151,10 @@ def getUserRequest(user: User)->list:
 
     return getJsonData(userRequestFile)
 
-def logToUserRequest(user: User, text: str):
+def logToUserRequest(user: User, moduleName: str,text: str):
     request = getUserRequest(user)
-    request.append(text)
+    log.info(type(request))
+    request[moduleName] = text
     updateUserRequest(user, request)
 
 def generateUserStorage(user: User):

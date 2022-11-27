@@ -49,7 +49,7 @@ class BikeScooterCategoryChoice(MenuModuleInterface):
             return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
-        storage.logToUserRequest(ctx.from_user, f"Категория скутера: {messageText}")
+        storage.logToUserRequest(ctx.from_user,"bikeScooterCategoryChoice", f"Категория скутера: {messageText}")
         log.info(f"Пользователь выбрал свою модель скутера: {messageText}")       
         
         # if messageText not in self.menuDict:

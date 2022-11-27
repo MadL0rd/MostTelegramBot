@@ -34,20 +34,26 @@ class BikeCriteriaChoice(MenuModuleInterface):
         
         messageText = ctx.text
         pull = storage.getJsonData(storage.PathConfig.botContentBikeCriteria)
-
-        pullPrevious = [line for line in pull if line["type"] in data and data[line["type"]] == False]
+        # bikeName = getJsonData(....request.json)["bikeName"]
+        # pull = [criteria for criteria in pull]............
+        # вытаскиваю название байка и делаю фильтрацию
+        # TODO: ОБЪЯСНИСЬ БЛЯТЬ!
+        pullPrevious = [criteria for criteria in pull if criteria["type"] in data and data[criteria["type"]] == False]
         if len(pullPrevious) > 0:
 
             prevCriteria = pullPrevious[0]
             prevCriteriaName = prevCriteria["type"]
 
-            if messageText in prevCriteria["values"]:
-                storage.logToUserRequest(ctx.from_user, f"Критерий байка {prevCriteriaName}: {messageText}")
+            if prevCriteria["customTextEnable"] == True or messageText in prevCriteria["values"]:
+                storage.logToUserRequest(ctx.from_user, f"bikeCriteriaChoice.{prevCriteriaName}",f"Критерий байка {prevCriteriaName}: {messageText}")
+                # Ставим критерию True, т.к. критерий обработан и данные внесены в request.json
                 data[prevCriteriaName] = True
             else:
                 return self.canNotHandle(data)
 
-        pull = [line for line in pull if line["type"] not in data]
+        # отфильтровали все критерии и оставили в pull только те, 
+        # которые юзер ещё не видел
+        pull = [criteria for criteria in pull if criteria["type"] not in data]
         if len(pull) > 0:
             criteria = pull[0]
             criteriaName = criteria["type"]
@@ -58,8 +64,9 @@ class BikeCriteriaChoice(MenuModuleInterface):
                 text = criteria["type"],
                 keyboardMarkup = keyboardMarkup
             )            
-
-            data[f"{criteriaName}"] = False
+            # ставим False критерию, т.к. он уже отправлен пользователю, 
+            # но ответ на него мы ещё не получили
+            data[criteriaName] = False
             log.debug(data)
 
             return Completion(

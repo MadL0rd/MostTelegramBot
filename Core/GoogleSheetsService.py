@@ -12,10 +12,9 @@ from logger import logger as log
 class PageNames(enum.Enum):
 
     uniqueMessages = "УникальныеСообщения"
-    scooterCategoriesSmallList = "СкутерыМалые"
-    scooterCategoriesBigList = "СкутерыБольшие"
+    scooterCategoriesList = "Скутеры"
     motoCategoriesList = "Мотоциклы"
-    bikeCriteria = "КритерииБайка"
+    bikeCriteria = "КритерииБайкаV2"
     onboarding = "Онбординг"
 
 pages = PageNames
@@ -93,6 +92,10 @@ def updateBikeCriteria():
         criteria = {}
         criteria["type"] = line[0]
         del line[0]
+        criteria["customTextEnable"] = line[0] == "TRUE"
+        del line[0]
+        criteria["bikes"] = line[0].split("\n")
+        del line[0]
         criteria["values"] = line
         content.append(criteria)
 
@@ -101,41 +104,31 @@ def updateBikeCriteria():
         content
     )
 
-def updateScooterCategoriesSmallList():
+def updateScooterCategoriesList():
 
-    values = getContent(pages.scooterCategoriesSmallList, "A2:A200")
+    values = getContent(pages.scooterCategoriesList, "A2:B200")
 
-    content = list()
+    contentSmall = list()
+    contentBig = list()
     #log.debug(values)
     for line in values:
         try:
-            if line[0] not in content and line[0] != "":
-                content.append(line[0])
+            if line[0] not in contentSmall and line[0] != "":
+                contentSmall.append(line[0])
+            if line[1] not in contentBig and line[1] != "":
+                contentBig.append(line[1])
         except:
             continue
 
     storage.writeJsonData(
         storage.path.botContentScooterCategoriesSmallList, 
-        content
+        contentSmall
     )
-
-def updateScooterCategoriesBigList():
-
-    values = getContent(pages.scooterCategoriesBigList, "A2:A200")
-
-    content = list()
-    #log.debug(values)
-    for line in values:
-        try:
-            if line[0] not in content and line[0] != "":
-                content.append(line[0])
-        except:
-            continue
-
     storage.writeJsonData(
         storage.path.botContentScooterCategoriesBigList, 
-        content
+        contentBig
     )
+
 def updateMotoCategoriesList():
 
     values = getContent(pages.motoCategoriesList, "A2:A200")

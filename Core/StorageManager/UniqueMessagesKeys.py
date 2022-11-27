@@ -70,6 +70,9 @@ class UniqueMessagesKeys(enum.Enum):
     
     messageAfterFillingOutForm = "messageAfterFillingOutForm"
 
+    commentStart = "commentStart"
+    comment = "comment"
+
     @property
     def get(self) -> str:
         messagesKeys = storage.getJsonData(storage.path.botContentUniqueMessages)
