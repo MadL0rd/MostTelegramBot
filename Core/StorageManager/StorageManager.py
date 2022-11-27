@@ -8,6 +8,7 @@ import pytz
 import xlsxwriter
 
 from aiogram.types import User
+from MenuModules.Request.RequestCodingKeys import RequestCodingKeys
 
 from logger import logger as log
 import Core.Utils.Utils as utils
@@ -53,6 +54,7 @@ class UserHistoryEvent(enum.Enum):
 class PathConfig:
 
     baseDir = Path("./DataStorage")
+    botContentPrivateConfig = baseDir / "PrivateConfig.json"
 
     usersDir = baseDir / "Users"
     # userRequestFile = usersDir
@@ -61,7 +63,6 @@ class PathConfig:
     botContentOnboarding = botContentDir/ "Onboarding.json"
     botContentBikeCriteria = botContentDir/ "BikeCriteria.json"
     botContentUniqueMessages = botContentDir/ "UniqueTextMessages.json"
-    botContentPrivateConfig = botContentDir / "PrivateConfig.json"
     totalHistoryTableFile = baseDir / "TotalHistory.xlsx"
     statisticHistoryTableFile = baseDir / "StatisticalHistory.xlsx"
     botContentScooterCategoriesSmallList = botContentDir / "ScooterCategoriesSmall.json"
@@ -151,10 +152,10 @@ def getUserRequest(user: User)->list:
 
     return getJsonData(userRequestFile)
 
-def logToUserRequest(user: User, moduleName: str,text: str):
+def logToUserRequest(user: User, codingKey: RequestCodingKeys, text: str):
     request = getUserRequest(user)
     log.info(type(request))
-    request[moduleName] = text
+    request[codingKey.get] = text
     updateUserRequest(user, request)
 
 def generateUserStorage(user: User):

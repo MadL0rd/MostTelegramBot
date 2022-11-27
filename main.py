@@ -126,13 +126,12 @@ async def default_callback_handler(ctx: CallbackQuery):
     await dispatcher.handleCallback(ctx)
 
 async def on_startup(_):
+    sheets.updateUniqueMessages()
+    sheets.updateOnboarding()
+    sheets.updateScooterCategoriesList()
+    sheets.updateMotoCategoriesList()
+    sheets.updateBikeCriteria()
     log.info("Bot just started")
-    if utils.isWindows:
-        sheets.updateUniqueMessages()
-        sheets.updateOnboarding()
-        sheets.updateScooterCategoriesList()
-        sheets.updateMotoCategoriesList()
-        sheets.updateBikeCriteria()
 
 if __name__ == "__main__":
     executor.start_polling(dp, skip_updates=True, on_startup=on_startup)
