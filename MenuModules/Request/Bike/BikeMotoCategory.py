@@ -45,7 +45,6 @@ class BikeMotoCategory(MenuModuleInterface):
             inProgress=True,
             didHandledUserInteraction=True,
             moduleData={ 
-                "bikeMotoCategoryMessageDidSent" : True,
                 "categoryList" : categoryList
             }
         )
@@ -53,11 +52,8 @@ class BikeMotoCategory(MenuModuleInterface):
     async def handleUserMessage(self, ctx: Message, msg: MessageSender, data: dict) -> Completion:
 
         log.debug(f"User: {ctx.from_user.id}")
-        log.info(data["categoryList"])
+        log.debug(data["categoryList"])
 
-        if "bikeMotoCategoryMessageDidSent" not in data or data["bikeMotoCategoryMessageDidSent"] != True:
-            return self.handleModuleStart(ctx, msg)
-        
         messageText = ctx.text
 
         if messageText in data["categoryList"] and messageText != "Другое":
@@ -67,6 +63,7 @@ class BikeMotoCategory(MenuModuleInterface):
 
         if messageText == "Другое":
             log.info(f"Пользователь решил указать свою модель мотоцилка")
+            storage.logToUserRequest(ctx.from_user, RequestCodingKeys.bikeMotoCategory, messageText)
             return self.complete(nextModuleName = MenuModuleName.bikeMotoCategoryChoice.get)
 
         return self.canNotHandle(data)

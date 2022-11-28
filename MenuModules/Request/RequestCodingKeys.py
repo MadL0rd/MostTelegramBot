@@ -1,27 +1,27 @@
 import enum
 
 titles = {
-    "bikeHelmet": "Сколько шлемов нужно: ",
-    "comment": "Комментарий: ",
-    "requestGeoposition": "Геопозиция: ",
-    "bikeCommitment": "Тип: ",
-    "bikeCriteriaChoice": "Критерий байка: ",
-    "bikeMotoCategory": "Категорий мотоцикла: ",
-    "bikeMotoCategoryChoice": "Категорий мотоцикла: ",
-    "bikeScooterCategory": "Модель скутера: ",
-    "bikeScooterCategoryChoice": "Модель скутера: ",
-    "bikeScooterOrMoto": "Вид байка: ",
-    "carModels": "Модель авто: ",
-    "carSize": "Размер авто: ",
-    "carTransmission": "Трансмиссия: ",
-    "timeRequest": "Вид аренды: ",
-    "timeRequestDayWeekWhen": "Когда нужен транспорт: ",
-    "timeRequestDayWeekWhenSetDate": "Когда нужен транспорт: ",
-    "timeRequestHowManyDays": "На сколько дней нужен транспорт: ",
-    "timeRequestHowManyMonths": "На сколько месяцев нужен транспорт: ",
-    "timeRequestHowManyMonthsSet": "На сколько месяцев нужен транспорт: ",
-    "timeRequestMonthWhen": "Когда начнётся помесячная аренда: ",
-    "timeRequestMonthWhenSetDate": "Когда начнётся помесячная аренда: "
+    "bikeHelmet": "Сколько шлемов нужно",
+    "comment": "Комментарий",
+    "requestGeoposition": "Геопозиция",
+    "bikeCommitment": "Тип",
+    "bikeCriteriaChoice": "Критерий байка",
+    "bikeMotoCategory": "Категорий мотоцикла",
+    "bikeMotoCategoryChoice": "Категорий мотоцикла",
+    "bikeScooterCategory": "Модель скутера",
+    "bikeScooterCategoryChoice": "Модель скутера",
+    "bikeScooterOrMoto": "Вид байка",
+    "carModels": "Модель авто",
+    "carSize": "Размер авто",
+    "carTransmission": "Трансмиссия",
+    "timeRequest": "Вид аренды",
+    "timeRequestDayWeekWhen": "Когда нужен транспорт",
+    "timeRequestDayWeekWhenSetDate": "Когда нужен транспорт",
+    "timeRequestHowManyDays": "На сколько дней нужен транспорт",
+    "timeRequestHowManyMonths": "На сколько месяцев нужен транспорт",
+    "timeRequestHowManyMonthsSet": "На сколько месяцев нужен транспорт",
+    "timeRequestMonthWhen": "Когда начнётся помесячная аренда",
+    "timeRequestMonthWhenSetDate": "Когда начнётся помесячная аренда"
 }
 
 class RequestCodingKeys(enum.Enum):

@@ -30,10 +30,7 @@ class BikeHelmet(MenuModuleInterface):
             resize_keyboard=True
         ).add(KeyboardButton("Один шлем"),
         ).add(KeyboardButton("Два шлема"),
-        ).add(KeyboardButton("Шлемы не нужны")
-        )
-        
-
+        ).add(KeyboardButton("Шлемы не нужны"))
         
         userTg = ctx.from_user
         userInfo = storage.getUserInfo(userTg)
@@ -60,13 +57,9 @@ class BikeHelmet(MenuModuleInterface):
         messageText = ctx.text
         storage.logToUserRequest(ctx.from_user, RequestCodingKeys.bikeHelmet, messageText)
 
-
         if messageText in ("Один шлем","Два шлема","Шлемы не нужны"):
             log.info(messageText)
-            return self.complete(nextModuleName = MenuModuleName.timeRequest.get)
-        
-            
-            
+            return self.complete(nextModuleName = MenuModuleName.timeRequest.get) 
 
         # if messageText not in self.menuDict:
         #     return self.canNotHandle(data)
@@ -82,9 +75,3 @@ class BikeHelmet(MenuModuleInterface):
     # =====================
     # Custom stuff
     # =====================
-
-    @property
-    def menuDict(self) -> dict:
-        return {
-
-        }

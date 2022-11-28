@@ -152,10 +152,22 @@ def getUserRequest(user: User)->list:
 
     return getJsonData(userRequestFile)
 
-def logToUserRequest(user: User, codingKey: RequestCodingKeys, text: str):
+def logToUserRequest(user: User, codingKey: RequestCodingKeys, value: str):
     request = getUserRequest(user)
     log.info(type(request))
-    request[codingKey.get] = text
+    request[codingKey.get] = {
+        "title": codingKey.getTitle,
+        "value": value
+    }
+    updateUserRequest(user, request)
+
+def logToUserRequestCustom(user: User, codingKey: str, title: str, value: str):
+    request = getUserRequest(user)
+    log.info(type(request))
+    request[codingKey] = {
+        "title": title,
+        "value": value
+    }
     updateUserRequest(user, request)
 
 def generateUserStorage(user: User):

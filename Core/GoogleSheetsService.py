@@ -90,7 +90,11 @@ def updateBikeCriteria():
     content = []
     for line in values:
         criteria = {}
-        criteria["type"] = line[0]
+        criteria["id"] = line[0]
+        del line[0]
+        criteria["title"] = line[0]
+        del line[0]
+        criteria["question"] = line[0]
         del line[0]
         criteria["customTextEnable"] = line[0] == "TRUE"
         del line[0]
