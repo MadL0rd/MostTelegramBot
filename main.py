@@ -106,11 +106,7 @@ async def default_message_handler(ctx: Message):
     elif ctx.from_user.first_name == "Telegram":
 
         # If ctx is order message from channel chat
-        for i in range(0, 10):
-            await asyncio.sleep(2)
-            if crossDialogMessageSender.getUserWaitingForOrder(ctx.text) != None:
-                await crossDialogMessageSender.makeAnOrderWithChannelChatMessageCtx(ctx)
-                return
+        await crossDialogMessageSender.makeAnOrderWithChannelChatMessageCtx(ctx)
     
     # Manager message to user
     order = {}
@@ -126,6 +122,8 @@ async def default_callback_handler(ctx: CallbackQuery):
     await dispatcher.handleCallback(ctx)
 
 async def on_startup(_):
+    crossDialogMessageSender.configureBackgroundTasks()
+    asyncio.create_task(crossDialogMessageSender.threadedTasks())
     sheets.updateUniqueMessages()
     sheets.updateOnboarding()
     sheets.updateScooterCategoriesList()
