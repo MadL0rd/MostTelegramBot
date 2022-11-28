@@ -32,4 +32,5 @@ def createCard(title: str, description: str):
         headers=headers,
         params=query
     )
-    log.info(f"Trello card creation status code: {response.status_code}")
+    log.info(f"Trello card creation status code: {response.status_code}; card id: {response.json()['id']}")
+    return response.json()
