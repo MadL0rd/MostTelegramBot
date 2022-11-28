@@ -1,4 +1,4 @@
-from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton
+from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
 
 import Core.StorageManager.StorageManager as storage
 from Core.StorageManager.StorageManager import UserHistoryEvent as event
@@ -7,15 +7,16 @@ from Core.StorageManager.UniqueMessagesKeys import textConstant
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
+from MenuModules.Request.RequestCodingKeys import RequestCodingKeys
 from logger import logger as log
 
-class BikeParameters(MenuModuleInterface):
+class CarSize(MenuModuleInterface):
 
     # =====================
     # Interface implementation
     # =====================
 
-    namePrivate = MenuModuleName.bikeParameters
+    namePrivate = MenuModuleName.carSize
 
     # Use default implementation
     # def callbackData(self, data: dict, msg: MessageSender) -> str:
@@ -23,50 +24,51 @@ class BikeParameters(MenuModuleInterface):
     async def handleModuleStart(self, ctx: Message, msg: MessageSender) -> Completion:
 
         log.debug(f"User: {ctx.from_user.id}")
-        storage.logToUserHistory(ctx.from_user, event.startModuleBikeScooterOrMoto, "")
+        storage.logToUserHistory(ctx.from_user, event.startModuleCarSize, "")
 
         keyboardMarkup = ReplyKeyboardMarkup(
             resize_keyboard=True
-        ).add(KeyboardButton(textConstant.bikeButtonCriteria.get)
-        ).add(KeyboardButton(textConstant.bikeButtonShowAll.get))
+        ).row(KeyboardButton(textConstant.carButtonSizeSmall.get),KeyboardButton(textConstant.carButtonSizeBig.get)
+        ).row(KeyboardButton(textConstant.carButtonSizeMinivan.get),KeyboardButton(textConstant.carButtonSizePremium.get)
+        ).add(KeyboardButton(textConstant.carButtonSizeShowAll.get))
+        
+
         
         userTg = ctx.from_user
         userInfo = storage.getUserInfo(userTg)
 
         await msg.answer(
             ctx = ctx,
-            text = textConstant.bikeParameters.get,
+            text = textConstant.carSize.get,
             keyboardMarkup = keyboardMarkup
         )
-
+        storage.updateUserRequest(userTg, {})
         return Completion(
             inProgress=True,
             didHandledUserInteraction=True,
-            moduleData={ "bikeButtonCriteriaMessageDidSent" : True }
+            moduleData={ "carSizeMessageDidSent" : True }
         )
 
     async def handleUserMessage(self, ctx: Message, msg: MessageSender, data: dict) -> Completion:
 
         log.debug(f"User: {ctx.from_user.id}")
 
-        if "bikeButtonCriteriaMessageDidSent" not in data or data["bikeButtonCriteriaMessageDidSent"] != True:
+        if "carSizeMessageDidSent" not in data or data["carSizeMessageDidSent"] != True:
             return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
-
-        if messageText == textConstant.bikeButtonCriteria.get:
-            log.info("Юзер выбрал выбор критериев")
-            return self.complete(nextModuleName = MenuModuleName.bikeCriteriaChoice.get)
+        storage.logToUserRequest(ctx.from_user, RequestCodingKeys.carSize , messageText)
+        if messageText in self.menuDict:
+            log.info(messageText)
+            return self.complete(nextModuleName = MenuModuleName.carTransmission.get)
         
-        if messageText == textConstant.bikeButtonShowAll.get:
-            log.info("Юзер решил не выбирать критерии")
-            return self.complete(nextModuleName = MenuModuleName.bikeHelmet.get)
+            
+            
 
         if messageText not in self.menuDict:
             return self.canNotHandle(data)
 
-        return log.info("Модуль BikeParameters завершён")
-        # self.complete(nextModuleName = self.menuDict[messageText])
+        return self.complete(nextModuleName = MenuModuleName.mainMenu.get)
         
 
     async def handleCallback(self, ctx: CallbackQuery, data: dict, msg: MessageSender) -> Completion:
@@ -81,9 +83,9 @@ class BikeParameters(MenuModuleInterface):
     @property
     def menuDict(self) -> dict:
         return {
-            
-            textConstant.bikeButtonCriteria.get: MenuModuleName.bikeButtonCriteria.get,
-            textConstant.bikeCriteriaChoice.get: MenuModuleName.bikeButtonShowAll.get
-
-            
+            textConstant.carButtonSizeSmall.get: MenuModuleName.carButtonSizeSmall.get,
+            textConstant.carButtonSizeBig.get: MenuModuleName.carButtonSizeBig.get,
+            textConstant.carButtonSizeMinivan.get: MenuModuleName.carButtonSizeMinivan.get,
+            textConstant.carButtonSizePremium.get: MenuModuleName.carButtonSizePremium.get,
+            textConstant.carButtonSizeShowAll.get: MenuModuleName.carButtonSizeShowAll.get,
         }

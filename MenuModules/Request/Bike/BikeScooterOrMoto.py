@@ -7,6 +7,7 @@ from Core.StorageManager.UniqueMessagesKeys import textConstant
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
+from MenuModules.Request.RequestCodingKeys import RequestCodingKeys
 from logger import logger as log
 
 class BikeScooterOrMoto(MenuModuleInterface):
@@ -54,6 +55,8 @@ class BikeScooterOrMoto(MenuModuleInterface):
             return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
+        storage.logToUserRequest(ctx.from_user,RequestCodingKeys.bikeScooterOrMoto , messageText)
+
 
         if messageText == textConstant.bikeButtonScooterOrMotoMoto.get:
             log.info("Юзер выбрал скутер")

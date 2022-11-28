@@ -1,16 +1,19 @@
+import asyncio
+import platform
 import sys
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.types import Message, CallbackQuery
-from Core.GoogleSheetsService import UpdateMotoCategoriesList, UpdateScooterCategoriesBigList, UpdateScooterCategoriesSmallList, updateOnboarding, updateUniqueMessages
 
 from logger import logger as log
 
 import MenuModules.MenuDispatcher as dispatcher
 import Core.StorageManager.StorageManager as storage
 from Core.CrossDialogMessageSender import CrossDialogMessageSender, crossDialogMessageSenderShared
+import Core.GoogleSheetsService as sheets
+import Core.Utils.Utils as utils
 
 # =====================
-# Version 0.1.0
+# Version 1.0.3
 # MostBaliBot
 # https://api.telegram.org/bot5278616125:AAH65CfKVC7pCiWZyPTGQQY442l4C4tBB8E/sendMessage?chat_id=@MadL0rdTest&text=Text
 # =====================
@@ -28,7 +31,7 @@ log.info(sys.argv)
 apiKey = "5278616125:AAH65CfKVC7pCiWZyPTGQQY442l4C4tBB8E"
 channel = "-1001443864958"
 chat = -1001886206503
-allMessagesChat = -721123169
+allMessagesChat = -1001505950222
 
 # =====================
 #       Test env
@@ -58,14 +61,18 @@ async def send_welcome_message_handler(ctx: types.Message):
     await dispatcher.handleUserStart(ctx)
 
     # Here is test post creation
-    userTg = ctx.from_user
-    msgText = f"Created an order for {userTg.full_name} @{userTg.username}"
-    await crossDialogMessageSender.setWaitingForOrder(userTg, msgText)
+    # userTg = ctx.from_user
+    # msgText = f"Created an order for {userTg.full_name} @{userTg.username}"
+    # await crossDialogMessageSender.setWaitingForOrder(userTg, msgText)
 
 @dp.message_handler(content_types=["text", "sticker", "voice", "photo", "audio", "video", "document"])
 async def default_message_handler(ctx: Message):
     log.info(f"From {ctx.from_user.full_name} receive: {ctx}")
 
+    if ctx.text == "/start":
+        await dispatcher.handleUserStart(ctx)
+        return
+        
     # Message from private chat with user
     if ctx.chat.type == "private":
 
@@ -75,7 +82,6 @@ async def default_message_handler(ctx: Message):
             from_chat_id=ctx.chat.id,
             message_id=ctx.message_id
         )
-
 
         userTg = ctx.from_user
         userInfo = storage.getUserInfo(userTg)
@@ -96,16 +102,15 @@ async def default_message_handler(ctx: Message):
             channelChatMessageId=channelChatMessageId
         )
 
-    if ctx.chat.id != chat:
-        return
-
     # Fetch automatic telegram message for channel order from bot
     elif ctx.from_user.first_name == "Telegram":
 
         # If ctx is order message from channel chat
-        if crossDialogMessageSender.getUserWaitingForOrder(ctx.text) == None:
-            return
-        await crossDialogMessageSender.makeAnOrderWithChannelChatMessageCtx(ctx)        
+        for i in range(0, 10):
+            await asyncio.sleep(2)
+            if crossDialogMessageSender.getUserWaitingForOrder(ctx.text) != None:
+                await crossDialogMessageSender.makeAnOrderWithChannelChatMessageCtx(ctx)
+                return
     
     # Manager message to user
     order = {}
@@ -116,18 +121,17 @@ async def default_message_handler(ctx: Message):
 
     await crossDialogMessageSender.forwardMessageFromManagerToUser(ctx, order)
 
-
 @dp.callback_query_handler()
 async def default_callback_handler(ctx: CallbackQuery):
     await dispatcher.handleCallback(ctx)
 
 async def on_startup(_):
-    updateUniqueMessages()
-    updateOnboarding()
-    UpdateScooterCategoriesSmallList()
-    UpdateScooterCategoriesBigList()
-    UpdateMotoCategoriesList()
-    print("LETS GO")
+    sheets.updateUniqueMessages()
+    sheets.updateOnboarding()
+    sheets.updateScooterCategoriesList()
+    sheets.updateMotoCategoriesList()
+    sheets.updateBikeCriteria()
+    log.info("Bot just started")
 
 if __name__ == "__main__":
     executor.start_polling(dp, skip_updates=True, on_startup=on_startup)

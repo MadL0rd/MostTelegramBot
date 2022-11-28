@@ -1,4 +1,4 @@
-from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton
+from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
 
 import Core.StorageManager.StorageManager as storage
 from Core.StorageManager.StorageManager import UserHistoryEvent as event
@@ -7,15 +7,16 @@ from Core.StorageManager.UniqueMessagesKeys import textConstant
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
+from MenuModules.Request.RequestCodingKeys import RequestCodingKeys
 from logger import logger as log
 
-class BikeParameters(MenuModuleInterface):
+class TimeRequestMonthWhen(MenuModuleInterface):
 
     # =====================
     # Interface implementation
     # =====================
 
-    namePrivate = MenuModuleName.bikeParameters
+    namePrivate = MenuModuleName.timeRequestMonthWhen
 
     # Use default implementation
     # def callbackData(self, data: dict, msg: MessageSender) -> str:
@@ -23,50 +24,56 @@ class BikeParameters(MenuModuleInterface):
     async def handleModuleStart(self, ctx: Message, msg: MessageSender) -> Completion:
 
         log.debug(f"User: {ctx.from_user.id}")
-        storage.logToUserHistory(ctx.from_user, event.startModuleBikeScooterOrMoto, "")
+        storage.logToUserHistory(ctx.from_user, event.startModuletimeRequestMonthWhen, "")
 
         keyboardMarkup = ReplyKeyboardMarkup(
             resize_keyboard=True
-        ).add(KeyboardButton(textConstant.bikeButtonCriteria.get)
-        ).add(KeyboardButton(textConstant.bikeButtonShowAll.get))
+        ).add(KeyboardButton("Сегодня"),
+        ).add(KeyboardButton("Завтра"),
+        ).add(KeyboardButton("В ближайшие дни, можно сегодня или завтра")
+        ).add(KeyboardButton("Указать дату")
+        )
+        
+
         
         userTg = ctx.from_user
         userInfo = storage.getUserInfo(userTg)
 
         await msg.answer(
             ctx = ctx,
-            text = textConstant.bikeParameters.get,
+            text = textConstant.timeRequestMonthWhen.get,
             keyboardMarkup = keyboardMarkup
         )
 
         return Completion(
             inProgress=True,
             didHandledUserInteraction=True,
-            moduleData={ "bikeButtonCriteriaMessageDidSent" : True }
+            moduleData={ "timeRequestMonthWhenMessageDidSent" : True }
         )
 
     async def handleUserMessage(self, ctx: Message, msg: MessageSender, data: dict) -> Completion:
 
         log.debug(f"User: {ctx.from_user.id}")
 
-        if "bikeButtonCriteriaMessageDidSent" not in data or data["bikeButtonCriteriaMessageDidSent"] != True:
+        if "timeRequestMonthWhenMessageDidSent" not in data or data["timeRequestMonthWhenMessageDidSent"] != True:
             return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
+        if messageText in ("Сегодня" ,"Завтра" ,"В ближайшие дни, можно сегодня или завтра" ):
+            log.info(f"Транспорт нужен {messageText}")
+            storage.logToUserRequest(ctx.from_user, RequestCodingKeys.timeRequestMonthWhen, messageText)
+            return self.complete(nextModuleName = MenuModuleName.requestGeoposition.get)
 
-        if messageText == textConstant.bikeButtonCriteria.get:
-            log.info("Юзер выбрал выбор критериев")
-            return self.complete(nextModuleName = MenuModuleName.bikeCriteriaChoice.get)
+        if messageText in ("Указать дату" ):
+            log.info(f"Юзер решил указать дату")
+            return self.complete(nextModuleName = MenuModuleName.timeRequestMonthWhenSetDate.get)
         
-        if messageText == textConstant.bikeButtonShowAll.get:
-            log.info("Юзер решил не выбирать критерии")
-            return self.complete(nextModuleName = MenuModuleName.bikeHelmet.get)
+        return self.complete(nextModuleName = MenuModuleName.requestGeoposition.get)
 
-        if messageText not in self.menuDict:
-            return self.canNotHandle(data)
+        # if messageText not in self.menuDict:
+        #     return self.canNotHandle(data)
 
-        return log.info("Модуль BikeParameters завершён")
-        # self.complete(nextModuleName = self.menuDict[messageText])
+  
         
 
     async def handleCallback(self, ctx: CallbackQuery, data: dict, msg: MessageSender) -> Completion:
@@ -81,9 +88,5 @@ class BikeParameters(MenuModuleInterface):
     @property
     def menuDict(self) -> dict:
         return {
-            
-            textConstant.bikeButtonCriteria.get: MenuModuleName.bikeButtonCriteria.get,
-            textConstant.bikeCriteriaChoice.get: MenuModuleName.bikeButtonShowAll.get
 
-            
         }

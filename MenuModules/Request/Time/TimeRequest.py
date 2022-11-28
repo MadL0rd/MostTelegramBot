@@ -7,6 +7,7 @@ from Core.StorageManager.UniqueMessagesKeys import textConstant
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
+from MenuModules.Request.RequestCodingKeys import RequestCodingKeys
 from logger import logger as log
 
 class TimeRequest(MenuModuleInterface):
@@ -55,18 +56,19 @@ class TimeRequest(MenuModuleInterface):
             return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
+        storage.logToUserRequest(ctx.from_user, RequestCodingKeys.timeRequest, messageText)
 
         if messageText == textConstant.timeButtonRequestDay.get:
             log.info("Юзер решил выбирать по дням")
-            return self.complete(nextModuleName = MenuModuleName.mainMenu.get)
+            return self.complete(nextModuleName = MenuModuleName.timeRequestDayWeekWhen.get)
         
         if messageText == textConstant.timeButtonRequestWeek.get:
             log.info("Юзер решил выбирать по неделям")
-            return self.complete(nextModuleName = MenuModuleName.mainMenu.get)
+            return self.complete(nextModuleName = MenuModuleName.timeRequestDayWeekWhen.get)
 
         if messageText == textConstant.timeButtonRequestMonth.get:
             log.info("Юзер решил выбирать по месяцам")
-            return self.complete(nextModuleName = MenuModuleName.mainMenu.get)
+            return self.complete(nextModuleName = MenuModuleName.timeRequestHowManyMonths.get)
 
         if messageText not in self.menuDict:
             return self.canNotHandle(data)

@@ -1,4 +1,4 @@
-from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton
+from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton, User
 
 import Core.StorageManager.StorageManager as storage
 from Core.StorageManager.StorageManager import UserHistoryEvent as event
@@ -7,6 +7,7 @@ from Core.StorageManager.UniqueMessagesKeys import textConstant
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
+from MenuModules.Request.RequestCodingKeys import RequestCodingKeys
 from logger import logger as log
 
 class BikeCommitment(MenuModuleInterface):
@@ -40,6 +41,8 @@ class BikeCommitment(MenuModuleInterface):
             keyboardMarkup = keyboardMarkup
         )
 
+        storage.updateUserRequest(userTg, {})
+
         return Completion(
             inProgress=True,
             didHandledUserInteraction=True,
@@ -55,13 +58,15 @@ class BikeCommitment(MenuModuleInterface):
         
         messageText = ctx.text
 
+        storage.logToUserRequest(ctx.from_user,RequestCodingKeys.bikeCommitment, "Байк")
+
         if messageText == textConstant.bikeButtonCommitmentNo.get:
             log.info("Юзер запросил описание байков")
             await msg.answer(
-            ctx = ctx,
-            text = textConstant.bikeModelsDescription.get,
-            keyboardMarkup=ReplyKeyboardMarkup(
-            resize_keyboard=True)
+                ctx = ctx,
+                text = textConstant.bikeModelsDescription.get,
+                keyboardMarkup=ReplyKeyboardMarkup(
+                resize_keyboard=True)
             )
             return self.complete(nextModuleName = MenuModuleName.bikeScooterOrMoto.get)
 

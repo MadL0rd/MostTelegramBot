@@ -29,6 +29,8 @@ class UniqueMessagesKeys(enum.Enum):
 
     bikeMotoCategory = "bikeMotoCategory"
     bikeScooterCategory = "bikeScooterCategory"
+    bikeScooterCategoryChoice = "bikeScooterCategoryChoice"
+    bikeMotoCategoryChoice = "bikeMotoCategoryChoice"
 
     bikeParameters = "bikeParameters"
     bikeButtonCriteria = "bikeButtonCriteria"
@@ -40,9 +42,36 @@ class UniqueMessagesKeys(enum.Enum):
     timeButtonRequestWeek = "timeButtonRequestWeek"
     timeButtonRequestMonth = "timeButtonRequestMonth"
 
+    timeRequestDayWeekWhen = "timeRequestDayWeekWhen"
+    timeButtonRequestWhenToday = "timeButtonRequestWhenToday"
+    timeButtonRequestWhenTomorrow = "timeButtonRequestWhenTomorrow"
+    timeButtonRequestWhenSetDate = "timeButtonRequestWhenSetDate"
+    timeRequestDayWeekWhenSetDate = "timeRequestDayWeekWhenSetDate"
+    timeRequestHowManyDays = "timeRequestHowManyDays"
+    timeRequestHowManyMonths = "timeRequestHowManyMonths"
+    timeRequestHowManyMonthsSet = "timeRequestHowManyMonthsSet"
+    timeRequestMonthWhen = "timeRequestMonthWhen"
+    timeRequestMonthWhenSetDate = "timeRequestMonthWhenSetDate"
+    bikeHelmet = "bikeHelmet"
+    requestGeoposition = "requestGeoposition"
 
+    carSize = "carSize"
+    carButtonSizeSmall = "carButtonSizeSmall"
+    carButtonSizeBig = "carButtonSizeBig"
+    carButtonSizeMinivan = "carButtonSizeMinivan"
+    carButtonSizePremium = "carButtonSizePremium"
+    carButtonSizeShowAll = "carButtonSizeShowAll"
+    carTransmission = "carTransmission"
+    carButtonTransmissionAutomatic = "carButtonTransmissionAutomatic"
+    carButtonTransmissionManual = "carButtonTransmissionManual"
+    carButtonTransmissionShowAll = "carButtonTransmissionShowAll"
+    carModels = "carModels"
+    carModelsFurther = "carModelsFurther"
+    
+    messageAfterFillingOutForm = "messageAfterFillingOutForm"
 
-
+    commentStart = "commentStart"
+    comment = "comment"
 
     @property
     def get(self) -> str:

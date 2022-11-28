@@ -1,10 +1,10 @@
-from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton
+from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
 
 import Core.StorageManager.StorageManager as storage
 from Core.StorageManager.StorageManager import UserHistoryEvent as event
 from Core.MessageSender import MessageSender
 from Core.StorageManager.UniqueMessagesKeys import textConstant
-import Core.Utils.Utils as utils
+from Core.Utils.Utils import dictToList
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
@@ -12,14 +12,13 @@ from MenuModules.Request.RequestCodingKeys import RequestCodingKeys
 from logger import logger as log
 
 
-
-class BikeMotoCategory(MenuModuleInterface):
+class BikeMotoCategoryChoice(MenuModuleInterface):
 
     # =====================
     # Interface implementation
     # =====================
 
-    namePrivate = MenuModuleName.bikeMotoCategory
+    namePrivate = MenuModuleName.bikeMotoCategoryChoice
 
     # Use default implementation
     # def callbackData(self, data: dict, msg: MessageSender) -> str:
@@ -27,49 +26,38 @@ class BikeMotoCategory(MenuModuleInterface):
     async def handleModuleStart(self, ctx: Message, msg: MessageSender) -> Completion:
 
         log.debug(f"User: {ctx.from_user.id}")
-        storage.logToUserHistory(ctx.from_user, event.startModuleBikeMotoCategory, "")
-
-        categoryDict = storage.getJsonData(storage.path.botContentMotoCategoriesList)
-        log.info(categoryDict)
-        categoryList = categoryDict
-        log.info(categoryList)
-        keyboardMarkup = utils.replyMarkupFromListOfButtons(categoryList)
-
+        storage.logToUserHistory(ctx.from_user, event.strartModuleBikeMotoCategoryChoice, "")
+        
         await msg.answer(
             ctx = ctx,
-            text = textConstant.bikeMotoCategory.get,
-            keyboardMarkup = keyboardMarkup
+            text = textConstant.bikeMotoCategoryChoice.get,
+            keyboardMarkup = ReplyKeyboardRemove()
         )
 
         return Completion(
             inProgress=True,
             didHandledUserInteraction=True,
             moduleData={ 
-                "bikeMotoCategoryMessageDidSent" : True,
-                "categoryList" : categoryList
+                "bikeMotoCategoryChoiceMessageDidSent" : True
             }
         )
 
     async def handleUserMessage(self, ctx: Message, msg: MessageSender, data: dict) -> Completion:
 
         log.debug(f"User: {ctx.from_user.id}")
-        log.info(data["categoryList"])
 
-        if "bikeMotoCategoryMessageDidSent" not in data or data["bikeMotoCategoryMessageDidSent"] != True:
+        if "bikeMotoCategoryChoiceMessageDidSent" not in data or data["bikeMotoCategoryChoiceMessageDidSent"] != True:
             return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
+        storage.logToUserRequest(ctx.from_user,RequestCodingKeys.bikeMotoCategoryChoice , messageText)
+        log.info(f"Пользователь выбрал свою модель мотоцикла: {messageText}")       
+        
+        # if messageText not in self.menuDict:
+        #     return self.canNotHandle(data)
 
-        if messageText in data["categoryList"] and messageText != "Другое":
-            log.info(f"Пользователь выбрал {messageText}")
-            storage.logToUserRequest(ctx.from_user, RequestCodingKeys.bikeMotoCategory, messageText)
-            return self.complete(nextModuleName = MenuModuleName.bikeParameters.get)
-
-        if messageText == "Другое":
-            log.info(f"Пользователь решил указать свою модель мотоцилка")
-            return self.complete(nextModuleName = MenuModuleName.bikeMotoCategoryChoice.get)
-
-        return self.canNotHandle(data)
+        return self.complete(nextModuleName = MenuModuleName.bikeParameters.get)
+        
 
     async def handleCallback(self, ctx: CallbackQuery, data: dict, msg: MessageSender) -> Completion:
 
@@ -83,5 +71,6 @@ class BikeMotoCategory(MenuModuleInterface):
     @property
     def menuDict(self) -> dict:
         return {
-                       
+            
+            
         }
