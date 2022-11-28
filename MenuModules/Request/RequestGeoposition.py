@@ -41,13 +41,21 @@ class RequestGeoposition(MenuModuleInterface):
     async def handleUserMessage(self, ctx: Message, msg: MessageSender, data: dict) -> Completion:
 
         log.debug(f"User: {ctx.from_user.id}")
+
+        locationText = ""
+
+        if ctx.text != None:
+            locationText = ctx.text
+
+        if ctx.location != None:
+            googleMapsLink = f"https://www.google.com/maps/place/{ctx.location.latitude},{ctx.location.longitude}" 
+            locationText = googleMapsLink
         
-        messageText = ctx.text
-        storage.logToUserRequest(ctx.from_user, RequestCodingKeys.requestGeoposition , messageText)
-        
-        log.info(messageText)
-        
-        return self.complete(nextModuleName = MenuModuleName.comment.get)        
+        if locationText != "":
+            storage.logToUserRequest(ctx.from_user, RequestCodingKeys.requestGeoposition, locationText)
+            return self.complete(nextModuleName = MenuModuleName.comment.get)
+
+        return self.canNotHandle(data)
 
     async def handleCallback(self, ctx: CallbackQuery, data: dict, msg: MessageSender) -> Completion:
 

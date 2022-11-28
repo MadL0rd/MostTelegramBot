@@ -111,11 +111,12 @@ class CrossDialogMessageSender:
 
             orderData = {
                 "id": orderId,
+                "orderVersion": "1.1.0",
                 "channelMessageId": channelMessage.message_id,
                 "channelChatId": channelChatId,
                 "channelChatMessageId": channelChatMessageId,
                 "status": "Создан",
-                "trelloCardId": orderCreationEntity.treloCard["id"],
+                "trelloCard": orderCreationEntity.treloCard,
                 "text": text
             }
 
