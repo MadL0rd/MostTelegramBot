@@ -58,11 +58,11 @@ class TimeRequestHowManyMonths(MenuModuleInterface):
         
         messageText = ctx.text
 
-        if messageText in (
+        if messageText in [
             textConstant.timeButtonRequestHowManyMonths1.get, 
             textConstant.timeButtonRequestHowManyMonths2.get, 
             textConstant.timeButtonRequestHowManyMonths3.get
-            ):
+        ]:
             storage.logToUserRequest(ctx.from_user, RequestCodingKeys.timeRequestHowManyMonths, messageText)
             return self.complete(nextModuleName = MenuModuleName.timeRequestMonthWhen.get)
 

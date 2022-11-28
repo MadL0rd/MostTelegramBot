@@ -1,4 +1,4 @@
-from aiogram.types import Message, CallbackQuery
+from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup
 
 import Core.StorageManager.StorageManager as storage
 from Core.StorageManager.StorageManager import UserHistoryEvent as event
@@ -84,6 +84,11 @@ class BikeCriteriaChoice(MenuModuleInterface):
                 moduleData=data
             )
 
+        await msg.answer(
+                ctx = ctx,
+                text = textConstant.bikeButtonCriteriaFinal.get,
+                keyboardMarkup = ReplyKeyboardMarkup()
+            ) 
         return self.complete(nextModuleName = MenuModuleName.bikeHelmet.get)
         
     async def handleCallback(self, ctx: CallbackQuery, data: dict, msg: MessageSender) -> Completion:

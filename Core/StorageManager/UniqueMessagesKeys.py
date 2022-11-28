@@ -36,6 +36,8 @@ class UniqueMessagesKeys(enum.Enum):
     bikeButtonCriteria = "bikeButtonCriteria"
     bikeCriteriaChoice = "bikeCriteriaChoice"
     bikeButtonShowAll = "bikeButtonShowAll"
+    bikeButtonCriteriaFinal = "bikeButtonCriteriaFinal"
+    bikeButtonCriteriaShowAllAnswer = "bikeButtonCriteriaShowAllAnswer"
 
     timeRequest  = "timeRequest"
     timeButtonRequestDay = "timeButtonRequestDay"
@@ -55,9 +57,11 @@ class UniqueMessagesKeys(enum.Enum):
     timeButtonRequestHowManyMonthsMore = "timeButtonRequestHowManyMonthsMore"
     timeRequestHowManyMonthsSet = "timeRequestHowManyMonthsSet"
     timeRequestMonthWhen = "timeRequestMonthWhen"
-    timeButtonRequestMonthWhenToday = "timeRequestMonthWhenToday"
-    timeButtonRequestMonthWhenTomorrow = "timeRequestMonthWhenTomorrow"
-    timeButtonRequestMonthWhenComingDays = "timeRequestMonthWhenComingDays"
+    timeButtonRequestMonthWhenToday = "timeButtonRequestMonthWhenToday"
+    timeButtonRequestMonthWhenTomorrow = "timeButtonRequestMonthWhenTomorrow"
+    timeButtonRequestMonthWhenComingDays = "timeButtonRequestMonthWhenComingDays"
+    timeButtonRequestMonthWhenSetDate = "timeButtonRequestMonthWhenSetDate"
+
     timeRequestMonthWhenSetDate = "timeRequestMonthWhenSetDate"
     bikeHelmet = "bikeHelmet"
     bikeHelmet1 = "bikeHelmet1"

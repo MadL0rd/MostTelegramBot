@@ -31,7 +31,7 @@ class TimeRequestMonthWhen(MenuModuleInterface):
         ).add(KeyboardButton(textConstant.timeButtonRequestMonthWhenToday.get),
         ).add(KeyboardButton(textConstant.timeButtonRequestMonthWhenTomorrow.get),
         ).add(KeyboardButton(textConstant.timeButtonRequestMonthWhenComingDays.get),
-        ).add(KeyboardButton(textConstant.timeRequestMonthWhenSetDate.get)
+        ).add(KeyboardButton(textConstant.timeButtonRequestMonthWhenSetDate.get)
         )
 
         await msg.answer(
@@ -54,15 +54,15 @@ class TimeRequestMonthWhen(MenuModuleInterface):
             return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
-        if messageText in (
+        if messageText in [
             textConstant.timeButtonRequestMonthWhenToday.get,
             textConstant.timeButtonRequestMonthWhenTomorrow.get, 
             textConstant.timeButtonRequestMonthWhenComingDays.get
-            ):
+        ]:
             storage.logToUserRequest(ctx.from_user, RequestCodingKeys.timeRequestMonthWhen, messageText)
             return self.complete(nextModuleName = MenuModuleName.requestGeoposition.get)
 
-        if messageText == (textConstant.timeRequestMonthWhenSetDate.get):
+        if messageText == (textConstant.timeButtonRequestMonthWhenSetDate.get):
             return self.complete(nextModuleName = MenuModuleName.timeRequestMonthWhenSetDate.get)
         
         return self.canNotHandle(data)        

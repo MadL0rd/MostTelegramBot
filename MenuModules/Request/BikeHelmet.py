@@ -54,11 +54,11 @@ class BikeHelmet(MenuModuleInterface):
         messageText = ctx.text
         storage.logToUserRequest(ctx.from_user, RequestCodingKeys.bikeHelmet, messageText)
 
-        if messageText in (
+        if messageText in [
             textConstant.bikeHelmet1.get, 
             textConstant.bikeHelmet2.get, 
             textConstant.bikeHelmet0.get
-        ):
+            ]:
             log.info(messageText)
             return self.complete(nextModuleName = MenuModuleName.timeRequest.get) 
 

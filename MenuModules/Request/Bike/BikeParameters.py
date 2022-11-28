@@ -55,6 +55,11 @@ class BikeParameters(MenuModuleInterface):
             return self.complete(nextModuleName = MenuModuleName.bikeCriteriaChoice.get)
         
         if messageText == textConstant.bikeButtonShowAll.get:
+            await msg.answer(
+            ctx = ctx,
+            text = textConstant.bikeButtonCriteriaShowAllAnswer.get,
+            keyboardMarkup = ReplyKeyboardMarkup()
+        )
             return self.complete(nextModuleName = MenuModuleName.bikeHelmet.get)
 
         return self.canNotHandle(data)     
