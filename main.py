@@ -60,12 +60,7 @@ async def send_welcome_message_handler(ctx: types.Message):
 
     await dispatcher.handleUserStart(ctx)
 
-    # Here is test post creation
-    # userTg = ctx.from_user
-    # msgText = f"Created an order for {userTg.full_name} @{userTg.username}"
-    # await crossDialogMessageSender.setWaitingForOrder(userTg, msgText)
-
-@dp.message_handler(content_types=["text", "sticker", "voice", "photo", "audio", "video", "document"])
+@dp.message_handler(content_types=["audio", "game", "document", "photo", "sticker", "video", "voice", "video_note", "contact", "location", "venue", "invoice", "successful_payment", "text"])
 async def default_message_handler(ctx: Message):
     log.info(f"From {ctx.from_user.full_name} receive: {ctx}")
 

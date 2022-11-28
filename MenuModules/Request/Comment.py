@@ -32,63 +32,59 @@ class Comment(MenuModuleInterface):
 
         keyboardMarkup = ReplyKeyboardMarkup(
             resize_keyboard=True
-        )
+        ).add(KeyboardButton(textConstant.commentCompleteOrderButton.get)
+        ).add(KeyboardButton(textConstant.commentUserWishesButton.get))
         
-        userTg = ctx.from_user
-        userInfo = storage.getUserInfo(userTg)
-
-        userRequest = storage.getUserRequest(user=ctx.from_user)
-        userRequestString = textConstant.commentStart.get + "\n"
-        for line in userRequest:
-            userRequestString += f"{userRequest[line]}\n"
-        userRequestString += textConstant.comment.get
+        userRequestString = getUserRequestString(ctx)
 
         await msg.answer(
             ctx = ctx,
-            text = userRequestString,
-            keyboardMarkup = keyboardMarkup.add(KeyboardButton("Закончить"))
+            text = f"{textConstant.commentOrderTextStart.get}\n\n{userRequestString}",
+            keyboardMarkup = keyboardMarkup
         )
 
         return Completion(
             inProgress=True,
             didHandledUserInteraction=True,
-            moduleData={ "commentMessageDidSent" : True }
+            moduleData={}
         )
 
     async def handleUserMessage(self, ctx: Message, msg: MessageSender, data: dict) -> Completion:
 
-        log.debug(f"User: {ctx.from_user.id}")
-
-        if "commentMessageDidSent" not in data or data["commentMessageDidSent"] != True:
-            return self.handleModuleStart(ctx, msg)
-        
         messageText = ctx.text
+        if messageText == textConstant.commentUserWishesButton.get:
+            await msg.answer(
+                ctx = ctx,
+                text = textConstant.commentUserWishesText.get,
+                keyboardMarkup = ReplyKeyboardRemove()
+            )
 
-        if messageText != "Закончить":
-            storage.logToUserRequest(ctx.from_user,RequestCodingKeys.comment, messageText)
-        
-        log.info(messageText)
-        
-        userRequest = storage.getUserRequest(user=ctx.from_user)
-        userRequestString = ""
-        for line in userRequest:
-            userRequestString += f"{userRequest[line]}\n"
+            return Completion(
+                inProgress=True,
+                didHandledUserInteraction=True,
+                moduleData={ "commentMessageDidSent" : True }
+            )
 
+        if "commentMessageDidSent" in data and data["commentMessageDidSent"] == True:
+            storage.logToUserRequest(ctx.from_user, RequestCodingKeys.comment, messageText)
 
-        userRequestString = f"{ctx.from_user.full_name} @{ctx.from_user.username}\n{userRequestString}"
+        if messageText == textConstant.commentCompleteOrderButton.get or "commentMessageDidSent" in data:
 
-        await crossDialogMessageSender.setWaitingForOrder(ctx.from_user, userRequestString)
+            userRequestString = getUserRequestString(ctx)
+            userRequestString = f"{ctx.from_user.full_name} @{ctx.from_user.username}\n{userRequestString}"
 
-        storage.updateUserRequest(ctx.from_user, {})
+            await crossDialogMessageSender.setWaitingForOrder(ctx.from_user, userRequestString)
 
-        # if messageText not in self.menuDict:
-        #     return self.canNotHandle(data)
-        await msg.answer(
-            ctx = ctx,
-            text = textConstant.messageAfterFillingOutForm.get,
-            keyboardMarkup = ReplyKeyboardRemove()
-        )
-        return self.complete(nextModuleName = MenuModuleName.mainMenu.get)        
+            storage.updateUserRequest(ctx.from_user, {})
+            
+            await msg.answer(
+                ctx = ctx,
+                text = textConstant.messageAfterFillingOutForm.get,
+                keyboardMarkup = ReplyKeyboardRemove()
+            )
+            return self.complete(nextModuleName = MenuModuleName.mainMenu.get)    
+
+        return self.canNotHandle(data=data)    
 
     async def handleCallback(self, ctx: CallbackQuery, data: dict, msg: MessageSender) -> Completion:
 
@@ -99,8 +95,10 @@ class Comment(MenuModuleInterface):
     # Custom stuff
     # =====================
 
-    @property
-    def menuDict(self) -> dict:
-        return {
+def getUserRequestString(ctx: Message) -> str:
+    userRequest = storage.getUserRequest(user=ctx.from_user)
+    userRequestString = ""
+    for line in userRequest.values():
+        userRequestString += f"{line['title']}: {line['value']}\n"
 
-        }
+    return userRequestString

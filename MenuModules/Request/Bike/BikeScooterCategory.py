@@ -70,6 +70,7 @@ class BikeScooterCategory(MenuModuleInterface):
         
         if messageText == data["textAnything"]:
             log.info(f"Пользователь решил указать другую модель скутера")
+            storage.logToUserRequest(ctx.from_user,RequestCodingKeys.bikeScooterCategory, messageText)
             return self.complete(nextModuleName = MenuModuleName.bikeScooterCategoryChoice.get)
         
         if messageText not in data["categoryList"] and messageText != data["textAnything"]:

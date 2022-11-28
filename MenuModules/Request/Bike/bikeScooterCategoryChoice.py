@@ -37,25 +37,17 @@ class BikeScooterCategoryChoice(MenuModuleInterface):
         return Completion(
             inProgress=True,
             didHandledUserInteraction=True,
-            moduleData={ 
-                "bikeScooterCategoryChoiceMessageDidSent" : True
-            }
+            moduleData={}
         )
 
     async def handleUserMessage(self, ctx: Message, msg: MessageSender, data: dict) -> Completion:
 
         log.debug(f"User: {ctx.from_user.id}")
 
-        if "bikeScooterCategoryChoiceMessageDidSent" not in data or data["bikeScooterCategoryChoiceMessageDidSent"] != True:
-            return self.handleModuleStart(ctx, msg)
-        
         messageText = ctx.text
         storage.logToUserRequest(ctx.from_user,RequestCodingKeys.bikeScooterCategoryChoice, messageText)
         log.info(f"Пользователь выбрал свою модель скутера: {messageText}")       
         
-        # if messageText not in self.menuDict:
-        #     return self.canNotHandle(data)
-
         return self.complete(nextModuleName = MenuModuleName.bikeParameters.get)
         
 
@@ -67,10 +59,3 @@ class BikeScooterCategoryChoice(MenuModuleInterface):
     # =====================
     # Custom stuff
     # =====================
-
-    @property
-    def menuDict(self) -> dict:
-        return {
-            
-            
-        }

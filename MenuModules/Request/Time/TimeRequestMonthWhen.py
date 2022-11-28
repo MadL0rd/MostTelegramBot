@@ -34,8 +34,6 @@ class TimeRequestMonthWhen(MenuModuleInterface):
         ).add(KeyboardButton("Указать дату")
         )
         
-
-        
         userTg = ctx.from_user
         userInfo = storage.getUserInfo(userTg)
 
@@ -70,12 +68,6 @@ class TimeRequestMonthWhen(MenuModuleInterface):
         
         return self.complete(nextModuleName = MenuModuleName.requestGeoposition.get)
 
-        # if messageText not in self.menuDict:
-        #     return self.canNotHandle(data)
-
-  
-        
-
     async def handleCallback(self, ctx: CallbackQuery, data: dict, msg: MessageSender) -> Completion:
 
         log.debug(f"User: {ctx.from_user.id}")
@@ -84,9 +76,3 @@ class TimeRequestMonthWhen(MenuModuleInterface):
     # =====================
     # Custom stuff
     # =====================
-
-    @property
-    def menuDict(self) -> dict:
-        return {
-
-        }

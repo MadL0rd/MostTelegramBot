@@ -70,8 +70,10 @@ class UniqueMessagesKeys(enum.Enum):
     
     messageAfterFillingOutForm = "messageAfterFillingOutForm"
 
-    commentStart = "commentStart"
-    comment = "comment"
+    commentOrderTextStart = "commentOrderTextStart"
+    commentCompleteOrderButton = "commentCompleteOrderButton"
+    commentUserWishesButton = "commentUserWishesButton"
+    commentUserWishesText = "commentUserWishesText"
 
     orderNumberMask = "orderNumberMask"
     orderCreationUserText = "orderCreationUserText"

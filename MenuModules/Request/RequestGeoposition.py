@@ -10,10 +10,6 @@ from MenuModules.MenuModuleName import MenuModuleName
 from MenuModules.Request.RequestCodingKeys import RequestCodingKeys
 from logger import logger as log
 
-from main import crossDialogMessageSender
-
-# from Core.CrossDialogMessageSender import crossDialogMessageSenderShared
-
 class RequestGeoposition(MenuModuleInterface):
 
     # =====================
@@ -30,13 +26,6 @@ class RequestGeoposition(MenuModuleInterface):
         log.debug(f"User: {ctx.from_user.id}")
         storage.logToUserHistory(ctx.from_user, event.startModuleRequestGeoposition, "")
 
-        keyboardMarkup = ReplyKeyboardMarkup(
-            resize_keyboard=True
-        )
-        
-        userTg = ctx.from_user
-        userInfo = storage.getUserInfo(userTg)
-
         await msg.answer(
             ctx = ctx,
             text = textConstant.requestGeoposition.get,
@@ -46,28 +35,18 @@ class RequestGeoposition(MenuModuleInterface):
         return Completion(
             inProgress=True,
             didHandledUserInteraction=True,
-            moduleData={ "requestGeopositionMessageDidSent" : True }
+            moduleData={}
         )
 
     async def handleUserMessage(self, ctx: Message, msg: MessageSender, data: dict) -> Completion:
 
         log.debug(f"User: {ctx.from_user.id}")
-
-        if "requestGeopositionMessageDidSent" not in data or data["requestGeopositionMessageDidSent"] != True:
-            return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
         storage.logToUserRequest(ctx.from_user, RequestCodingKeys.requestGeoposition , messageText)
         
         log.info(messageText)
         
-        # if messageText not in self.menuDict:
-        #     return self.canNotHandle(data)
-        await msg.answer(
-            ctx = ctx,
-            text = textConstant.messageAfterFillingOutForm.get,
-            keyboardMarkup = ReplyKeyboardRemove()
-        )
         return self.complete(nextModuleName = MenuModuleName.comment.get)        
 
     async def handleCallback(self, ctx: CallbackQuery, data: dict, msg: MessageSender) -> Completion:
@@ -78,9 +57,3 @@ class RequestGeoposition(MenuModuleInterface):
     # =====================
     # Custom stuff
     # =====================
-
-    @property
-    def menuDict(self) -> dict:
-        return {
-
-        }
