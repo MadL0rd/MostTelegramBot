@@ -7,6 +7,7 @@ from Core.StorageManager.UniqueMessagesKeys import textConstant
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
+from MenuModules.Request.RequestCodingKeys import RequestCodingKeys
 from logger import logger as log
 
 class CarModels(MenuModuleInterface):
@@ -56,9 +57,9 @@ class CarModels(MenuModuleInterface):
         messageText = ctx.text
         if messageText == textConstant.carModelsFurther.get:
             log.info("Юзер закончил выбирать модель")
-            storage.logToUserRequest(ctx.from_user, f"Модель авто: не выбрана")
+            storage.logToUserRequest(ctx.from_user, RequestCodingKeys.carModels, "Модель авто: не выбрана")
         else:
-            storage.logToUserRequest(ctx.from_user, f"Модель авто: {messageText}")
+            storage.logToUserRequest(ctx.from_user, RequestCodingKeys.carModels, messageText)
       
         log.info(messageText)   
 

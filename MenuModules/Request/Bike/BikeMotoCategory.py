@@ -8,6 +8,7 @@ import Core.Utils.Utils as utils
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
+from MenuModules.Request.RequestCodingKeys import RequestCodingKeys
 from logger import logger as log
 
 
@@ -30,7 +31,7 @@ class BikeMotoCategory(MenuModuleInterface):
 
         categoryDict = storage.getJsonData(storage.path.botContentMotoCategoriesList)
         log.info(categoryDict)
-        categoryList = utils.dictToList(categoryDict)
+        categoryList = categoryDict
         log.info(categoryList)
         keyboardMarkup = utils.replyMarkupFromListOfButtons(categoryList)
 
@@ -44,7 +45,6 @@ class BikeMotoCategory(MenuModuleInterface):
             inProgress=True,
             didHandledUserInteraction=True,
             moduleData={ 
-                "bikeMotoCategoryDidSent" : True,
                 "categoryList" : categoryList
             }
         )
@@ -52,20 +52,18 @@ class BikeMotoCategory(MenuModuleInterface):
     async def handleUserMessage(self, ctx: Message, msg: MessageSender, data: dict) -> Completion:
 
         log.debug(f"User: {ctx.from_user.id}")
-        log.info(data["categoryList"])
+        log.debug(data["categoryList"])
 
-        if "bikeMotoCategoryDidSent" not in data or data["bikeMotoCategoryDidSent"] != True:
-            return self.handleModuleStart(ctx, msg)
-        
         messageText = ctx.text
 
         if messageText in data["categoryList"] and messageText != "Другое":
             log.info(f"Пользователь выбрал {messageText}")
-            storage.logToUserRequest(ctx.from_user, f"Категория мотоцикла: {messageText}")
+            storage.logToUserRequest(ctx.from_user, RequestCodingKeys.bikeMotoCategory, messageText)
             return self.complete(nextModuleName = MenuModuleName.bikeParameters.get)
 
         if messageText == "Другое":
             log.info(f"Пользователь решил указать свою модель мотоцилка")
+            storage.logToUserRequest(ctx.from_user, RequestCodingKeys.bikeMotoCategory, messageText)
             return self.complete(nextModuleName = MenuModuleName.bikeMotoCategoryChoice.get)
 
         return self.canNotHandle(data)

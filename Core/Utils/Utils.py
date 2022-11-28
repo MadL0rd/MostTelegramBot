@@ -1,4 +1,9 @@
+import itertools
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
+from logger import logger as log
+import platform
+
+isWindows = platform.system() == 'Windows'
 
 def dictToList(source: dict):
     result = []
@@ -48,5 +53,30 @@ def replyMarkupFromListOfButtons(buttons: list) -> ReplyKeyboardMarkup:
         keyboardMarkup.row(
             KeyboardButton(buttonText)
         )
+
+    return keyboardMarkup
+
+def doubleListToButton(list1: list, list2: list, add: str, fill: str):
+    # Функция пробегается одновременно по двум спискам list1 и list2
+    # и формирует из них keyboardMarkup.
+    # В наименьший из списков добавляет элемент add.
+    # Если наименьшего нет, то добавляет один большой add в конце по центру.
+    # Если после этого длины списков неодинаковы, то пробелы заполняются fill
+
+    keyboardMarkup = ReplyKeyboardMarkup(resize_keyboard=True)
+    didAppended = False
+
+
+    if len(list1) < len(list2):
+        list1.append(add)
+        didAppended = True
+    if len(list1) > len(list2):
+        list2.append(add)
+        didAppended = True 
+    for (item1, item2) in itertools.zip_longest(list1, list2, fillvalue= fill):
+        keyboardMarkup.row(KeyboardButton(item1),KeyboardButton(item2))
+    if len(list1) == len(list2) and didAppended == False:
+        log.info(didAppended)
+        keyboardMarkup.add(KeyboardButton(add))
 
     return keyboardMarkup

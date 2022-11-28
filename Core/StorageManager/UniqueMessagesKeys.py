@@ -70,11 +70,29 @@ class UniqueMessagesKeys(enum.Enum):
     
     messageAfterFillingOutForm = "messageAfterFillingOutForm"
 
+    commentOrderTextStart = "commentOrderTextStart"
+    commentCompleteOrderButton = "commentCompleteOrderButton"
+    commentUserWishesButton = "commentUserWishesButton"
+    commentUserWishesText = "commentUserWishesText"
+
+    orderNumberMask = "orderNumberMask"
+    orderCreationUserText = "orderCreationUserText"
+    orderDetailsMessageTitle = "orderDetailsMessageTitle"
+
     @property
     def get(self) -> str:
         messagesKeys = storage.getJsonData(storage.path.botContentUniqueMessages)
         if self.value in messagesKeys:
             return messagesKeys[self.value]
+        else:
+            return "Unknown"
+
+    def getAndReplaceOrderMaskWith(self, text: str) -> str:
+        messagesKeys = storage.getJsonData(storage.path.botContentUniqueMessages)
+        if self.value in messagesKeys:
+            value: str = messagesKeys[self.value]
+            mask: str = textConstant.orderNumberMask.get
+            return value.replace(mask, text)
         else:
             return "Unknown"
 

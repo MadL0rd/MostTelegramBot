@@ -7,11 +7,8 @@ from Core.StorageManager.UniqueMessagesKeys import textConstant
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
+from MenuModules.Request.RequestCodingKeys import RequestCodingKeys
 from logger import logger as log
-
-from main import crossDialogMessageSender
-
-# from Core.CrossDialogMessageSender import crossDialogMessageSenderShared
 
 class RequestGeoposition(MenuModuleInterface):
 
@@ -29,13 +26,6 @@ class RequestGeoposition(MenuModuleInterface):
         log.debug(f"User: {ctx.from_user.id}")
         storage.logToUserHistory(ctx.from_user, event.startModuleRequestGeoposition, "")
 
-        keyboardMarkup = ReplyKeyboardMarkup(
-            resize_keyboard=True
-        )
-        
-        userTg = ctx.from_user
-        userInfo = storage.getUserInfo(userTg)
-
         await msg.answer(
             ctx = ctx,
             text = textConstant.requestGeoposition.get,
@@ -45,41 +35,27 @@ class RequestGeoposition(MenuModuleInterface):
         return Completion(
             inProgress=True,
             didHandledUserInteraction=True,
-            moduleData={ "requestGeopositionMessageDidSent" : True }
+            moduleData={}
         )
 
     async def handleUserMessage(self, ctx: Message, msg: MessageSender, data: dict) -> Completion:
 
         log.debug(f"User: {ctx.from_user.id}")
 
-        if "requestGeopositionMessageDidSent" not in data or data["requestGeopositionMessageDidSent"] != True:
-            return self.handleModuleStart(ctx, msg)
+        locationText = ""
+
+        if ctx.text != None:
+            locationText = ctx.text
+
+        if ctx.location != None:
+            googleMapsLink = f"https://www.google.com/maps/place/{ctx.location.latitude},{ctx.location.longitude}" 
+            locationText = googleMapsLink
         
-        messageText = ctx.text
-        storage.logToUserRequest(ctx.from_user, f"Геопозиция: {messageText}")
-        
-        log.info(messageText)
-        
-        # TODO: НАдо заебашить сраку
-        userRequest = storage.getUserRequest(user=ctx.from_user)
-        userRequestString = ""
-        for line in userRequest:
-            userRequestString += f"{line}\n"
+        if locationText != "":
+            storage.logToUserRequest(ctx.from_user, RequestCodingKeys.requestGeoposition, locationText)
+            return self.complete(nextModuleName = MenuModuleName.comment.get)
 
-        userRequestString = f"{ctx.from_user.full_name} @{ctx.from_user.username}\n{userRequestString}"
-
-        await crossDialogMessageSender.setWaitingForOrder(ctx.from_user, userRequestString)
-
-        storage.updateUserRequest(ctx.from_user, [])
-
-        # if messageText not in self.menuDict:
-        #     return self.canNotHandle(data)
-        await msg.answer(
-            ctx = ctx,
-            text = textConstant.messageAfterFillingOutForm.get,
-            keyboardMarkup = ReplyKeyboardRemove()
-        )
-        return self.complete(nextModuleName = MenuModuleName.mainMenu.get)        
+        return self.canNotHandle(data)
 
     async def handleCallback(self, ctx: CallbackQuery, data: dict, msg: MessageSender) -> Completion:
 
@@ -89,9 +65,3 @@ class RequestGeoposition(MenuModuleInterface):
     # =====================
     # Custom stuff
     # =====================
-
-    @property
-    def menuDict(self) -> dict:
-        return {
-
-        }

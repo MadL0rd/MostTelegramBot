@@ -7,6 +7,7 @@ from Core.StorageManager.UniqueMessagesKeys import textConstant
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
+from MenuModules.Request.RequestCodingKeys import RequestCodingKeys
 from logger import logger as log
 
 class TimeRequestDayWeekWhen(MenuModuleInterface):
@@ -58,12 +59,12 @@ class TimeRequestDayWeekWhen(MenuModuleInterface):
 
         if messageText == textConstant.timeButtonRequestWhenToday.get:
             log.info("Транспорт нужен сегодня")
-            storage.logToUserRequest(ctx.from_user, f"Когда нужен транспорт: {messageText}")
+            storage.logToUserRequest(ctx.from_user, RequestCodingKeys.timeRequestDayWeekWhen, messageText)
             return self.complete(nextModuleName = MenuModuleName.timeRequestHowManyDays.get)
         
         if messageText == textConstant.timeButtonRequestWhenTomorrow.get:
             log.info("Транспорт нужен завтра")
-            storage.logToUserRequest(ctx.from_user, f"Когда нужен транспорт: {messageText}")
+            storage.logToUserRequest(ctx.from_user, RequestCodingKeys.timeRequestDayWeekWhen, messageText)
             return self.complete(nextModuleName = MenuModuleName.timeRequestHowManyDays.get)
 
         if messageText == textConstant.timeButtonRequestWhenSetDate.get:

@@ -1,4 +1,5 @@
 import asyncio
+import platform
 import sys
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.types import Message, CallbackQuery
@@ -8,9 +9,11 @@ from logger import logger as log
 import MenuModules.MenuDispatcher as dispatcher
 import Core.StorageManager.StorageManager as storage
 from Core.CrossDialogMessageSender import CrossDialogMessageSender, crossDialogMessageSenderShared
+import Core.GoogleSheetsService as sheets
+import Core.Utils.Utils as utils
 
 # =====================
-# Version 1.0.3
+# Version 1.1.0
 # MostBaliBot
 # https://api.telegram.org/bot5278616125:AAH65CfKVC7pCiWZyPTGQQY442l4C4tBB8E/sendMessage?chat_id=@MadL0rdTest&text=Text
 # =====================
@@ -57,12 +60,7 @@ async def send_welcome_message_handler(ctx: types.Message):
 
     await dispatcher.handleUserStart(ctx)
 
-    # Here is test post creation
-    # userTg = ctx.from_user
-    # msgText = f"Created an order for {userTg.full_name} @{userTg.username}"
-    # await crossDialogMessageSender.setWaitingForOrder(userTg, msgText)
-
-@dp.message_handler(content_types=["text", "sticker", "voice", "photo", "audio", "video", "document"])
+@dp.message_handler(content_types=["audio", "game", "document", "photo", "sticker", "video", "voice", "video_note", "contact", "location", "venue", "invoice", "successful_payment", "text"])
 async def default_message_handler(ctx: Message):
     log.info(f"From {ctx.from_user.full_name} receive: {ctx}")
 
@@ -103,11 +101,7 @@ async def default_message_handler(ctx: Message):
     elif ctx.from_user.first_name == "Telegram":
 
         # If ctx is order message from channel chat
-        for i in range(0, 10):
-            await asyncio.sleep(2)
-            if crossDialogMessageSender.getUserWaitingForOrder(ctx.text) != None:
-                await crossDialogMessageSender.makeAnOrderWithChannelChatMessageCtx(ctx)
-                return
+        await crossDialogMessageSender.makeAnOrderWithChannelChatMessageCtx(ctx)
     
     # Manager message to user
     order = {}
@@ -123,6 +117,13 @@ async def default_callback_handler(ctx: CallbackQuery):
     await dispatcher.handleCallback(ctx)
 
 async def on_startup(_):
+    crossDialogMessageSender.configureBackgroundTasks()
+    asyncio.create_task(crossDialogMessageSender.threadedTasks())
+    sheets.updateUniqueMessages()
+    sheets.updateOnboarding()
+    sheets.updateScooterCategoriesList()
+    sheets.updateMotoCategoriesList()
+    sheets.updateBikeCriteria()
     log.info("Bot just started")
 
 if __name__ == "__main__":

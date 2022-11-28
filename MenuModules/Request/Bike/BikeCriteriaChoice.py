@@ -8,6 +8,7 @@ import Core.Utils.Utils as utils
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
+from MenuModules.Request.RequestCodingKeys import RequestCodingKeys
 from logger import logger as log
 
 class BikeCriteriaChoice(MenuModuleInterface):
@@ -34,32 +35,48 @@ class BikeCriteriaChoice(MenuModuleInterface):
         
         messageText = ctx.text
         pull = storage.getJsonData(storage.PathConfig.botContentBikeCriteria)
+        request = storage.getUserRequest(ctx.from_user)
+        if RequestCodingKeys.bikeScooterCategory.get in request:
+            bikeName = request[RequestCodingKeys.bikeScooterCategory.get]["value"]
+            log.info(bikeName)
+            pull = [criteria for criteria in pull if "Все" in criteria["bikes"] or bikeName in criteria["bikes"]]
 
-        pullPrevious = [line for line in pull if line["type"] in data and data[line["type"]] == False]
+        pullPrevious = [criteria for criteria in pull if criteria["id"] in data and data[criteria["id"]] == False]
         if len(pullPrevious) > 0:
 
             prevCriteria = pullPrevious[0]
-            prevCriteriaName = prevCriteria["type"]
+            prevCriteriaId = prevCriteria["id"]
+            prevCriteriaTitle = prevCriteria["title"]
 
-            if messageText in prevCriteria["values"]:
-                storage.logToUserRequest(ctx.from_user, f"Критерий байка {prevCriteriaName}: {messageText}")
-                data[prevCriteriaName] = True
+            if prevCriteria["customTextEnable"] == True or messageText in prevCriteria["values"]:
+                storage.logToUserRequestCustom(
+                    user = ctx.from_user,
+                    codingKey = f"{RequestCodingKeys.bikeCriteriaChoice.get}.{prevCriteriaId}",
+                    title = prevCriteriaTitle,
+                    value = messageText
+                )
+                    
+                # Ставим критерию True, т.к. критерий обработан и данные внесены в request.json
+                data[prevCriteriaId] = True
             else:
                 return self.canNotHandle(data)
 
-        pull = [line for line in pull if line["type"] not in data]
+        # отфильтровали все критерии и оставили в pull только те, 
+        # которые юзер ещё не видел
+        pull = [criteria for criteria in pull if criteria["id"] not in data]
         if len(pull) > 0:
             criteria = pull[0]
-            criteriaName = criteria["type"]
+            criteriaId = criteria["id"]
             keyboardMarkup = utils.replyMarkupFromListOfButtons(criteria["values"])
 
             await msg.answer(
                 ctx = ctx,
-                text = criteria["type"],
+                text = criteria["question"],
                 keyboardMarkup = keyboardMarkup
             )            
-
-            data[f"{criteriaName}"] = False
+            # ставим False критерию, т.к. он уже отправлен пользователю, 
+            # но ответ на него мы ещё не получили
+            data[criteriaId] = False
             log.debug(data)
 
             return Completion(
@@ -79,9 +96,3 @@ class BikeCriteriaChoice(MenuModuleInterface):
     # =====================
     # Custom stuff
     # =====================
-
-    @property
-    def menuDict(self) -> dict:
-        return {
-            
-        }
