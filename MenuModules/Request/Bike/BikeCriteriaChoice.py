@@ -1,12 +1,14 @@
-from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton
+from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
 
 import Core.StorageManager.StorageManager as storage
 from Core.StorageManager.StorageManager import UserHistoryEvent as event
 from Core.MessageSender import MessageSender
 from Core.StorageManager.UniqueMessagesKeys import textConstant
+import Core.Utils.Utils as utils
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
+from MenuModules.Request.RequestCodingKeys import RequestCodingKeys
 from logger import logger as log
 
 class BikeCriteriaChoice(MenuModuleInterface):
@@ -23,50 +25,58 @@ class BikeCriteriaChoice(MenuModuleInterface):
     async def handleModuleStart(self, ctx: Message, msg: MessageSender) -> Completion:
 
         log.debug(f"User: {ctx.from_user.id}")
-        storage.logToUserHistory(ctx.from_user, event.startModuleBikeCriteriaChoice, "")
-
-        keyboardMarkup = ReplyKeyboardMarkup(
-            resize_keyboard=True
-        ).add(KeyboardButton("Далее")
-        )
+        storage.logToUserHistory(ctx.from_user, event.startModuleBikeCriteriaChoice, "")   
         
-        userTg = ctx.from_user
-        userInfo = storage.getUserInfo(userTg)
-
-        await msg.answer(
-            ctx = ctx,
-            text = textConstant.bikeCriteriaChoice.get,
-            keyboardMarkup = keyboardMarkup
-        )
-
-        return Completion(
-            inProgress=True,
-            didHandledUserInteraction=True,
-            moduleData={ "bikeCriteriaChoiceMessageDidSent" : True }
-        )
+        return await self.handleUserMessage(ctx, msg, {})
 
     async def handleUserMessage(self, ctx: Message, msg: MessageSender, data: dict) -> Completion:
 
         log.debug(f"User: {ctx.from_user.id}")
-
-        if "bikeCriteriaChoiceMessageDidSent" not in data or data["bikeCriteriaChoiceMessageDidSent"] != True:
-            return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
-        storage.logToUserRequest(ctx.from_user, f"Критерии байка: {messageText}")
+        pull = storage.getJsonData(storage.PathConfig.botContentBikeCriteria)
+        # bikeName = getJsonData(....request.json)["bikeName"]
+        # pull = [criteria for criteria in pull]............
+        # вытаскиваю название байка и делаю фильтрацию
+        # TODO: ОБЪЯСНИСЬ БЛЯТЬ!
+        pullPrevious = [criteria for criteria in pull if criteria["type"] in data and data[criteria["type"]] == False]
+        if len(pullPrevious) > 0:
 
-        if messageText == "Далее":
-            log.info("Юзер выбрал критерии")
-            return self.complete(nextModuleName = MenuModuleName.bikeHelmet.get)
+            prevCriteria = pullPrevious[0]
+            prevCriteriaName = prevCriteria["type"]
 
-        # TODO: Сделать выбор критериев поиска
-        
+            if prevCriteria["customTextEnable"] == True or messageText in prevCriteria["values"]:
+                storage.logToUserRequest(ctx.from_user, f"{RequestCodingKeys.bikeCriteriaChoice}.{prevCriteria}" , messageText)
+                # Ставим критерию True, т.к. критерий обработан и данные внесены в request.json
+                data[prevCriteriaName] = True
+            else:
+                return self.canNotHandle(data)
 
-        # if messageText not in self.menuDict:
-        #     return self.canNotHandle(data)
+        # отфильтровали все критерии и оставили в pull только те, 
+        # которые юзер ещё не видел
+        pull = [criteria for criteria in pull if criteria["type"] not in data]
+        if len(pull) > 0:
+            criteria = pull[0]
+            criteriaName = criteria["type"]
+            keyboardMarkup = utils.replyMarkupFromListOfButtons(criteria["values"])
 
-        return log.info("Модуль BikeCriteriaChoice завершён")
-        # self.complete(nextModuleName = self.menuDict[messageText])
+            await msg.answer(
+                ctx = ctx,
+                text = criteria["type"],
+                keyboardMarkup = keyboardMarkup
+            )            
+            # ставим False критерию, т.к. он уже отправлен пользователю, 
+            # но ответ на него мы ещё не получили
+            data[criteriaName] = False
+            log.debug(data)
+
+            return Completion(
+                inProgress=True,
+                didHandledUserInteraction=True,
+                moduleData=data
+            )
+
+        return self.complete(nextModuleName = MenuModuleName.bikeHelmet.get)
         
 
     async def handleCallback(self, ctx: CallbackQuery, data: dict, msg: MessageSender) -> Completion:

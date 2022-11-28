@@ -4,10 +4,11 @@ import Core.StorageManager.StorageManager as storage
 from Core.StorageManager.StorageManager import UserHistoryEvent as event
 from Core.MessageSender import MessageSender
 from Core.StorageManager.UniqueMessagesKeys import textConstant
-from Core.Utils.Utils import dictToList
+import Core.Utils.Utils as utils
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
+from MenuModules.Request.RequestCodingKeys import RequestCodingKeys
 from logger import logger as log
 
 
@@ -28,19 +29,11 @@ class BikeMotoCategory(MenuModuleInterface):
         log.debug(f"User: {ctx.from_user.id}")
         storage.logToUserHistory(ctx.from_user, event.startModuleBikeMotoCategory, "")
 
-        categoryList = dictToList(storage.getJsonData(storage.path.botContentMotoCategoriesList))
-        categoryLen = len(categoryList)
-
-        keyboardMarkup = ReplyKeyboardMarkup(
-        resize_keyboard=True
-        )
-        categoryCounter = 0
-        while categoryCounter < categoryLen:
-            keyboardMarkup.add(KeyboardButton(categoryList[categoryCounter]))
-            categoryCounter+=1
-        
-        userTg = ctx.from_user
-        userInfo = storage.getUserInfo(userTg)
+        categoryDict = storage.getJsonData(storage.path.botContentMotoCategoriesList)
+        log.info(categoryDict)
+        categoryList = categoryDict
+        log.info(categoryList)
+        keyboardMarkup = utils.replyMarkupFromListOfButtons(categoryList)
 
         await msg.answer(
             ctx = ctx,
@@ -51,34 +44,32 @@ class BikeMotoCategory(MenuModuleInterface):
         return Completion(
             inProgress=True,
             didHandledUserInteraction=True,
-            moduleData={ "bikeMotoCategoryDidSent" : True,
-                         "categoryList" : categoryList
-            
+            moduleData={ 
+                "bikeMotoCategoryMessageDidSent" : True,
+                "categoryList" : categoryList
             }
         )
 
     async def handleUserMessage(self, ctx: Message, msg: MessageSender, data: dict) -> Completion:
 
         log.debug(f"User: {ctx.from_user.id}")
+        log.info(data["categoryList"])
 
-        if "bikeMotoCategoryDidSent" not in data or data["bikeMotoCategoryDidSent"] != True:
+        if "bikeMotoCategoryMessageDidSent" not in data or data["bikeMotoCategoryMessageDidSent"] != True:
             return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
-        storage.logToUserRequest(ctx.from_user, f"Категория мотоцикла: {messageText}")
 
-        if messageText in data["categoryList"]:
+        if messageText in data["categoryList"] and messageText != "Другое":
             log.info(f"Пользователь выбрал {messageText}")
+            storage.logToUserRequest(ctx.from_user, RequestCodingKeys.bikeMotoCategory, messageText)
             return self.complete(nextModuleName = MenuModuleName.bikeParameters.get)
 
-        # TODO: При выборе варианта "другое" надо запрашивать модель и сохранять
+        if messageText == "Другое":
+            log.info(f"Пользователь решил указать свою модель мотоцилка")
+            return self.complete(nextModuleName = MenuModuleName.bikeMotoCategoryChoice.get)
 
-        # if messageText not in self.menuDict:
-        #     return self.canNotHandle(data)
-
-        return log.info("Модуль BikeMotoCategory завершён")
-        # self.complete(nextModuleName = self.menuDict[messageText])
-        
+        return self.canNotHandle(data)
 
     async def handleCallback(self, ctx: CallbackQuery, data: dict, msg: MessageSender) -> Completion:
 

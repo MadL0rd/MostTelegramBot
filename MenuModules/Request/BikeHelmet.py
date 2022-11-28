@@ -7,6 +7,7 @@ from Core.StorageManager.UniqueMessagesKeys import textConstant
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
+from MenuModules.Request.RequestCodingKeys import RequestCodingKeys
 from logger import logger as log
 
 class BikeHelmet(MenuModuleInterface):
@@ -57,7 +58,7 @@ class BikeHelmet(MenuModuleInterface):
             return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
-        storage.logToUserRequest(ctx.from_user, f"Сколько шлемов нужно: {messageText}")
+        storage.logToUserRequest(ctx.from_user, RequestCodingKeys.bikeHelmet, messageText)
 
 
         if messageText in ("Один шлем","Два шлема","Шлемы не нужны"):

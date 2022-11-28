@@ -7,6 +7,7 @@ from Core.StorageManager.UniqueMessagesKeys import textConstant
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
+from MenuModules.Request.RequestCodingKeys import RequestCodingKeys
 from logger import logger as log
 
 class TimeRequestMonthWhen(MenuModuleInterface):
@@ -30,6 +31,7 @@ class TimeRequestMonthWhen(MenuModuleInterface):
         ).add(KeyboardButton("Сегодня"),
         ).add(KeyboardButton("Завтра"),
         ).add(KeyboardButton("В ближайшие дни, можно сегодня или завтра")
+        ).add(KeyboardButton("Указать дату")
         )
         
 
@@ -57,14 +59,15 @@ class TimeRequestMonthWhen(MenuModuleInterface):
             return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
-        storage.logToUserRequest(ctx.from_user, f"Когда начнётся помесячная аренда: {messageText}")
-
         if messageText in ("Сегодня" ,"Завтра" ,"В ближайшие дни, можно сегодня или завтра" ):
             log.info(f"Транспорт нужен {messageText}")
+            storage.logToUserRequest(ctx.from_user, RequestCodingKeys.timeRequestMonthWhen, messageText)
             return self.complete(nextModuleName = MenuModuleName.requestGeoposition.get)
+
+        if messageText in ("Указать дату" ):
+            log.info(f"Юзер решил указать дату")
+            return self.complete(nextModuleName = MenuModuleName.timeRequestMonthWhenSetDate.get)
         
-        
-        log.info(f"Транспорт нужен на {messageText}")
         return self.complete(nextModuleName = MenuModuleName.requestGeoposition.get)
 
         # if messageText not in self.menuDict:

@@ -67,7 +67,7 @@ class MainMenu(MenuModuleInterface):
             return self.complete(nextModuleName = MenuModuleName.mainMenu.get)
 
         if messageText == textConstant.menuButtonAdmin.get:
-            return self.complete(nextModuleName = MenuModuleName.mainMenu.get)
+            return self.complete(nextModuleName = MenuModuleName.admin.get)
 
         if messageText not in self.menuDict:
             return self.canNotHandle(data)
@@ -89,8 +89,6 @@ class MainMenu(MenuModuleInterface):
         return {
             textConstant.menuButtonRentBike.get: MenuModuleName.rentBike.get,
             textConstant.menuButtonRentCar.get: MenuModuleName.rentCar.get,
-            textConstant.menuButtonMyOrders.get: MenuModuleName.myOrders.get,
-            textConstant.menuButtonAdmin.get: MenuModuleName.menuButtonAdmin.get
-
-            
+            # textConstant.menuButtonMyOrders.get: MenuModuleName.myOrders.get,
+            # textConstant.menuButtonAdmin.get: MenuModuleName.menuButtonAdmin.get
         }

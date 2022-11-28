@@ -11,7 +11,7 @@
             "program": "${workspaceFolder}/main.py",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "args": ["5769610401:AAGxxBig9ESUKUP-ctFXb9Z0iGP-9z17PVs"]
+            "args": ["-test"]
         }
     ]
 }

@@ -8,8 +8,10 @@ import pytz
 import xlsxwriter
 
 from aiogram.types import User
+from MenuModules.Request.RequestCodingKeys import RequestCodingKeys
 
 from logger import logger as log
+import Core.Utils.Utils as utils
 
 # =====================
 # Base
@@ -23,22 +25,24 @@ class UserHistoryEvent(enum.Enum):
     becomeAdmin = "Стал администратором"
     startModuleOnboarding = "Начал смотреть онбординг"
     startModuleMainMenu = "Перешел в главное меню" 
-    sessionGenerated = "Сессия создана"
-    sessionReload = "Перезапустил сессию"
-    sessionComplete = "Завершил сессию"
 
     startModuleBikeCommitment = "Приступил к выбору байка"
     startModuleBikeScooterOrMoto = "Приступил к выбору скутера или мотоцикла"
     startModuleBikeMotoCategory = "Приступил к выбору категории мотоцикла"
     startModuleBikeScooterCategory = "Приступил к выбору категории скутера"
+    startModuleBikeScooterCategoryChoice = "Приступил к точному указанию желаемой модели скутера"
+    strartModuleBikeMotoCategoryChoice = "Приступил к точному указанию желаемой модели мотоцикла"
     startModuleBikeParameters = "Приступил к выбору параметров байка"
     startModuleBikeCriteriaChoice = "Приступил к выбору критериев"
 
     startModuleTimeRequest = "Приступил к выбору времени"
     startModuleTimeRequestDayWeekWhen = "Приступил к выбору даты начала аренды (длительность в днях/неделях)"
+    startModuleTimeRequestDayWeekWhenSetDate = "Приступил к указанию точной даты начала аренды (длительность в днях/неделях)"
     startModuleTimeRequestHowManyDays = "Приступил к выбору длительности аренды в днях"
     startModuleTimeRequestHowManyMonths = "Приступил к выбору длительности аренды в месяцах"
+    startModuleTimeRequestHowManyMonthsSet = "Приступил к указанию точного количества месяцев аренды"
     startModuletimeRequestMonthWhen = "Приступил к выбору даты начала аренды (длительность в месяцах)"
+    startModuleTimeRequestMonthWhenSetDate = "Приступил к указанию точной даты начала аредны (длительность в месяцах)"
 
     startModuleBikeHelmet = "Приступил к выбору количества шлемов"
 
@@ -46,23 +50,29 @@ class UserHistoryEvent(enum.Enum):
     startModuleCarSize = "Приступил к выбору размера машины"
     startModuleCarTransmission = "Приступил к выбору коробки передач"
     startModuleCarModels = "Приступил к выбору моделей"
+    startModuleComment = "Приступил к написанию комментария к заказу"
 class PathConfig:
 
     baseDir = Path("./DataStorage")
+    botContentPrivateConfig = baseDir / "PrivateConfig.json"
 
     usersDir = baseDir / "Users"
     # userRequestFile = usersDir
 
     botContentDir = baseDir / "BotContent"
     botContentOnboarding = botContentDir/ "Onboarding.json"
+    botContentBikeCriteria = botContentDir/ "BikeCriteria.json"
     botContentUniqueMessages = botContentDir/ "UniqueTextMessages.json"
-    botContentPrivateConfig = botContentDir / "PrivateConfig.json"
     totalHistoryTableFile = baseDir / "TotalHistory.xlsx"
     statisticHistoryTableFile = baseDir / "StatisticalHistory.xlsx"
     botContentScooterCategoriesSmallList = botContentDir / "ScooterCategoriesSmall.json"
     botContentScooterCategoriesBigList = botContentDir / "ScooterCategoriesBig.json"
     botContentMotoCategoriesList = botContentDir / "MotoCategories.json"
 
+    channelOrdersDir = baseDir / "Orders"
+
+    def orderDir(self, orderId: int):
+        return self.channelOrdersDir / f"{orderId}.json"
 
     def userFolder(self, user: User):
         return self.usersDir / f"{user.id}"
@@ -85,15 +95,36 @@ def getJsonData(filePath: Path):
 
 def writeJsonData(filePath: Path, content):
     # log.debug(content)
-    data = json.dumps(content, ensure_ascii=False, indent=2)
-    with filePath.open('w') as file:
-    # data = json.dumps(content, indent=2)
-    # with filePath.open('w', encoding= 'utf-8') as file:
-        file.write(data)
+    if utils.isWindows:
+        data = json.dumps(content, indent=2)
+        with filePath.open('w', encoding= 'utf-8') as file:
+            file.write(data)
+    else:
+        data = json.dumps(content, ensure_ascii=False, indent=2)
+        with filePath.open('w') as file:
+            file.write(data)
 
 # =====================
 # Public interaction
 # =====================
+
+
+def getOrder(orderId: int) -> dict:
+    orderFile = path.orderDir(orderId)
+
+    # If user file does not exist
+    if not orderFile.exists():
+        log.info(f"Order {orderId} file does not exist")
+        updateOrderData(orderId, {})
+        return {}
+    
+    return getJsonData(orderFile)
+
+def updateOrderData(orderId: int, data: dict):
+    
+    orderFile = path.orderDir(orderId)
+    data["updateTime"] = getTimestamp()
+    writeJsonData(orderFile, data)
 
 def getUserInfo(user: User):
     
@@ -121,9 +152,10 @@ def getUserRequest(user: User)->list:
 
     return getJsonData(userRequestFile)
 
-def logToUserRequest(user: User, text: str):
+def logToUserRequest(user: User, codingKey: RequestCodingKeys, text: str):
     request = getUserRequest(user)
-    request.append(text)
+    log.info(type(request))
+    request[codingKey.get] = text
     updateUserRequest(user, request)
 
 def generateUserStorage(user: User):
@@ -192,25 +224,21 @@ def generateStatisticTable():
     log.info("Statistic table generation start")
 
     statisticEvents = [
-        UserHistoryEvent.start,
-        UserHistoryEvent.questionAnswer,
-        UserHistoryEvent.sessionGenerated,
-        UserHistoryEvent.sessionReload,
-        UserHistoryEvent.sessionComplete
+        UserHistoryEvent.start
     ]
 
     dateConfig = getJsonData(path.botContentPrivateConfig)["startDate"]
     startDate = date(dateConfig["year"], dateConfig["month"], dateConfig["day"])
-
+    
     workbook = xlsxwriter.Workbook(path.statisticHistoryTableFile)
 
-    event = UserHistoryEvent.assessmentDelta
-    generateStatisticPageForEvent(workbook, event.value, startDate, StatisticPageOperation.sum)
+    # event = UserHistoryEvent.assessmentDelta
+    # generateStatisticPageForEvent(workbook, event.value, startDate, StatisticPageOperation.sum)
 
-    event = UserHistoryEvent.assessmentBefore
-    generateStatisticPageForEvent(workbook, event.value, startDate, StatisticPageOperation.average)
-    event = UserHistoryEvent.assessmentAfter
-    generateStatisticPageForEvent(workbook, event.value, startDate, StatisticPageOperation.average)
+    # event = UserHistoryEvent.assessmentBefore
+    # generateStatisticPageForEvent(workbook, event.value, startDate, StatisticPageOperation.average)
+    # event = UserHistoryEvent.assessmentAfter
+    # generateStatisticPageForEvent(workbook, event.value, startDate, StatisticPageOperation.average)
 
     for event in statisticEvents:
         generateStatisticPageForEvent(workbook, event.value, startDate)

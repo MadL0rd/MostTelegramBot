@@ -29,6 +29,8 @@ class UniqueMessagesKeys(enum.Enum):
 
     bikeMotoCategory = "bikeMotoCategory"
     bikeScooterCategory = "bikeScooterCategory"
+    bikeScooterCategoryChoice = "bikeScooterCategoryChoice"
+    bikeMotoCategoryChoice = "bikeMotoCategoryChoice"
 
     bikeParameters = "bikeParameters"
     bikeButtonCriteria = "bikeButtonCriteria"
@@ -44,9 +46,12 @@ class UniqueMessagesKeys(enum.Enum):
     timeButtonRequestWhenToday = "timeButtonRequestWhenToday"
     timeButtonRequestWhenTomorrow = "timeButtonRequestWhenTomorrow"
     timeButtonRequestWhenSetDate = "timeButtonRequestWhenSetDate"
+    timeRequestDayWeekWhenSetDate = "timeRequestDayWeekWhenSetDate"
     timeRequestHowManyDays = "timeRequestHowManyDays"
     timeRequestHowManyMonths = "timeRequestHowManyMonths"
+    timeRequestHowManyMonthsSet = "timeRequestHowManyMonthsSet"
     timeRequestMonthWhen = "timeRequestMonthWhen"
+    timeRequestMonthWhenSetDate = "timeRequestMonthWhenSetDate"
     bikeHelmet = "bikeHelmet"
     requestGeoposition = "requestGeoposition"
 
@@ -62,15 +67,30 @@ class UniqueMessagesKeys(enum.Enum):
     carButtonTransmissionShowAll = "carButtonTransmissionShowAll"
     carModels = "carModels"
     carModelsFurther = "carModelsFurther"
+    
+    messageAfterFillingOutForm = "messageAfterFillingOutForm"
 
+    commentStart = "commentStart"
+    comment = "comment"
 
-
+    orderNumberMask = "orderNumberMask"
+    orderCreationUserText = "orderCreationUserText"
+    orderDetailsMessageTitle = "orderDetailsMessageTitle"
 
     @property
     def get(self) -> str:
         messagesKeys = storage.getJsonData(storage.path.botContentUniqueMessages)
         if self.value in messagesKeys:
             return messagesKeys[self.value]
+        else:
+            return "Unknown"
+
+    def getAndReplaceOrderMaskWith(self, text: str) -> str:
+        messagesKeys = storage.getJsonData(storage.path.botContentUniqueMessages)
+        if self.value in messagesKeys:
+            value: str = messagesKeys[self.value]
+            mask: str = textConstant.orderNumberMask.get
+            return value.replace(mask, text)
         else:
             return "Unknown"
 

@@ -32,7 +32,6 @@ class AdminMenu(MenuModuleInterface):
             resize_keyboard=True
         ).add(KeyboardButton(textConstant.adminMenuButtonReloadData.get)
         ).add(KeyboardButton(textConstant.adminMenuButtonLoadData.get)
-        ).add(KeyboardButton(textConstant.adminMenuButtonEveningReflectionStart.get)
         ).add(KeyboardButton(textConstant.menuButtonReturnToMainMenu.get))
         
 
@@ -55,41 +54,24 @@ class AdminMenu(MenuModuleInterface):
 
         if ctx.text == textConstant.menuButtonReturnToMainMenu.get:
             return self.complete(nextModuleName=MenuModuleName.mainMenu.get)
-        
-        if ctx.text == textConstant.adminMenuButtonEveningReflectionStart.get:
-            return self.complete(nextModuleName=MenuModuleName.eveningReflectionQuestions.get)
-        
+
         if ctx.text == textConstant.adminMenuButtonReloadData.get:
             
             log.info("Bot sheets data update start")
 
             message = await ctx.answer(updateStateReloadDataMessage(0))
 
-            sheets.updateUniqueMessages()
-            await message.edit_text(updateStateReloadDataMessage(1))
+            functions = [
+                sheets.updateUniqueMessages,
+                sheets.updateOnboarding,
+                sheets.updateScooterCategoriesList,
+                sheets.updateMotoCategoriesList,
+                sheets.updateBikeCriteria
+            ]
 
-            sheets.updateOnboarding()
-            await message.edit_text(updateStateReloadDataMessage(2))
-
-            sheets.updateNews()
-            await message.edit_text(updateStateReloadDataMessage(3))
-
-            sheets.updatetaskEmotions()
-            await message.edit_text(updateStateReloadDataMessage(4))
-
-            sheets.updatetaskThoughts()
-            await message.edit_text(updateStateReloadDataMessage(5))
-
-            sheets.updateQuestions()
-            await message.edit_text(updateStateReloadDataMessage(6))
-
-            sheets.updateEveningReflectionQuestions()
-            await message.edit_text(updateStateReloadDataMessage(7))
-
-            sheets.updateFairytale()
-            await message.edit_text(updateStateReloadDataMessage(8))
-
-            sheets.updateOhterHuman()
+            for index, func in enumerate(functions):
+                func()
+                await message.edit_text(updateStateReloadDataMessage(index + 1))
 
             await message.edit_text("❇️ Тексты обновлены")
 
@@ -136,16 +118,12 @@ def updateStateReloadDataMessage(stateIndex: int) -> str:
     tablePageNames = [
         "УникальныеСообщения",
         "Онбординг",
-        "Новости",
-        'УпражненияЭмоции',
-        'УпражненияМысли',
-        'Вопросы',
-        'ВечерняяРефлексияВопросы',
-        'Сказка',
-        'Работа с другим человеком'
+        "Категории скутеры",
+        "Категории мотоциклы",
+        'Критерии байк'
     ]
     for index, value in enumerate(tablePageNames):
-        indicator = "🔴" if index > stateIndex else "🟢"
+        indicator = "🔴" if index >= stateIndex else "🟢"
         text += f"\n{indicator} {value}"
 
     return text

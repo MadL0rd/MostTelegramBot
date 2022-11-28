@@ -7,7 +7,12 @@ from Core.StorageManager.UniqueMessagesKeys import textConstant
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
+from MenuModules.Request.RequestCodingKeys import RequestCodingKeys
 from logger import logger as log
+
+from main import crossDialogMessageSender
+
+# from Core.CrossDialogMessageSender import crossDialogMessageSenderShared
 
 class RequestGeoposition(MenuModuleInterface):
 
@@ -52,16 +57,18 @@ class RequestGeoposition(MenuModuleInterface):
             return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
-        storage.logToUserRequest(ctx.from_user, f"Геопозиция: {messageText}")
+        storage.logToUserRequest(ctx.from_user, RequestCodingKeys.requestGeoposition , messageText)
         
         log.info(messageText)
         
-        # TODO: НАдо заебашить сраку
-
         # if messageText not in self.menuDict:
         #     return self.canNotHandle(data)
-
-        return self.complete(nextModuleName = MenuModuleName.mainMenu.get)        
+        await msg.answer(
+            ctx = ctx,
+            text = textConstant.messageAfterFillingOutForm.get,
+            keyboardMarkup = ReplyKeyboardRemove()
+        )
+        return self.complete(nextModuleName = MenuModuleName.comment.get)        
 
     async def handleCallback(self, ctx: CallbackQuery, data: dict, msg: MessageSender) -> Completion:
 
