@@ -1,4 +1,4 @@
-from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
+from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton
 
 import Core.StorageManager.StorageManager as storage
 from Core.StorageManager.StorageManager import UserHistoryEvent as event
@@ -28,10 +28,10 @@ class TimeRequestHowManyMonths(MenuModuleInterface):
 
         keyboardMarkup = ReplyKeyboardMarkup(
             resize_keyboard=True
-        ).add(KeyboardButton("Один месяц"),
-        ).add(KeyboardButton("Два месяца"),
-        ).add(KeyboardButton("Три месяца"),
-        ).add(KeyboardButton("Больше трёх месяцев")
+        ).add(KeyboardButton(textConstant.timeButtonRequestHowManyMonths1.get),
+        ).add(KeyboardButton(textConstant.timeButtonRequestHowManyMonths2.get),
+        ).add(KeyboardButton(textConstant.timeButtonRequestHowManyMonths3.get),
+        ).add(KeyboardButton(textConstant.timeButtonRequestHowManyMonthsMore.get)
         )
             
         userTg = ctx.from_user
@@ -58,20 +58,18 @@ class TimeRequestHowManyMonths(MenuModuleInterface):
         
         messageText = ctx.text
 
-        if messageText in ("Один месяц","Два месяца","Три месяца"):
+        if messageText in (
+            textConstant.timeButtonRequestHowManyMonths1.get, 
+            textConstant.timeButtonRequestHowManyMonths2.get, 
+            textConstant.timeButtonRequestHowManyMonths3.get
+            ):
             storage.logToUserRequest(ctx.from_user, RequestCodingKeys.timeRequestHowManyMonths, messageText)
-            log.info(f"Транспорт нужен на {messageText}")
             return self.complete(nextModuleName = MenuModuleName.timeRequestMonthWhen.get)
 
-        if messageText in ("Больше трёх месяцев"):
-            log.info(f"Транспорт нужен больше чем на три месяца")
+        if messageText in (textConstant.timeButtonRequestHowManyMonthsMore.get):
             return self.complete(nextModuleName = MenuModuleName.timeRequestHowManyMonthsSet.get)    
-            
-        # if messageText not in self.menuDict:
-        #     return self.canNotHandle(data)
 
-        return self.complete(nextModuleName = MenuModuleName.timeRequestMonthWhen.get)
-        
+        return self.canNotHandle(data)     
 
     async def handleCallback(self, ctx: CallbackQuery, data: dict, msg: MessageSender) -> Completion:
 
@@ -81,9 +79,3 @@ class TimeRequestHowManyMonths(MenuModuleInterface):
     # =====================
     # Custom stuff
     # =====================
-
-    @property
-    def menuDict(self) -> dict:
-        return {
-
-        }

@@ -1,4 +1,4 @@
-from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
+from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton
 
 import Core.StorageManager.StorageManager as storage
 from Core.StorageManager.StorageManager import UserHistoryEvent as event
@@ -28,13 +28,10 @@ class BikeHelmet(MenuModuleInterface):
 
         keyboardMarkup = ReplyKeyboardMarkup(
             resize_keyboard=True
-        ).add(KeyboardButton("Один шлем"),
-        ).add(KeyboardButton("Два шлема"),
-        ).add(KeyboardButton("Шлемы не нужны"))
+        ).add(KeyboardButton(textConstant.bikeHelmet1.get),
+        ).add(KeyboardButton(textConstant.bikeHelmet2.get),
+        ).add(KeyboardButton(textConstant.bikeHelmet0.get))
         
-        userTg = ctx.from_user
-        userInfo = storage.getUserInfo(userTg)
-
         await msg.answer(
             ctx = ctx,
             text = textConstant.bikeHelmet.get,
@@ -57,15 +54,15 @@ class BikeHelmet(MenuModuleInterface):
         messageText = ctx.text
         storage.logToUserRequest(ctx.from_user, RequestCodingKeys.bikeHelmet, messageText)
 
-        if messageText in ("Один шлем","Два шлема","Шлемы не нужны"):
+        if messageText in (
+            textConstant.bikeHelmet1.get, 
+            textConstant.bikeHelmet2.get, 
+            textConstant.bikeHelmet0.get
+        ):
             log.info(messageText)
             return self.complete(nextModuleName = MenuModuleName.timeRequest.get) 
 
-        # if messageText not in self.menuDict:
-        #     return self.canNotHandle(data)
-
-        return self.complete(nextModuleName = MenuModuleName.timeRequest.get)
-        
+        return self.canNotHandle(data)        
 
     async def handleCallback(self, ctx: CallbackQuery, data: dict, msg: MessageSender) -> Completion:
 

@@ -1,4 +1,4 @@
-from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton
+from aiogram.types import Message, CallbackQuery
 
 import Core.StorageManager.StorageManager as storage
 from Core.StorageManager.StorageManager import UserHistoryEvent as event
@@ -10,7 +10,6 @@ from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandl
 from MenuModules.MenuModuleName import MenuModuleName
 from MenuModules.Request.RequestCodingKeys import RequestCodingKeys
 from logger import logger as log
-
 
 class BikeScooterCategory(MenuModuleInterface):
 
@@ -34,9 +33,6 @@ class BikeScooterCategory(MenuModuleInterface):
         textAnything = "Другое"
         textSomething = "---------"
         keyboardMarkup = doubleListToButton(categoryListSmall, categoryListBig, textAnything, textSomething)
-        
-        userTg = ctx.from_user
-        userInfo = storage.getUserInfo(userTg)
 
         await msg.answer(
             ctx = ctx,
@@ -64,20 +60,14 @@ class BikeScooterCategory(MenuModuleInterface):
         messageText = ctx.text
 
         if messageText in data["categoryList"] and messageText != data["textAnything"]:
-            log.info(f"Пользователь выбрал {messageText}")
             storage.logToUserRequest(ctx.from_user,RequestCodingKeys.bikeScooterCategory, messageText)
             return self.complete(nextModuleName = MenuModuleName.bikeParameters.get)
         
         if messageText == data["textAnything"]:
-            log.info(f"Пользователь решил указать другую модель скутера")
             storage.logToUserRequest(ctx.from_user,RequestCodingKeys.bikeScooterCategory, messageText)
             return self.complete(nextModuleName = MenuModuleName.bikeScooterCategoryChoice.get)
         
-        if messageText not in data["categoryList"] and messageText != data["textAnything"]:
-             return self.canNotHandle(data)
-
-        return self.complete(nextModuleName = MenuModuleName.bikeParameters.get)
-        
+        return self.canNotHandle(data)        
 
     async def handleCallback(self, ctx: CallbackQuery, data: dict, msg: MessageSender) -> Completion:
 
@@ -87,10 +77,3 @@ class BikeScooterCategory(MenuModuleInterface):
     # =====================
     # Custom stuff
     # =====================
-
-    @property
-    def menuDict(self) -> dict:
-        return {
-            
-            
-        }

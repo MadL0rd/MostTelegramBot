@@ -27,7 +27,6 @@ class Onboarding(MenuModuleInterface):
 
         pageIndex = 0
         onboardingPages = storage.getJsonData(storage.path.botContentOnboarding)
-        log.info(onboardingPages)
         if len(onboardingPages) > pageIndex:
             page = OnboardingPage(onboardingPages[pageIndex])
             await sendOnboardingPage(ctx, msg, page)
@@ -52,8 +51,6 @@ class Onboarding(MenuModuleInterface):
         pageIndex = data["previousPageIndex"]
         onboardingPages = storage.getJsonData(storage.path.botContentOnboarding)
         page = OnboardingPage(onboardingPages[pageIndex])
-        log.info(onboardingPages)
-        log.info(page)
 
         if ctx.text != page.buttonText:
             return self.canNotHandle(data)

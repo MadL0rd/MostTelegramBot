@@ -1,4 +1,4 @@
-from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
+from aiogram.types import Message, CallbackQuery
 
 import Core.StorageManager.StorageManager as storage
 from Core.StorageManager.StorageManager import UserHistoryEvent as event
@@ -38,7 +38,6 @@ class BikeCriteriaChoice(MenuModuleInterface):
         request = storage.getUserRequest(ctx.from_user)
         if RequestCodingKeys.bikeScooterCategory.get in request:
             bikeName = request[RequestCodingKeys.bikeScooterCategory.get]["value"]
-            log.info(bikeName)
             pull = [criteria for criteria in pull if "Все" in criteria["bikes"] or bikeName in criteria["bikes"]]
 
         pullPrevious = [criteria for criteria in pull if criteria["id"] in data and data[criteria["id"]] == False]
@@ -87,7 +86,6 @@ class BikeCriteriaChoice(MenuModuleInterface):
 
         return self.complete(nextModuleName = MenuModuleName.bikeHelmet.get)
         
-
     async def handleCallback(self, ctx: CallbackQuery, data: dict, msg: MessageSender) -> Completion:
 
         log.debug(f"User: {ctx.from_user.id}")

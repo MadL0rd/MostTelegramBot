@@ -1,4 +1,4 @@
-from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton, User
+from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton
 
 import Core.StorageManager.StorageManager as storage
 from Core.StorageManager.StorageManager import UserHistoryEvent as event
@@ -33,7 +33,6 @@ class BikeCommitment(MenuModuleInterface):
         )
         
         userTg = ctx.from_user
-        userInfo = storage.getUserInfo(userTg)
 
         await msg.answer(
             ctx = ctx,
@@ -61,7 +60,6 @@ class BikeCommitment(MenuModuleInterface):
         storage.logToUserRequest(ctx.from_user,RequestCodingKeys.bikeCommitment, "Байк")
 
         if messageText == textConstant.bikeButtonCommitmentNo.get:
-            log.info("Юзер запросил описание байков")
             await msg.answer(
                 ctx = ctx,
                 text = textConstant.bikeModelsDescription.get,
@@ -73,11 +71,7 @@ class BikeCommitment(MenuModuleInterface):
         if messageText == textConstant.bikeButtonCommitmentYes.get:
             return self.complete(nextModuleName = MenuModuleName.bikeScooterOrMoto.get)
 
-        if messageText not in self.menuDict:
-            return self.canNotHandle(data)
-
-        return log.info("Модуль Commitment завершён"), self.complete(nextModuleName = MenuModuleName.bikeScooterOrMoto.get)
-        
+        return self.canNotHandle(data)        
 
     async def handleCallback(self, ctx: CallbackQuery, data: dict, msg: MessageSender) -> Completion:
 
@@ -87,13 +81,3 @@ class BikeCommitment(MenuModuleInterface):
     # =====================
     # Custom stuff
     # =====================
-
-    @property
-    def menuDict(self) -> dict:
-        return {
-            
-            textConstant.bikeButtonCommitmentYes.get: MenuModuleName.bikeButtonCommitmentYes.get,
-            textConstant.bikeButtonCommitmentNo.get: MenuModuleName.bikeButtonCommitmentNo.get
-
-            
-        }

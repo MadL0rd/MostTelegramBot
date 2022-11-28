@@ -68,15 +68,16 @@ class CrossDialogMessageSender:
 
         # TODO: implement test env to evoid terllo card creation while testing
         trelloCardTitle = f"@{userTg.username}: {bikeName}"
-        response = trello.createCard(
-            title = trelloCardTitle,
-            description = f"https://t.me/{userTg.username}\n{msgText}"
-        )
+        # response = trello.createCard(
+        #     title = trelloCardTitle,
+        #     description = f"https://t.me/{userTg.username}\n{msgText}"
+        # )
         orderCreationEntities[message.text] = OrderCreationEntities(
             user = userTg,
             channelPost = message,
             treloCard = {
-                "id": response["id"],
+                # "id": response["id"],
+                "id": 228,
                 "title": trelloCardTitle
             },
             userRequest = userRequest

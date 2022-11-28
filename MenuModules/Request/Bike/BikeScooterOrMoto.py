@@ -31,9 +31,6 @@ class BikeScooterOrMoto(MenuModuleInterface):
         ).add(KeyboardButton(textConstant.bikeButtonScooterOrMotoScooter.get),
         ).add(KeyboardButton(textConstant.bikeButtonScooterOrMotoMoto.get)
         )
-        
-        userTg = ctx.from_user
-        userInfo = storage.getUserInfo(userTg)
 
         await msg.answer(
             ctx = ctx,
@@ -57,21 +54,13 @@ class BikeScooterOrMoto(MenuModuleInterface):
         messageText = ctx.text
         storage.logToUserRequest(ctx.from_user,RequestCodingKeys.bikeScooterOrMoto , messageText)
 
-
         if messageText == textConstant.bikeButtonScooterOrMotoMoto.get:
-            log.info("Юзер выбрал скутер")
             return self.complete(nextModuleName = MenuModuleName.bikeMotoCategory.get)
         
         if messageText == textConstant.bikeButtonScooterOrMotoScooter.get:
-            log.info("Юзер выбрал мотоцикл")
             return self.complete(nextModuleName = MenuModuleName.bikeScooterCategory.get)
 
-        if messageText not in self.menuDict:
-            return self.canNotHandle(data)
-
-        return log.info("Модуль BikeScooterOrMoto завершён")
-        # self.complete(nextModuleName = self.menuDict[messageText])
-        
+        return self.canNotHandle(data)        
 
     async def handleCallback(self, ctx: CallbackQuery, data: dict, msg: MessageSender) -> Completion:
 
@@ -81,13 +70,3 @@ class BikeScooterOrMoto(MenuModuleInterface):
     # =====================
     # Custom stuff
     # =====================
-
-    @property
-    def menuDict(self) -> dict:
-        return {
-            
-            textConstant.bikeButtonScooterOrMotoMoto.get: MenuModuleName.bikeButtonScooterOrMotoMoto.get,
-            textConstant.bikeButtonScooterOrMotoScooter.get: MenuModuleName.bikeButtonScooterOrMotoScooter.get
-
-            
-        }

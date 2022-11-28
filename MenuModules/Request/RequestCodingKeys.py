@@ -5,6 +5,7 @@ titles = {
     "comment": "Комментарий",
     "requestGeoposition": "Геопозиция",
     "bikeCommitment": "Тип",
+    "carCommitment": "Тип",
     "bikeCriteriaChoice": "Критерий байка",
     "bikeMotoCategory": "Категорий мотоцикла",
     "bikeMotoCategoryChoice": "Категорий мотоцикла",
@@ -29,6 +30,7 @@ class RequestCodingKeys(enum.Enum):
     comment : str = "comment"
     requestGeoposition : str = "requestGeoposition"
     bikeCommitment : str = "bikeCommitment"
+    carCommitment : str = "carCommitment"
     bikeCriteriaChoice : str = "bikeCriteriaChoice"
     bikeMotoCategory : str = "bikeMotoCategory"
     bikeMotoCategoryChoice : str = "bikeMotoCategoryChoice"

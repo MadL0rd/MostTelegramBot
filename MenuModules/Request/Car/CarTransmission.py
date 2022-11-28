@@ -1,4 +1,4 @@
-from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
+from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton
 
 import Core.StorageManager.StorageManager as storage
 from Core.StorageManager.StorageManager import UserHistoryEvent as event
@@ -29,12 +29,8 @@ class CarTransmission(MenuModuleInterface):
         keyboardMarkup = ReplyKeyboardMarkup(
             resize_keyboard=True
         ).row(KeyboardButton(textConstant.carButtonTransmissionAutomatic.get),KeyboardButton(textConstant.carButtonTransmissionManual.get)
-        ).add(KeyboardButton(textConstant.carButtonTransmissionShowAll.get))
-        
-
-        
-        userTg = ctx.from_user
-        userInfo = storage.getUserInfo(userTg)
+        ).add(KeyboardButton(textConstant.carButtonTransmissionShowAll.get)
+        )
 
         await msg.answer(
             ctx = ctx,
@@ -59,16 +55,9 @@ class CarTransmission(MenuModuleInterface):
         storage.logToUserRequest(ctx.from_user, RequestCodingKeys.carTransmission, messageText)
         if messageText in self.menuDict:
             return self.complete(nextModuleName = MenuModuleName.carModels.get)
+
+        return self.canNotHandle(data)
         
-            
-            
-
-        if messageText not in self.menuDict:
-            return self.canNotHandle(data)
-
-        return self.complete(nextModuleName = MenuModuleName.carModels.get)
-        
-
     async def handleCallback(self, ctx: CallbackQuery, data: dict, msg: MessageSender) -> Completion:
 
         log.debug(f"User: {ctx.from_user.id}")
@@ -84,5 +73,4 @@ class CarTransmission(MenuModuleInterface):
             textConstant.carButtonTransmissionAutomatic.get: MenuModuleName.carButtonTransmissionAutomatic.get,
             textConstant.carButtonTransmissionManual.get: MenuModuleName.carButtonTransmissionManual.get,
             textConstant.carButtonTransmissionShowAll.get: MenuModuleName.carButtonTransmissionShowAll.get
-     
         }

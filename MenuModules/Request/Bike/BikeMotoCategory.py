@@ -1,4 +1,4 @@
-from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton
+from aiogram.types import Message, CallbackQuery
 
 import Core.StorageManager.StorageManager as storage
 from Core.StorageManager.StorageManager import UserHistoryEvent as event
@@ -10,8 +10,6 @@ from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandl
 from MenuModules.MenuModuleName import MenuModuleName
 from MenuModules.Request.RequestCodingKeys import RequestCodingKeys
 from logger import logger as log
-
-
 
 class BikeMotoCategory(MenuModuleInterface):
 
@@ -30,9 +28,7 @@ class BikeMotoCategory(MenuModuleInterface):
         storage.logToUserHistory(ctx.from_user, event.startModuleBikeMotoCategory, "")
 
         categoryDict = storage.getJsonData(storage.path.botContentMotoCategoriesList)
-        log.info(categoryDict)
         categoryList = categoryDict
-        log.info(categoryList)
         keyboardMarkup = utils.replyMarkupFromListOfButtons(categoryList)
 
         await msg.answer(
@@ -57,12 +53,10 @@ class BikeMotoCategory(MenuModuleInterface):
         messageText = ctx.text
 
         if messageText in data["categoryList"] and messageText != "Другое":
-            log.info(f"Пользователь выбрал {messageText}")
             storage.logToUserRequest(ctx.from_user, RequestCodingKeys.bikeMotoCategory, messageText)
             return self.complete(nextModuleName = MenuModuleName.bikeParameters.get)
 
         if messageText == "Другое":
-            log.info(f"Пользователь решил указать свою модель мотоцилка")
             storage.logToUserRequest(ctx.from_user, RequestCodingKeys.bikeMotoCategory, messageText)
             return self.complete(nextModuleName = MenuModuleName.bikeMotoCategoryChoice.get)
 
@@ -76,9 +70,3 @@ class BikeMotoCategory(MenuModuleInterface):
     # =====================
     # Custom stuff
     # =====================
-
-    @property
-    def menuDict(self) -> dict:
-        return {
-                       
-        }

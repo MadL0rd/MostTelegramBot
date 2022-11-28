@@ -1,4 +1,4 @@
-from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
+from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton
 
 import Core.StorageManager.StorageManager as storage
 from Core.StorageManager.StorageManager import UserHistoryEvent as event
@@ -29,12 +29,7 @@ class CarModels(MenuModuleInterface):
         keyboardMarkup = ReplyKeyboardMarkup(
             resize_keyboard=True
         ).add(KeyboardButton(textConstant.carModelsFurther.get))
-        
-
-        
-        userTg = ctx.from_user
-        userInfo = storage.getUserInfo(userTg)
-
+    
         await msg.answer(
             ctx = ctx,
             text = textConstant.carModels.get,
@@ -56,15 +51,12 @@ class CarModels(MenuModuleInterface):
         
         messageText = ctx.text
         if messageText == textConstant.carModelsFurther.get:
-            log.info("Юзер закончил выбирать модель")
             storage.logToUserRequest(ctx.from_user, RequestCodingKeys.carModels, "Модель авто: не выбрана")
+            return self.complete(nextModuleName = MenuModuleName.timeRequest.get)
+
         else:
             storage.logToUserRequest(ctx.from_user, RequestCodingKeys.carModels, messageText)
-      
-        log.info(messageText)   
-
-        return self.complete(nextModuleName = MenuModuleName.timeRequest.get)
-        
+            return self.complete(nextModuleName = MenuModuleName.timeRequest.get)
 
     async def handleCallback(self, ctx: CallbackQuery, data: dict, msg: MessageSender) -> Completion:
 
@@ -74,9 +66,3 @@ class CarModels(MenuModuleInterface):
     # =====================
     # Custom stuff
     # =====================
-
-    @property
-    def menuDict(self) -> dict:
-        return {
-            
-        }

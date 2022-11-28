@@ -1,4 +1,4 @@
-from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
+from aiogram.types import Message, CallbackQuery, ReplyKeyboardRemove
 
 import Core.StorageManager.StorageManager as storage
 from Core.StorageManager.StorageManager import UserHistoryEvent as event
@@ -10,7 +10,6 @@ from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandl
 from MenuModules.MenuModuleName import MenuModuleName
 from MenuModules.Request.RequestCodingKeys import RequestCodingKeys
 from logger import logger as log
-
 
 class BikeMotoCategoryChoice(MenuModuleInterface):
 
@@ -51,11 +50,8 @@ class BikeMotoCategoryChoice(MenuModuleInterface):
         
         messageText = ctx.text
         storage.logToUserRequest(ctx.from_user,RequestCodingKeys.bikeMotoCategoryChoice , messageText)
-        log.info(f"Пользователь выбрал свою модель мотоцикла: {messageText}")       
-        
         return self.complete(nextModuleName = MenuModuleName.bikeParameters.get)
         
-
     async def handleCallback(self, ctx: CallbackQuery, data: dict, msg: MessageSender) -> Completion:
 
         log.debug(f"User: {ctx.from_user.id}")

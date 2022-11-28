@@ -63,18 +63,11 @@ class MainMenu(MenuModuleInterface):
         if messageText == textConstant.menuButtonRentCar.get:
             return self.complete(nextModuleName = MenuModuleName.carSize.get)
 
-        if messageText == textConstant.menuButtonMyOrders.get:
-            return self.complete(nextModuleName = MenuModuleName.mainMenu.get)
-
         if messageText == textConstant.menuButtonAdmin.get:
             return self.complete(nextModuleName = MenuModuleName.admin.get)
 
-        if messageText not in self.menuDict:
-            return self.canNotHandle(data)
-
-        return self.complete(nextModuleName = self.menuDict[messageText])
+        return self.canNotHandle(data)
         
-
     async def handleCallback(self, ctx: CallbackQuery, data: dict, msg: MessageSender) -> Completion:
 
         log.debug(f"User: {ctx.from_user.id}")
@@ -88,7 +81,5 @@ class MainMenu(MenuModuleInterface):
     def menuDict(self) -> dict:
         return {
             textConstant.menuButtonRentBike.get: MenuModuleName.rentBike.get,
-            textConstant.menuButtonRentCar.get: MenuModuleName.rentCar.get,
-            # textConstant.menuButtonMyOrders.get: MenuModuleName.myOrders.get,
-            # textConstant.menuButtonAdmin.get: MenuModuleName.menuButtonAdmin.get
+            textConstant.menuButtonRentCar.get: MenuModuleName.rentCar.get
         }

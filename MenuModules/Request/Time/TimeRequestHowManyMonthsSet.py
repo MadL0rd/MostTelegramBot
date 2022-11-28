@@ -1,4 +1,4 @@
-from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
+from aiogram.types import Message, CallbackQuery, ReplyKeyboardRemove
 
 import Core.StorageManager.StorageManager as storage
 from Core.StorageManager.StorageManager import UserHistoryEvent as event
@@ -25,9 +25,6 @@ class TimeRequestHowManyMonthsSet(MenuModuleInterface):
 
         log.debug(f"User: {ctx.from_user.id}")
         storage.logToUserHistory(ctx.from_user, event.startModuleTimeRequestHowManyMonthsSet, "")
-        
-        userTg = ctx.from_user
-        userInfo = storage.getUserInfo(userTg)
 
         await msg.answer(
             ctx = ctx,
@@ -50,14 +47,8 @@ class TimeRequestHowManyMonthsSet(MenuModuleInterface):
         
         messageText = ctx.text
         storage.logToUserRequest(ctx.from_user, RequestCodingKeys.timeRequestHowManyMonthsSet, messageText)
-        log.info(f"Транспорт нужен на {messageText} месяцев")
-
-        # if messageText not in self.menuDict:
-        #     return self.canNotHandle(data)
-
         return self.complete(nextModuleName = MenuModuleName.timeRequestMonthWhen.get)
         
-
     async def handleCallback(self, ctx: CallbackQuery, data: dict, msg: MessageSender) -> Completion:
 
         log.debug(f"User: {ctx.from_user.id}")
@@ -66,9 +57,3 @@ class TimeRequestHowManyMonthsSet(MenuModuleInterface):
     # =====================
     # Custom stuff
     # =====================
-
-    @property
-    def menuDict(self) -> dict:
-        return {
-
-        }

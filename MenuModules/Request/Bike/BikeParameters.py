@@ -30,9 +30,6 @@ class BikeParameters(MenuModuleInterface):
         ).add(KeyboardButton(textConstant.bikeButtonCriteria.get)
         ).add(KeyboardButton(textConstant.bikeButtonShowAll.get))
         
-        userTg = ctx.from_user
-        userInfo = storage.getUserInfo(userTg)
-
         await msg.answer(
             ctx = ctx,
             text = textConstant.bikeParameters.get,
@@ -55,19 +52,12 @@ class BikeParameters(MenuModuleInterface):
         messageText = ctx.text
 
         if messageText == textConstant.bikeButtonCriteria.get:
-            log.info("Юзер выбрал выбор критериев")
             return self.complete(nextModuleName = MenuModuleName.bikeCriteriaChoice.get)
         
         if messageText == textConstant.bikeButtonShowAll.get:
-            log.info("Юзер решил не выбирать критерии")
             return self.complete(nextModuleName = MenuModuleName.bikeHelmet.get)
 
-        if messageText not in self.menuDict:
-            return self.canNotHandle(data)
-
-        return log.info("Модуль BikeParameters завершён")
-        # self.complete(nextModuleName = self.menuDict[messageText])
-        
+        return self.canNotHandle(data)     
 
     async def handleCallback(self, ctx: CallbackQuery, data: dict, msg: MessageSender) -> Completion:
 
@@ -77,13 +67,3 @@ class BikeParameters(MenuModuleInterface):
     # =====================
     # Custom stuff
     # =====================
-
-    @property
-    def menuDict(self) -> dict:
-        return {
-            
-            textConstant.bikeButtonCriteria.get: MenuModuleName.bikeButtonCriteria.get,
-            textConstant.bikeCriteriaChoice.get: MenuModuleName.bikeButtonShowAll.get
-
-            
-        }

@@ -34,7 +34,6 @@ class AdminMenu(MenuModuleInterface):
         ).add(KeyboardButton(textConstant.adminMenuButtonLoadData.get)
         ).add(KeyboardButton(textConstant.menuButtonReturnToMainMenu.get))
         
-
         await msg.answer(
             ctx = ctx,
             text = textConstant.adminMenuText.get,
@@ -46,7 +45,6 @@ class AdminMenu(MenuModuleInterface):
             didHandledUserInteraction=True,
             moduleData={ "startMessageDidSent" : True }
         )
-
 
     async def handleUserMessage(self, ctx: Message, msg: MessageSender, data: dict) -> Completion:
 
