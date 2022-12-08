@@ -1,4 +1,4 @@
-from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
+from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove, ParseMode
 
 import Core.StorageManager.StorageManager as storage
 from Core.StorageManager.StorageManager import UserHistoryEvent as event
@@ -40,7 +40,8 @@ class Comment(MenuModuleInterface):
         await msg.answer(
             ctx = ctx,
             text = f"{textConstant.commentOrderTextStart.get}\n\n{userRequestString}",
-            keyboardMarkup = keyboardMarkup
+            keyboardMarkup = keyboardMarkup,
+            parse_mode = None
         )
 
         return Completion(
