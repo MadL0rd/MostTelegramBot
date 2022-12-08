@@ -60,7 +60,7 @@ async def send_welcome_message_handler(ctx: types.Message):
 
     await dispatcher.handleUserStart(ctx)
 
-@dp.message_handler(content_types=["audio", "game", "document", "photo", "sticker", "video", "voice", "video_note", "contact", "location", "venue", "invoice", "successful_payment", "text"])
+@dp.message_handler(content_types=["audio", "game", "document", "photo", "sticker", "video", "voice", "video_note", "contact", "location", "venue", "invoice", "text"])
 async def default_message_handler(ctx: Message):
     log.info(f"From {ctx.from_user.full_name} receive: {ctx}")
 
