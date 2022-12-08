@@ -32,9 +32,6 @@ class TimeRequestDayWeekWhen(MenuModuleInterface):
         ).add(KeyboardButton(textConstant.timeButtonRequestWhenTomorrow.get),
         ).add(KeyboardButton(textConstant.timeButtonRequestWhenSetDate.get)
         )
-        
-        userTg = ctx.from_user
-        userInfo = storage.getUserInfo(userTg)
 
         await msg.answer(
             ctx = ctx,
@@ -58,25 +55,18 @@ class TimeRequestDayWeekWhen(MenuModuleInterface):
         messageText = ctx.text
 
         if messageText == textConstant.timeButtonRequestWhenToday.get:
-            log.info("Транспорт нужен сегодня")
             storage.logToUserRequest(ctx.from_user, RequestCodingKeys.timeRequestDayWeekWhen, messageText)
             return self.complete(nextModuleName = MenuModuleName.timeRequestHowManyDays.get)
         
         if messageText == textConstant.timeButtonRequestWhenTomorrow.get:
-            log.info("Транспорт нужен завтра")
             storage.logToUserRequest(ctx.from_user, RequestCodingKeys.timeRequestDayWeekWhen, messageText)
             return self.complete(nextModuleName = MenuModuleName.timeRequestHowManyDays.get)
 
         if messageText == textConstant.timeButtonRequestWhenSetDate.get:
-            log.info("Выбрал дату")
             return self.complete(nextModuleName = MenuModuleName.timeRequestDayWeekWhenSetDate.get)
-
-        # if messageText not in self.menuDict:
-        #     return self.canNotHandle(data)
-
-        return self.complete(nextModuleName = MenuModuleName.timeRequestHowManyDays.get)
-        
-
+            
+        return self.canNotHandle(data)
+       
     async def handleCallback(self, ctx: CallbackQuery, data: dict, msg: MessageSender) -> Completion:
 
         log.debug(f"User: {ctx.from_user.id}")
@@ -85,9 +75,3 @@ class TimeRequestDayWeekWhen(MenuModuleInterface):
     # =====================
     # Custom stuff
     # =====================
-
-    @property
-    def menuDict(self) -> dict:
-        return {
-
-        }

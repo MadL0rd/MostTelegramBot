@@ -1,16 +1,14 @@
-from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
+from aiogram.types import Message, CallbackQuery, ReplyKeyboardRemove
 
 import Core.StorageManager.StorageManager as storage
 from Core.StorageManager.StorageManager import UserHistoryEvent as event
 from Core.MessageSender import MessageSender
 from Core.StorageManager.UniqueMessagesKeys import textConstant
-from Core.Utils.Utils import dictToList
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
 from MenuModules.Request.RequestCodingKeys import RequestCodingKeys
 from logger import logger as log
-
 
 class BikeScooterCategoryChoice(MenuModuleInterface):
 
@@ -45,9 +43,7 @@ class BikeScooterCategoryChoice(MenuModuleInterface):
         log.debug(f"User: {ctx.from_user.id}")
 
         messageText = ctx.text
-        storage.logToUserRequest(ctx.from_user,RequestCodingKeys.bikeScooterCategoryChoice, messageText)
-        log.info(f"Пользователь выбрал свою модель скутера: {messageText}")       
-        
+        storage.logToUserRequest(ctx.from_user,RequestCodingKeys.bikeScooterCategoryChoice, messageText)  
         return self.complete(nextModuleName = MenuModuleName.bikeParameters.get)
         
 

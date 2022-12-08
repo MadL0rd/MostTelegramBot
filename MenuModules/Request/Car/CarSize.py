@@ -1,4 +1,4 @@
-from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
+from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton
 
 import Core.StorageManager.StorageManager as storage
 from Core.StorageManager.StorageManager import UserHistoryEvent as event
@@ -32,10 +32,7 @@ class CarSize(MenuModuleInterface):
         ).row(KeyboardButton(textConstant.carButtonSizeMinivan.get),KeyboardButton(textConstant.carButtonSizePremium.get)
         ).add(KeyboardButton(textConstant.carButtonSizeShowAll.get))
         
-
-        
         userTg = ctx.from_user
-        userInfo = storage.getUserInfo(userTg)
 
         await msg.answer(
             ctx = ctx,
@@ -43,6 +40,8 @@ class CarSize(MenuModuleInterface):
             keyboardMarkup = keyboardMarkup
         )
         storage.updateUserRequest(userTg, {})
+        storage.logToUserRequest(ctx.from_user,RequestCodingKeys.carCommitment, "Авто")
+
         return Completion(
             inProgress=True,
             didHandledUserInteraction=True,
@@ -61,16 +60,9 @@ class CarSize(MenuModuleInterface):
         if messageText in self.menuDict:
             log.info(messageText)
             return self.complete(nextModuleName = MenuModuleName.carTransmission.get)
-        
+        else:
+            return self.canNotHandle(data)        
             
-            
-
-        if messageText not in self.menuDict:
-            return self.canNotHandle(data)
-
-        return self.complete(nextModuleName = MenuModuleName.mainMenu.get)
-        
-
     async def handleCallback(self, ctx: CallbackQuery, data: dict, msg: MessageSender) -> Completion:
 
         log.debug(f"User: {ctx.from_user.id}")

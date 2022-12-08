@@ -1,4 +1,4 @@
-from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
+from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton
 
 import Core.StorageManager.StorageManager as storage
 from Core.StorageManager.StorageManager import UserHistoryEvent as event
@@ -28,14 +28,11 @@ class TimeRequestMonthWhen(MenuModuleInterface):
 
         keyboardMarkup = ReplyKeyboardMarkup(
             resize_keyboard=True
-        ).add(KeyboardButton("Сегодня"),
-        ).add(KeyboardButton("Завтра"),
-        ).add(KeyboardButton("В ближайшие дни, можно сегодня или завтра")
-        ).add(KeyboardButton("Указать дату")
+        ).add(KeyboardButton(textConstant.timeButtonRequestMonthWhenToday.get),
+        ).add(KeyboardButton(textConstant.timeButtonRequestMonthWhenTomorrow.get),
+        ).add(KeyboardButton(textConstant.timeButtonRequestMonthWhenComingDays.get),
+        ).add(KeyboardButton(textConstant.timeButtonRequestMonthWhenSetDate.get)
         )
-        
-        userTg = ctx.from_user
-        userInfo = storage.getUserInfo(userTg)
 
         await msg.answer(
             ctx = ctx,
@@ -57,16 +54,18 @@ class TimeRequestMonthWhen(MenuModuleInterface):
             return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
-        if messageText in ("Сегодня" ,"Завтра" ,"В ближайшие дни, можно сегодня или завтра" ):
-            log.info(f"Транспорт нужен {messageText}")
+        if messageText in [
+            textConstant.timeButtonRequestMonthWhenToday.get,
+            textConstant.timeButtonRequestMonthWhenTomorrow.get, 
+            textConstant.timeButtonRequestMonthWhenComingDays.get
+        ]:
             storage.logToUserRequest(ctx.from_user, RequestCodingKeys.timeRequestMonthWhen, messageText)
             return self.complete(nextModuleName = MenuModuleName.requestGeoposition.get)
 
-        if messageText in ("Указать дату" ):
-            log.info(f"Юзер решил указать дату")
+        if messageText == (textConstant.timeButtonRequestMonthWhenSetDate.get):
             return self.complete(nextModuleName = MenuModuleName.timeRequestMonthWhenSetDate.get)
         
-        return self.complete(nextModuleName = MenuModuleName.requestGeoposition.get)
+        return self.canNotHandle(data)        
 
     async def handleCallback(self, ctx: CallbackQuery, data: dict, msg: MessageSender) -> Completion:
 

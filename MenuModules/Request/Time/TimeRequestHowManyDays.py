@@ -1,4 +1,4 @@
-from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
+from aiogram.types import Message, CallbackQuery, ReplyKeyboardRemove
 
 import Core.StorageManager.StorageManager as storage
 from Core.StorageManager.StorageManager import UserHistoryEvent as event
@@ -26,13 +26,6 @@ class TimeRequestHowManyDays(MenuModuleInterface):
         log.debug(f"User: {ctx.from_user.id}")
         storage.logToUserHistory(ctx.from_user, event.startModuleTimeRequestHowManyDays, "")
 
-        keyboardMarkup = ReplyKeyboardMarkup(
-            resize_keyboard=True
-        )
-        
-        userTg = ctx.from_user
-        userInfo = storage.getUserInfo(userTg)
-
         await msg.answer(
             ctx = ctx,
             text = textConstant.timeRequestHowManyDays.get,
@@ -54,11 +47,6 @@ class TimeRequestHowManyDays(MenuModuleInterface):
         
         messageText = ctx.text
         storage.logToUserRequest(ctx.from_user,RequestCodingKeys.timeRequestHowManyDays, messageText)
-        log.info(f"Байк нужен на {messageText} дней")
-
-        # if messageText not in self.menuDict:
-        #     return self.canNotHandle(data)
-
         return self.complete(nextModuleName = MenuModuleName.requestGeoposition.get)
         
 
@@ -70,9 +58,3 @@ class TimeRequestHowManyDays(MenuModuleInterface):
     # =====================
     # Custom stuff
     # =====================
-
-    @property
-    def menuDict(self) -> dict:
-        return {
-
-        }

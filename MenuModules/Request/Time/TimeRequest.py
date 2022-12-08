@@ -32,9 +32,6 @@ class TimeRequest(MenuModuleInterface):
         ).add(KeyboardButton(textConstant.timeButtonRequestWeek.get),
         ).add(KeyboardButton(textConstant.timeButtonRequestMonth.get)
         )
-        
-        userTg = ctx.from_user
-        userInfo = storage.getUserInfo(userTg)
 
         await msg.answer(
             ctx = ctx,
@@ -59,23 +56,15 @@ class TimeRequest(MenuModuleInterface):
         storage.logToUserRequest(ctx.from_user, RequestCodingKeys.timeRequest, messageText)
 
         if messageText == textConstant.timeButtonRequestDay.get:
-            log.info("Юзер решил выбирать по дням")
             return self.complete(nextModuleName = MenuModuleName.timeRequestDayWeekWhen.get)
         
         if messageText == textConstant.timeButtonRequestWeek.get:
-            log.info("Юзер решил выбирать по неделям")
             return self.complete(nextModuleName = MenuModuleName.timeRequestDayWeekWhen.get)
 
         if messageText == textConstant.timeButtonRequestMonth.get:
-            log.info("Юзер решил выбирать по месяцам")
             return self.complete(nextModuleName = MenuModuleName.timeRequestHowManyMonths.get)
 
-        if messageText not in self.menuDict:
-            return self.canNotHandle(data)
-
-        return log.info("Модуль TimeRequest завершён")
-        # self.complete(nextModuleName = self.menuDict[messageText])
-        
+        return self.canNotHandle(data)
 
     async def handleCallback(self, ctx: CallbackQuery, data: dict, msg: MessageSender) -> Completion:
 
@@ -84,18 +73,4 @@ class TimeRequest(MenuModuleInterface):
         
     # =====================
     # Custom stuff
-    # =====================
-
-    @property
-    def menuDict(self) -> dict:
-        return {
-            
-            textConstant.timeButtonRequestDay.get: MenuModuleName.timeButtonRequestDay.get,
-            textConstant.timeButtonRequestWeek.get: MenuModuleName.timeButtonRequestWeek.get,
-            textConstant.timeButtonRequestMonth.get: MenuModuleName.timeButtonRequestMonth.get
-
-        }
-
-
-            
-        
+    # =====================      

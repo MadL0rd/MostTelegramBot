@@ -1,4 +1,4 @@
-from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
+from aiogram.types import Message, CallbackQuery, ReplyKeyboardRemove
 
 import Core.StorageManager.StorageManager as storage
 from Core.StorageManager.StorageManager import UserHistoryEvent as event
@@ -26,13 +26,6 @@ class TimeRequestDayWeekWhenSetDate(MenuModuleInterface):
         log.debug(f"User: {ctx.from_user.id}")
         storage.logToUserHistory(ctx.from_user, event.startModuleTimeRequestDayWeekWhenSetDate, "")
 
-        keyboardMarkup = ReplyKeyboardMarkup(
-            resize_keyboard=True
-        )
-        
-        userTg = ctx.from_user
-        userInfo = storage.getUserInfo(userTg)
-
         await msg.answer(
             ctx = ctx,
             text = textConstant.timeRequestDayWeekWhenSetDate.get,
@@ -54,13 +47,8 @@ class TimeRequestDayWeekWhenSetDate(MenuModuleInterface):
         
         messageText = ctx.text
         storage.logToUserRequest(ctx.from_user,RequestCodingKeys.timeRequestDayWeekWhenSetDate, messageText)
-
-        # if messageText not in self.menuDict:
-        #     return self.canNotHandle(data)
-
         return self.complete(nextModuleName = MenuModuleName.timeRequestHowManyDays.get)
         
-
     async def handleCallback(self, ctx: CallbackQuery, data: dict, msg: MessageSender) -> Completion:
 
         log.debug(f"User: {ctx.from_user.id}")
@@ -69,9 +57,3 @@ class TimeRequestDayWeekWhenSetDate(MenuModuleInterface):
     # =====================
     # Custom stuff
     # =====================
-
-    @property
-    def menuDict(self) -> dict:
-        return {
-
-        }

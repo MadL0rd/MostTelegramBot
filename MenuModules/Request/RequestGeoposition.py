@@ -1,4 +1,4 @@
-from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
+from aiogram.types import Message, CallbackQuery, ReplyKeyboardRemove
 
 import Core.StorageManager.StorageManager as storage
 from Core.StorageManager.StorageManager import UserHistoryEvent as event
@@ -42,7 +42,7 @@ class RequestGeoposition(MenuModuleInterface):
 
         log.debug(f"User: {ctx.from_user.id}")
 
-        locationText = ""
+        locationText = None
 
         if ctx.text != None:
             locationText = ctx.text
@@ -51,7 +51,7 @@ class RequestGeoposition(MenuModuleInterface):
             googleMapsLink = f"https://www.google.com/maps/place/{ctx.location.latitude},{ctx.location.longitude}" 
             locationText = googleMapsLink
         
-        if locationText != "":
+        if locationText != "" and locationText != None:
             storage.logToUserRequest(ctx.from_user, RequestCodingKeys.requestGeoposition, locationText)
             return self.complete(nextModuleName = MenuModuleName.comment.get)
 
