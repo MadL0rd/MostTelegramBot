@@ -56,10 +56,6 @@ class MenuModuleName(enum.Enum):
 
     comment: str = "comment"
 
-
-
-
-
     @property
     def get(self) -> str:
         return self.value

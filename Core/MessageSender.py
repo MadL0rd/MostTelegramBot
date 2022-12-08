@@ -9,21 +9,21 @@ from main import bot
 
 class MessageSender:
 
-    async def answer(self, ctx: Message, text: str, inlineMarkup: InlineKeyboardMarkup):
+    async def answer(self, ctx: Message, text: str, inlineMarkup: InlineKeyboardMarkup, parse_mode=ParseMode.MARKDOWN):
 
         # log.debug(f"MessageSender sends: {text}")
         await ctx.answer(
             text,
-            parse_mode=ParseMode.MARKDOWN,
+            parse_mode=parse_mode,
             reply_markup=inlineMarkup
         )
 
-    async def answer(self, ctx: Message, text: str, keyboardMarkup: ReplyKeyboardMarkup):
+    async def answer(self, ctx: Message, text: str, keyboardMarkup: ReplyKeyboardMarkup, parse_mode = ParseMode.MARKDOWN):
         
         # log.debug(f"MessageSender sends: {text}")
         await ctx.answer(
             text,
-            parse_mode=ParseMode.MARKDOWN,
+            parse_mode=parse_mode,
             reply_markup=keyboardMarkup
         )
 
