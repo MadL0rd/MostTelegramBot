@@ -40,7 +40,8 @@ class Comment(MenuModuleInterface):
         await msg.answer(
             ctx = ctx,
             text = f"{textConstant.commentOrderTextStart.get}\n\n{userRequestString}",
-            keyboardMarkup = keyboardMarkup
+            keyboardMarkup = keyboardMarkup,
+            parse_mode = None
         )
 
         return Completion(
