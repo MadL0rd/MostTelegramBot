@@ -65,19 +65,21 @@ class CrossDialogMessageSender:
             bikeName = userRequest[RequestCodingKeys.bikeMotoCategory.get]["value"]
         if RequestCodingKeys.bikeScooterCategory.get in userRequest:
             bikeName = userRequest[RequestCodingKeys.bikeScooterCategory.get]["value"]
+        if RequestCodingKeys.carCommitment.get in userRequest:
+            bikeName = userRequest[RequestCodingKeys.carCommitment.get]["value"]
 
         # TODO: implement test env to evoid terllo card creation while testing
         trelloCardTitle = f"@{userTg.username}: {bikeName}"
-        # response = trello.createCard(
-        #     title = trelloCardTitle,
-        #     description = f"https://t.me/{userTg.username}\n{msgText}"
-        # )
+        response = trello.createCard(
+            title = trelloCardTitle,
+            description = f"https://t.me/{userTg.username}\n{msgText}"
+        )
         orderCreationEntities[message.text] = OrderCreationEntities(
             user = userTg,
             channelPost = message,
             treloCard = {
-                # "id": response["id"],
-                "id": 228,
+                "id": response["id"],
+                # "id": 228,
                 "title": trelloCardTitle
             },
             userRequest = userRequest
@@ -105,10 +107,15 @@ class CrossDialogMessageSender:
             text = messageText
             userTg = orderCreationEntity.user
             channelMessage: Message = orderCreationEntity.channelPost
-            await channelMessage.edit_text(
-                text=f"<b>id{orderId}</b>\n{text}",
-                parse_mode=ParseMode.HTML
-            )
+            try:
+                newText = f"<b>id{orderId}</b>\n{text}"
+                await channelMessage.edit_text(
+                    text=newText,
+                    parse_mode=ParseMode.HTML
+                )
+            except:
+                log.error("ChannelMessage order text already updated!")
+                continue
 
             orderData = {
                 "id": orderId,
