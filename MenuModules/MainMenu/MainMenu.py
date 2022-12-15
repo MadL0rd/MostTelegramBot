@@ -1,4 +1,4 @@
-from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton
+from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
 
 import Core.StorageManager.StorageManager as storage
 from Core.StorageManager.StorageManager import UserHistoryEvent as event
@@ -66,6 +66,21 @@ class MainMenu(MenuModuleInterface):
         if messageText == textConstant.menuButtonAdmin.get:
             return self.complete(nextModuleName = MenuModuleName.admin.get)
 
+        if messageText == textConstant.menuButtonBuyRights.get:
+            await msg.answer(
+                ctx = ctx,
+                text = textConstant.menuTextBuyRights.get,
+                keyboardMarkup= ReplyKeyboardRemove()
+            )
+            return self.complete(nextModuleName= MenuModuleName.mainMenu.get)
+        if messageText == textConstant.menuButtonFindInstructor.get:
+            await msg.answer(
+                ctx = ctx,
+                text = textConstant.menuTextFindInstructor.get,
+                keyboardMarkup= ReplyKeyboardRemove()
+            )
+            return self.complete(nextModuleName= MenuModuleName.mainMenu.get)
+
         return self.canNotHandle(data)
         
     async def handleCallback(self, ctx: CallbackQuery, data: dict, msg: MessageSender) -> Completion:
@@ -81,5 +96,7 @@ class MainMenu(MenuModuleInterface):
     def menuDict(self) -> dict:
         return {
             textConstant.menuButtonRentBike.get: MenuModuleName.rentBike.get,
-            textConstant.menuButtonRentCar.get: MenuModuleName.rentCar.get
+            textConstant.menuButtonRentCar.get: MenuModuleName.rentCar.get,
+            textConstant.menuButtonBuyRights.get: MenuModuleName.mainMenu.get,            
+            textConstant.menuButtonFindInstructor.get: MenuModuleName.mainMenu.get
         }
