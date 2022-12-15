@@ -13,6 +13,11 @@ class UniqueMessagesKeys(enum.Enum):
     menuButtonRentCar = "menuButtonRentCar"
     menuButtonMyOrders = "menuButtonMyOrders"
     menuButtonAdmin = "menuButtonAdmin"
+    menuButtonBuyRights = "menuButtonBuyRights"
+    menuButtonFindInstructor = "menuButtonFindInstructor"
+
+    menuTextBuyRights = "menuTextBuyRights"
+    menuTextFindInstructor = "menuTextFindInstructor"
 
     adminMenuText = "adminMenuText"
     adminMenuButtonLoadData = "adminMenuButtonLoadData"
