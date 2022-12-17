@@ -1,9 +1,9 @@
 from aiogram.types import Message, CallbackQuery, ReplyKeyboardRemove
 
-import Core.StorageManager.StorageManager as storage
 from Core.StorageManager.StorageManager import UserHistoryEvent as event
-from Core.MessageSender import MessageSender
 from Core.StorageManager.UniqueMessagesKeys import textConstant
+
+from Core.MessageSender import MessageSender
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
@@ -24,11 +24,11 @@ class RequestGeoposition(MenuModuleInterface):
     async def handleModuleStart(self, ctx: Message, msg: MessageSender) -> Completion:
 
         log.debug(f"User: {ctx.from_user.id}")
-        storage.logToUserHistory(ctx.from_user, event.startModuleRequestGeoposition, "")
+        self.storage.logToUserHistory(ctx.from_user, event.startModuleRequestGeoposition, "")
 
         await msg.answer(
             ctx = ctx,
-            text = textConstant.requestGeoposition.get,
+            text = self.storage.getTextConstant(textConstant.requestGeoposition),
             keyboardMarkup = ReplyKeyboardRemove()
         )
 
@@ -52,7 +52,7 @@ class RequestGeoposition(MenuModuleInterface):
             locationText = googleMapsLink
         
         if locationText != "" and locationText != None:
-            storage.logToUserRequest(ctx.from_user, RequestCodingKeys.requestGeoposition, locationText)
+            self.storage.logToUserRequest(ctx.from_user, RequestCodingKeys.requestGeoposition, locationText)
             return self.complete(nextModuleName = MenuModuleName.comment.get)
 
         return self.canNotHandle(data)

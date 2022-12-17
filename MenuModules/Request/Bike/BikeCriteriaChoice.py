@@ -1,9 +1,8 @@
 from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup
 
-import Core.StorageManager.StorageManager as storage
 from Core.StorageManager.StorageManager import UserHistoryEvent as event
-from Core.MessageSender import MessageSender
 from Core.StorageManager.UniqueMessagesKeys import textConstant
+from Core.MessageSender import MessageSender
 import Core.Utils.Utils as utils
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
@@ -25,7 +24,7 @@ class BikeCriteriaChoice(MenuModuleInterface):
     async def handleModuleStart(self, ctx: Message, msg: MessageSender) -> Completion:
 
         log.debug(f"User: {ctx.from_user.id}")
-        storage.logToUserHistory(ctx.from_user, event.startModuleBikeCriteriaChoice, "")   
+        self.storage.logToUserHistory(ctx.from_user, event.startModuleBikeCriteriaChoice, "")   
         
         return await self.handleUserMessage(ctx, msg, {})
 
@@ -34,10 +33,10 @@ class BikeCriteriaChoice(MenuModuleInterface):
         log.debug(f"User: {ctx.from_user.id}")
         
         messageText = ctx.text
-        pull = storage.getJsonData(storage.PathConfig.botContentBikeCriteria)
-        request = storage.getUserRequest(ctx.from_user)
-        if RequestCodingKeys.bikeScooterCategory.get in request:
-            bikeName = request[RequestCodingKeys.bikeScooterCategory.get]["value"]
+        pull = self.storage.getJsonData(self.storage.PathConfig.botContentBikeCriteria)
+        request = self.storage.getUserRequest(ctx.from_user)
+        if RequestCodingKeys.bikeScooterCategory.getKey in request:
+            bikeName = request[RequestCodingKeys.bikeScooterCategory.getKey]["value"]
             pull = [criteria for criteria in pull if "Все" in criteria["bikes"] or bikeName in criteria["bikes"]]
 
         pullPrevious = [criteria for criteria in pull if criteria["id"] in data and data[criteria["id"]] == False]
@@ -48,9 +47,9 @@ class BikeCriteriaChoice(MenuModuleInterface):
             prevCriteriaTitle = prevCriteria["title"]
 
             if prevCriteria["customTextEnable"] == True or messageText in prevCriteria["values"]:
-                storage.logToUserRequestCustom(
+                self.storage.logToUserRequestCustom(
                     user = ctx.from_user,
-                    codingKey = f"{RequestCodingKeys.bikeCriteriaChoice.get}.{prevCriteriaId}",
+                    codingKey = f"{RequestCodingKeys.bikeCriteriaChoice.getKey}.{prevCriteriaId}",
                     title = prevCriteriaTitle,
                     value = messageText
                 )
@@ -86,7 +85,7 @@ class BikeCriteriaChoice(MenuModuleInterface):
 
         await msg.answer(
                 ctx = ctx,
-                text = textConstant.bikeButtonCriteriaFinal.get,
+                text = self.storage.getTextConstant(textConstant.bikeButtonCriteriaFinal),
                 keyboardMarkup = ReplyKeyboardMarkup()
             ) 
         return self.complete(nextModuleName = MenuModuleName.bikeHelmet.get)

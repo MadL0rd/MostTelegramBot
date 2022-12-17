@@ -1,9 +1,8 @@
 from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton
 
-import Core.StorageManager.StorageManager as storage
 from Core.StorageManager.StorageManager import UserHistoryEvent as event
-from Core.MessageSender import MessageSender
 from Core.StorageManager.UniqueMessagesKeys import textConstant
+from Core.MessageSender import MessageSender
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
@@ -24,22 +23,22 @@ class TimeRequestHowManyMonths(MenuModuleInterface):
     async def handleModuleStart(self, ctx: Message, msg: MessageSender) -> Completion:
 
         log.debug(f"User: {ctx.from_user.id}")
-        storage.logToUserHistory(ctx.from_user, event.startModuleTimeRequestHowManyMonths, "")
+        self.storage.logToUserHistory(ctx.from_user, event.startModuleTimeRequestHowManyMonths, "")
 
         keyboardMarkup = ReplyKeyboardMarkup(
             resize_keyboard=True
-        ).add(KeyboardButton(textConstant.timeButtonRequestHowManyMonths1.get),
-        ).add(KeyboardButton(textConstant.timeButtonRequestHowManyMonths2.get),
-        ).add(KeyboardButton(textConstant.timeButtonRequestHowManyMonths3.get),
-        ).add(KeyboardButton(textConstant.timeButtonRequestHowManyMonthsMore.get)
+        ).add(KeyboardButton(self.storage.getTextConstant(textConstant.timeButtonRequestHowManyMonths1)),
+        ).add(KeyboardButton(self.storage.getTextConstant(textConstant.timeButtonRequestHowManyMonths2)),
+        ).add(KeyboardButton(self.storage.getTextConstant(textConstant.timeButtonRequestHowManyMonths3)),
+        ).add(KeyboardButton(self.storage.getTextConstant(textConstant.timeButtonRequestHowManyMonthsMore))
         )
             
         userTg = ctx.from_user
-        userInfo = storage.getUserInfo(userTg)
+        userInfo = self.storage.getUserInfo(userTg)
 
         await msg.answer(
             ctx = ctx,
-            text = textConstant.timeRequestHowManyMonths.get,
+            text = self.storage.getTextConstant(textConstant.timeRequestHowManyMonths),
             keyboardMarkup = keyboardMarkup
         )
 
@@ -59,14 +58,14 @@ class TimeRequestHowManyMonths(MenuModuleInterface):
         messageText = ctx.text
 
         if messageText in [
-            textConstant.timeButtonRequestHowManyMonths1.get, 
-            textConstant.timeButtonRequestHowManyMonths2.get, 
-            textConstant.timeButtonRequestHowManyMonths3.get
+            self.storage.getTextConstant(textConstant.timeButtonRequestHowManyMonths1), 
+            self.storage.getTextConstant(textConstant.timeButtonRequestHowManyMonths2), 
+            self.storage.getTextConstant(textConstant.timeButtonRequestHowManyMonths3)
         ]:
-            storage.logToUserRequest(ctx.from_user, RequestCodingKeys.timeRequestHowManyMonths, messageText)
+            self.storage.logToUserRequest(ctx.from_user, RequestCodingKeys.timeRequestHowManyMonths, messageText)
             return self.complete(nextModuleName = MenuModuleName.timeRequestMonthWhen.get)
 
-        if messageText in (textConstant.timeButtonRequestHowManyMonthsMore.get):
+        if messageText in (self.storage.getTextConstant(textConstant.timeButtonRequestHowManyMonthsMore)):
             return self.complete(nextModuleName = MenuModuleName.timeRequestHowManyMonthsSet.get)    
 
         return self.canNotHandle(data)     

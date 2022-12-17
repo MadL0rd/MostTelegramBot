@@ -3,7 +3,7 @@ import aioschedule
 from aiogram import Bot
 from aiogram.types import User, Message, ParseMode
 
-from Core.StorageManager.UniqueMessagesKeys import textConstant
+from Core.StorageManager.UniqueMessagesKeys import UniqueMessagesKeys
 import Core.StorageManager.StorageManager as storage
 import Core.TrelloService as trello
 from MenuModules.Request.RequestCodingKeys import RequestCodingKeys
@@ -61,10 +61,10 @@ class CrossDialogMessageSender:
 
         userRequest = storage.getUserRequest(userTg)
         bikeName = "None"
-        if RequestCodingKeys.bikeMotoCategory.get in userRequest:
-            bikeName = userRequest[RequestCodingKeys.bikeMotoCategory.get]["value"]
-        if RequestCodingKeys.bikeScooterCategory.get in userRequest:
-            bikeName = userRequest[RequestCodingKeys.bikeScooterCategory.get]["value"]
+        if RequestCodingKeys.bikeMotoCategory.getKey in userRequest:
+            bikeName = userRequest[RequestCodingKeys.bikeMotoCategory.getKey]["value"]
+        if RequestCodingKeys.bikeScooterCategory.getKey in userRequest:
+            bikeName = userRequest[RequestCodingKeys.bikeScooterCategory.getKey]["value"]
 
         # TODO: implement test env to evoid terllo card creation while testing
         trelloCardTitle = f"@{userTg.username}: {bikeName}"

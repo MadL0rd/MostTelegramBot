@@ -1,9 +1,8 @@
 from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton
 
-import Core.StorageManager.StorageManager as storage
 from Core.StorageManager.StorageManager import UserHistoryEvent as event
-from Core.MessageSender import MessageSender
 from Core.StorageManager.UniqueMessagesKeys import textConstant
+from Core.MessageSender import MessageSender
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
@@ -24,19 +23,19 @@ class TimeRequestMonthWhen(MenuModuleInterface):
     async def handleModuleStart(self, ctx: Message, msg: MessageSender) -> Completion:
 
         log.debug(f"User: {ctx.from_user.id}")
-        storage.logToUserHistory(ctx.from_user, event.startModuletimeRequestMonthWhen, "")
+        self.storage.logToUserHistory(ctx.from_user, event.startModuletimeRequestMonthWhen, "")
 
         keyboardMarkup = ReplyKeyboardMarkup(
             resize_keyboard=True
-        ).add(KeyboardButton(textConstant.timeButtonRequestMonthWhenToday.get),
-        ).add(KeyboardButton(textConstant.timeButtonRequestMonthWhenTomorrow.get),
-        ).add(KeyboardButton(textConstant.timeButtonRequestMonthWhenComingDays.get),
-        ).add(KeyboardButton(textConstant.timeButtonRequestMonthWhenSetDate.get)
+        ).add(KeyboardButton(self.storage.getTextConstant(textConstant.timeButtonRequestMonthWhenToday)),
+        ).add(KeyboardButton(self.storage.getTextConstant(textConstant.timeButtonRequestMonthWhenTomorrow)),
+        ).add(KeyboardButton(self.storage.getTextConstant(textConstant.timeButtonRequestMonthWhenComingDays)),
+        ).add(KeyboardButton(self.storage.getTextConstant(textConstant.timeButtonRequestMonthWhenSetDate))
         )
 
         await msg.answer(
             ctx = ctx,
-            text = textConstant.timeRequestMonthWhen.get,
+            text = self.storage.getTextConstant(textConstant.timeRequestMonthWhen),
             keyboardMarkup = keyboardMarkup
         )
 
@@ -55,14 +54,14 @@ class TimeRequestMonthWhen(MenuModuleInterface):
         
         messageText = ctx.text
         if messageText in [
-            textConstant.timeButtonRequestMonthWhenToday.get,
-            textConstant.timeButtonRequestMonthWhenTomorrow.get, 
-            textConstant.timeButtonRequestMonthWhenComingDays.get
+            self.storage.getTextConstant(textConstant.timeButtonRequestMonthWhenToday),
+            self.storage.getTextConstant(textConstant.timeButtonRequestMonthWhenTomorrow), 
+            self.storage.getTextConstant(textConstant.timeButtonRequestMonthWhenComingDays)
         ]:
-            storage.logToUserRequest(ctx.from_user, RequestCodingKeys.timeRequestMonthWhen, messageText)
+            self.storage.logToUserRequest(ctx.from_user, RequestCodingKeys.timeRequestMonthWhen, messageText)
             return self.complete(nextModuleName = MenuModuleName.requestGeoposition.get)
 
-        if messageText == (textConstant.timeButtonRequestMonthWhenSetDate.get):
+        if messageText == (self.storage.getTextConstant(textConstant.timeButtonRequestMonthWhenSetDate)):
             return self.complete(nextModuleName = MenuModuleName.timeRequestMonthWhenSetDate.get)
         
         return self.canNotHandle(data)        

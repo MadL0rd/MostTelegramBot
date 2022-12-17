@@ -8,185 +8,23 @@ import pytz
 import xlsxwriter
 
 from aiogram.types import User
+from Core.StorageManager.UniqueMessagesKeys import UniqueMessagesKeys
 from MenuModules.Request.RequestCodingKeys import RequestCodingKeys
-
-from logger import logger as log
+from Core.StorageManager.LanguageKey import LanguageKey
+from Core.StorageManager.PathConfig import PathConfig
+from Core.StorageManager.UserHistoryEvent import UserHistoryEvent
 import Core.Utils.Utils as utils
 
-# =====================
-# Base
-# =====================
+from logger import logger as log
 
-class UserHistoryEvent(enum.Enum):
+class StatisticPageOperation(enum.Enum):
+    count = "Количество"
+    sum = "Сумма"
+    average = "Среднее значение"
 
-    start = "Старт"
-    sendMessage = "Отправил сообщение"
-    callbackButtonDidTapped = "Нажал на кнопку в сообщении"
-    becomeAdmin = "Стал администратором"
-    startModuleOnboarding = "Начал смотреть онбординг"
-    startModuleMainMenu = "Перешел в главное меню" 
-
-    startModuleBikeCommitment = "Приступил к выбору байка"
-    startModuleBikeScooterOrMoto = "Приступил к выбору скутера или мотоцикла"
-    startModuleBikeMotoCategory = "Приступил к выбору категории мотоцикла"
-    startModuleBikeScooterCategory = "Приступил к выбору категории скутера"
-    startModuleBikeScooterCategoryChoice = "Приступил к точному указанию желаемой модели скутера"
-    strartModuleBikeMotoCategoryChoice = "Приступил к точному указанию желаемой модели мотоцикла"
-    startModuleBikeParameters = "Приступил к выбору параметров байка"
-    startModuleBikeCriteriaChoice = "Приступил к выбору критериев"
-
-    startModuleTimeRequest = "Приступил к выбору времени"
-    startModuleTimeRequestDayWeekWhen = "Приступил к выбору даты начала аренды (длительность в днях/неделях)"
-    startModuleTimeRequestDayWeekWhenSetDate = "Приступил к указанию точной даты начала аренды (длительность в днях/неделях)"
-    startModuleTimeRequestHowManyDays = "Приступил к выбору длительности аренды в днях"
-    startModuleTimeRequestHowManyMonths = "Приступил к выбору длительности аренды в месяцах"
-    startModuleTimeRequestHowManyMonthsSet = "Приступил к указанию точного количества месяцев аренды"
-    startModuletimeRequestMonthWhen = "Приступил к выбору даты начала аренды (длительность в месяцах)"
-    startModuleTimeRequestMonthWhenSetDate = "Приступил к указанию точной даты начала аредны (длительность в месяцах)"
-
-    startModuleBikeHelmet = "Приступил к выбору количества шлемов"
-
-    startModuleRequestGeoposition = "Приступил к указанию геопозиции"
-    startModuleCarSize = "Приступил к выбору размера машины"
-    startModuleCarTransmission = "Приступил к выбору коробки передач"
-    startModuleCarModels = "Приступил к выбору моделей"
-    startModuleComment = "Приступил к написанию комментария к заказу"
-class PathConfig:
-
-    baseDir = Path("./DataStorage")
-    botContentPrivateConfig = baseDir / "PrivateConfig.json"
-
-    usersDir = baseDir / "Users"
-    # userRequestFile = usersDir
-
-    botContentDir = baseDir / "BotContent"
-    botContentOnboarding = botContentDir/ "Onboarding.json"
-    botContentBikeCriteria = botContentDir/ "BikeCriteria.json"
-    botContentUniqueMessages = botContentDir/ "UniqueTextMessages.json"
-    totalHistoryTableFile = baseDir / "TotalHistory.xlsx"
-    statisticHistoryTableFile = baseDir / "StatisticalHistory.xlsx"
-    botContentScooterCategoriesSmallList = botContentDir / "ScooterCategoriesSmall.json"
-    botContentScooterCategoriesBigList = botContentDir / "ScooterCategoriesBig.json"
-    botContentMotoCategoriesList = botContentDir / "MotoCategories.json"
-
-    channelOrdersDir = baseDir / "Orders"
-
-    def orderDir(self, orderId: int):
-        return self.channelOrdersDir / f"{orderId}.json"
-
-    def userFolder(self, user: User):
-        return self.usersDir / f"{user.id}"
-
-    def userInfoFile(self, user: User):
-        return self.userFolder(user) / "info.json"
-    
-    def userRequestFile(self, user: User):
-        return self.userFolder(user) / "request.json"
-
-    def userHistoryFile(self, user: User):
-        return self.userFolder(user) / "history.json"
-
-path = PathConfig()
-
-def getJsonData(filePath: Path):
-    with filePath.open() as json_file:
-        data = json.load(json_file)
-    return data
-
-def writeJsonData(filePath: Path, content):
-    # log.debug(content)
-    if utils.isWindows:
-        data = json.dumps(content, indent=2)
-        with filePath.open('w', encoding= 'utf-8') as file:
-            file.write(data)
-    else:
-        data = json.dumps(content, ensure_ascii=False, indent=2)
-        with filePath.open('w') as file:
-            file.write(data)
-
-# =====================
-# Public interaction
-# =====================
-
-
-def getOrder(orderId: int) -> dict:
-    orderFile = path.orderDir(orderId)
-
-    # If user file does not exist
-    if not orderFile.exists():
-        log.info(f"Order {orderId} file does not exist")
-        updateOrderData(orderId, {})
-        return {}
-    
-    return getJsonData(orderFile)
-
-def updateOrderData(orderId: int, data: dict):
-    
-    orderFile = path.orderDir(orderId)
-    data["updateTime"] = getTimestamp()
-    writeJsonData(orderFile, data)
-
-def getUserInfo(user: User):
-    
-    userInfoFile = path.userInfoFile(user)
-
-    # If user file does not exist
-    if not userInfoFile.exists():
-        log.info(f"User {user.id} dir does not exist")
-        generateUserStorage(user)
-
-    userInfoFile = path.userInfoFile(user)
-
-    return getJsonData(userInfoFile)
-
-def getUserRequest(user: User)->list: 
-    
-    userRequestFile = path.userRequestFile(user)
-
-    # If user file does not exist
-    if not userRequestFile.exists():
-        log.info(f"User {user.id} dir does not exist")
-        generateUserStorage(user)
-
-    userRequestFile = path.userRequestFile(user)
-
-    return getJsonData(userRequestFile)
-
-def logToUserRequest(user: User, codingKey: RequestCodingKeys, value: str):
-    request = getUserRequest(user)
-    log.info(type(request))
-    request[codingKey.get] = {
-        "title": codingKey.getTitle,
-        "value": value
-    }
-    updateUserRequest(user, request)
-
-def logToUserRequestCustom(user: User, codingKey: str, title: str, value: str):
-    request = getUserRequest(user)
-    log.info(type(request))
-    request[codingKey] = {
-        "title": title,
-        "value": value
-    }
-    updateUserRequest(user, request)
-
-def generateUserStorage(user: User):
-
-    userFolder = path.userFolder(user)
-    userFolder.mkdir(parents=True, exist_ok=True)
-
-    # notoficationsConfig = getJsonData(path.botContentNotificationTimes)
-    
-    userData = json.loads(user.as_json())
-    userData = {
-        "info": userData,
-        "isAdmin": False,
-        "state": {},
-        # "notifications": notoficationsConfig["userDefault"]
-    }
-    updateUserRequest(user,[])
-    updateUserData(user, userData)
-    logToUserHistory(user, UserHistoryEvent.start, "Начало сохранения истории пользователя")
+def daterange(start_date, end_date):
+    for n in range(int((end_date - start_date).days + 1)):
+        yield start_date + timedelta(n)
 
 def getTimestamp():
 
@@ -198,172 +36,274 @@ def getTimestamp():
         "week": now.isocalendar()[1]
     }
 
-def updateUserData(user: User, userData):
-    
-    userInfoFile = path.userInfoFile(user)
-    userData["updateTime"] = getTimestamp()
-    writeJsonData(userInfoFile, userData)
+class StorageManager:
 
-def updateUserRequest(user: User, userRequest):
-    
-    userRequestFile = path.userRequestFile(user)
-    writeJsonData(userRequestFile, userRequest)
+    languageKey: str
+    path: PathConfig
 
-def logToUserHistory(user: User, event: UserHistoryEvent, content: string):
+    def __init__(self, language: LanguageKey):
+        self.languageKey = language.value
+        self.path = PathConfig(language)
 
-    log.info(f"{user.id} {event.value}: {content}")
+    def getJsonData(self, filePath: Path):
+        with filePath.open() as json_file:
+            data = json.load(json_file)
+        return data
 
-    historyFile = path.userHistoryFile(user)
+    def writeJsonData(self, filePath: Path, content):
+        # log.debug(content)
+        if utils.isWindows:
+            data = json.dumps(content, indent=2)
+            with filePath.open('w', encoding= 'utf-8') as file:
+                file.write(data)
+        else:
+            data = json.dumps(content, ensure_ascii=False, indent=2)
+            with filePath.open('w') as file:
+                file.write(data)
 
-    history = []
-    if historyFile.exists():
-        history = getJsonData(historyFile)
-    
-    history.append({
-        "timestamp": getTimestamp(),
-        "event": event.value,
-        "content": content
-    })
+    def getTextConstant(self, messageKey: UniqueMessagesKeys) -> str:
+        messagesKeysValues = self.getJsonData(self.path.botContentUniqueMessages)
+        if messageKey.value in messagesKeysValues:
+            return messagesKeysValues[messageKey.value]
+        else:
+            return "Unknown"
 
-    writeJsonData(historyFile, history)
+    def getOrder(self, orderId: int) -> dict:
+        orderFile = self.path.orderDir(orderId)
 
-# =====================
-# Data tables creation
-# =====================
+        # If user file does not exist
+        if not orderFile.exists():
+            log.info(f"Order {orderId} file does not exist")
+            self.updateOrderData(orderId, {})
+            return {}
+        
+        return self.getJsonData(orderFile)
 
-def generateStatisticTable():
+    def updateOrderData(self, orderId: int, data: dict):
+        
+        orderFile = self.path.orderDir(orderId)
+        data["updateTime"] = getTimestamp()
+        self.writeJsonData(orderFile, data)
 
-    log.info("Statistic table generation start")
+    def getUserInfo(self, user: User):
+        
+        userInfoFile = self.path.userInfoFile(user)
 
-    statisticEvents = [
-        UserHistoryEvent.start
-    ]
+        # If user file does not exist
+        if not userInfoFile.exists():
+            log.info(f"User {user.id} dir does not exist")
+            self.generateUserStorage(user)
 
-    dateConfig = getJsonData(path.botContentPrivateConfig)["startDate"]
-    startDate = date(dateConfig["year"], dateConfig["month"], dateConfig["day"])
-    
-    workbook = xlsxwriter.Workbook(path.statisticHistoryTableFile)
+        userInfoFile = self.path.userInfoFile(user)
 
-    # event = UserHistoryEvent.assessmentDelta
-    # generateStatisticPageForEvent(workbook, event.value, startDate, StatisticPageOperation.sum)
+        return self.getJsonData(userInfoFile)
 
-    # event = UserHistoryEvent.assessmentBefore
-    # generateStatisticPageForEvent(workbook, event.value, startDate, StatisticPageOperation.average)
-    # event = UserHistoryEvent.assessmentAfter
-    # generateStatisticPageForEvent(workbook, event.value, startDate, StatisticPageOperation.average)
+    def getUserRequest(self, user: User)->list: 
+        
+        userRequestFile = self.path.userRequestFile(user)
 
-    for event in statisticEvents:
-        generateStatisticPageForEvent(workbook, event.value, startDate)
+        # If user file does not exist
+        if not userRequestFile.exists():
+            log.info(f"User {user.id} dir does not exist")
+            self.generateUserStorage(user)
 
-    workbook.close()
+        userRequestFile = self.path.userRequestFile(user)
 
-    log.info("Statistic table generation completed")
+        return self.getJsonData(userRequestFile)
 
-def daterange(start_date, end_date):
-    for n in range(int((end_date - start_date).days + 1)):
-        yield start_date + timedelta(n)
+    def logToUserRequest(self, user: User, codingKey: RequestCodingKeys, value: str):
+        request = self.getUserRequest(user)
+        log.info(type(request))
+        request[codingKey.getKey] = {
+            "title": codingKey.getTitle,
+            "value": value
+        }
+        self.updateUserRequest(user, request)
 
-class StatisticPageOperation(enum.Enum):
-    count = "Количество"
-    sum = "Сумма"
-    average = "Среднее значение"
+    def logToUserRequestCustom(self, user: User, codingKey: str, title: str, value: str):
+        request = self.getUserRequest(user)
+        log.info(type(request))
+        request[codingKey] = {
+            "title": title,
+            "value": value
+        }
+        self.updateUserRequest(user, request)
 
-def generateStatisticPageForEvent(workbook: xlsxwriter.Workbook, eventName: string, startDate: date, operation: StatisticPageOperation = StatisticPageOperation.count):
+    def generateUserStorage(self, user: User):
 
-    worksheet = workbook.add_worksheet(eventName)
-    row = 1
-    col = 0
+        userFolder = self.path.userFolder(user)
+        userFolder.mkdir(parents=True, exist_ok=True)
 
-    startRow = 4
+        # notoficationsConfig = self.getJsonData(self.path.botContentNotificationTimes)
+        
+        userData = json.loads(user.as_json())
+        userData = {
+            "info": userData,
+            "isAdmin": False,
+            "state": {},
+            # "notifications": notoficationsConfig["userDefault"]
+        }
+        self.updateUserRequest(user,[])
+        self.updateUserData(user, userData)
+        self.logToUserHistory(user, UserHistoryEvent.start, "Начало сохранения истории пользователя")
 
-    worksheet.write(row, col, "Метрика:")
-    worksheet.write(row, col + 1, eventName)
-    row += 1
-    worksheet.write(row, col, "Тип агрегирования:")
-    worksheet.write(row, col + 1, operation.value)
+    def updateUserData(self, user: User, userData):
+        
+        userInfoFile = self.path.userInfoFile(user)
+        userData["updateTime"] = getTimestamp()
+        self.writeJsonData(userInfoFile, userData)
 
-    row = startRow
-    worksheet.write(row, col, "Дата / Пользователь")
-    row += 1
+    def updateUserRequest(self, user: User, userRequest):
+        
+        userRequestFile = self.path.userRequestFile(user)
+        self.writeJsonData(userRequestFile, userRequest)
 
-    dates = [strDate.strftime("%d.%m.%Y") for strDate in daterange(startDate, date.today())]
-    for single_date in dates:
-        worksheet.write(row, col, single_date)
+    def logToUserHistory(self, user: User, event: UserHistoryEvent, content: string):
+
+        log.info(f"{user.id} {event.value}: {content}")
+
+        historyFile = self.path.userHistoryFile(user)
+
+        history = []
+        if historyFile.exists():
+            history = self.getJsonData(historyFile)
+        
+        history.append({
+            "timestamp": getTimestamp(),
+            "event": event.value,
+            "content": content
+        })
+
+        self.writeJsonData(historyFile, history)
+
+    # =====================
+    # Data tables creation
+    # =====================
+
+    def generateStatisticTable(self):
+
+        log.info("Statistic table generation start")
+
+        statisticEvents = [
+            UserHistoryEvent.start
+        ]
+
+        dateConfig = self.getJsonData(self.path.botContentPrivateConfig)["startDate"]
+        startDate = date(dateConfig["year"], dateConfig["month"], dateConfig["day"])
+        
+        workbook = xlsxwriter.Workbook(self.path.statisticHistoryTableFile)
+
+        # event = UserHistoryEvent.assessmentDelta
+        # generateStatisticPageForEvent(workbook, event.value, startDate, StatisticPageOperation.sum)
+
+        # event = UserHistoryEvent.assessmentBefore
+        # generateStatisticPageForEvent(workbook, event.value, startDate, StatisticPageOperation.average)
+        # event = UserHistoryEvent.assessmentAfter
+        # generateStatisticPageForEvent(workbook, event.value, startDate, StatisticPageOperation.average)
+
+        for event in statisticEvents:
+            self.generateStatisticPageForEvent(workbook, event.value, startDate)
+
+        workbook.close()
+
+        log.info("Statistic table generation completed")
+
+    def generateStatisticPageForEvent(self, workbook: xlsxwriter.Workbook, eventName: string, startDate: date, operation: StatisticPageOperation = StatisticPageOperation.count):
+
+        worksheet = workbook.add_worksheet(eventName)
+        row = 1
+        col = 0
+
+        startRow = 4
+
+        worksheet.write(row, col, "Метрика:")
+        worksheet.write(row, col + 1, eventName)
         row += 1
-    col += 1
+        worksheet.write(row, col, "Тип агрегирования:")
+        worksheet.write(row, col + 1, operation.value)
 
-    usersCount = 0
-    for userFolder in path.usersDir.iterdir():
-        usersCount += 1
         row = startRow
-        history = getJsonData(userFolder / "history.json")
-        
-        columnTitle = f"user{userFolder.name}"
-        worksheet.write(row, col, columnTitle)
-        
+        worksheet.write(row, col, "Дата / Пользователь")
         row += 1
+
+        dates = [strDate.strftime("%d.%m.%Y") for strDate in daterange(startDate, date.today())]
         for single_date in dates:
-            dayEvents = [event for event in history if event["timestamp"]["date"] == single_date and event["event"] == eventName]
-
-            if operation == StatisticPageOperation.count:
-                dateEventsCount = len(dayEvents)
-                worksheet.write(row, col, dateEventsCount)
-
-            if operation == StatisticPageOperation.sum:
-                try:
-                    values = [int(event["content"]) for event in dayEvents]
-                except:
-                    values = []
-                worksheet.write(row, col, sum(values))
-
-            if operation == StatisticPageOperation.average:
-                try:
-                    values = [int(event["content"]) for event in dayEvents]
-                    result = sum(values) / len(values)
-                except:
-                    result = 0
-                worksheet.write(row, col, result)
-
+            worksheet.write(row, col, single_date)
             row += 1
-
         col += 1
 
-    worksheet.set_column(0, usersCount, 15)
-
-def generateTotalTable():
-    log.info("Total table generation start")
-
-    workbook = xlsxwriter.Workbook(path.totalHistoryTableFile)
-    bold = workbook.add_format({'bold': True})
-
-    for userFolder in path.usersDir.iterdir():
-        sheetTitle = f"user{userFolder.name}"
-        
-        worksheet = workbook.add_worksheet(sheetTitle)
-        row = 0 
-
-        titles = ["Дата", "Время", "Неделя", "Событие", "Описание"]
-        for col, title in enumerate(titles):
-            worksheet.write(row, col, title, bold)
-            worksheet.set_column(col, col, len(title))
-        worksheet.set_column(4, 4, 50)
-
-        history = getJsonData(userFolder / "history.json")
-
-        row = 1
-        for event in history:
-            col = 0
-            worksheet.write(row, col, event["timestamp"]["date"])
-            col += 1
-            worksheet.write(row, col, event["timestamp"]["time"])
-            col += 1
-            worksheet.write(row, col, event["timestamp"]["week"])
-            col += 1
-            worksheet.write(row, col, event["event"])
-            col += 1
-            worksheet.write(row, col, event["content"])
+        usersCount = 0
+        for userFolder in self.path.usersDir.iterdir():
+            usersCount += 1
+            row = startRow
+            history = self.getJsonData(userFolder / "history.json")
+            
+            columnTitle = f"user{userFolder.name}"
+            worksheet.write(row, col, columnTitle)
+            
             row += 1
+            for single_date in dates:
+                dayEvents = [event for event in history if event["timestamp"]["date"] == single_date and event["event"] == eventName]
 
-    workbook.close()
+                if operation == StatisticPageOperation.count:
+                    dateEventsCount = len(dayEvents)
+                    worksheet.write(row, col, dateEventsCount)
 
-    log.info("Total table generation completed")
+                if operation == StatisticPageOperation.sum:
+                    try:
+                        values = [int(event["content"]) for event in dayEvents]
+                    except:
+                        values = []
+                    worksheet.write(row, col, sum(values))
+
+                if operation == StatisticPageOperation.average:
+                    try:
+                        values = [int(event["content"]) for event in dayEvents]
+                        result = sum(values) / len(values)
+                    except:
+                        result = 0
+                    worksheet.write(row, col, result)
+
+                row += 1
+
+            col += 1
+
+        worksheet.set_column(0, usersCount, 15)
+
+    def generateTotalTable(self):
+        log.info("Total table generation start")
+
+        workbook = xlsxwriter.Workbook(self.path.totalHistoryTableFile)
+        bold = workbook.add_format({'bold': True})
+
+        for userFolder in self.path.usersDir.iterdir():
+            sheetTitle = f"user{userFolder.name}"
+            
+            worksheet = workbook.add_worksheet(sheetTitle)
+            row = 0 
+
+            titles = ["Дата", "Время", "Неделя", "Событие", "Описание"]
+            for col, title in enumerate(titles):
+                worksheet.write(row, col, title, bold)
+                worksheet.set_column(col, col, len(title))
+            worksheet.set_column(4, 4, 50)
+
+            history = self.getJsonData(userFolder / "history.json")
+
+            row = 1
+            for event in history:
+                col = 0
+                worksheet.write(row, col, event["timestamp"]["date"])
+                col += 1
+                worksheet.write(row, col, event["timestamp"]["time"])
+                col += 1
+                worksheet.write(row, col, event["timestamp"]["week"])
+                col += 1
+                worksheet.write(row, col, event["event"])
+                col += 1
+                worksheet.write(row, col, event["content"])
+                row += 1
+
+        workbook.close()
+
+        log.info("Total table generation completed")

@@ -1,9 +1,8 @@
 from aiogram.types import Message, CallbackQuery, ReplyKeyboardRemove
 
-import Core.StorageManager.StorageManager as storage
 from Core.StorageManager.StorageManager import UserHistoryEvent as event
-from Core.MessageSender import MessageSender
 from Core.StorageManager.UniqueMessagesKeys import textConstant
+from Core.MessageSender import MessageSender
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
@@ -24,11 +23,11 @@ class TimeRequestDayWeekWhenSetDate(MenuModuleInterface):
     async def handleModuleStart(self, ctx: Message, msg: MessageSender) -> Completion:
 
         log.debug(f"User: {ctx.from_user.id}")
-        storage.logToUserHistory(ctx.from_user, event.startModuleTimeRequestDayWeekWhenSetDate, "")
+        self.storage.logToUserHistory(ctx.from_user, event.startModuleTimeRequestDayWeekWhenSetDate, "")
 
         await msg.answer(
             ctx = ctx,
-            text = textConstant.timeRequestDayWeekWhenSetDate.get,
+            text = self.storage.getTextConstant(textConstant.timeRequestDayWeekWhenSetDate),
             keyboardMarkup = ReplyKeyboardRemove()
         )
 
@@ -46,7 +45,7 @@ class TimeRequestDayWeekWhenSetDate(MenuModuleInterface):
             return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
-        storage.logToUserRequest(ctx.from_user,RequestCodingKeys.timeRequestDayWeekWhenSetDate, messageText)
+        self.storage.logToUserRequest(ctx.from_user,RequestCodingKeys.timeRequestDayWeekWhenSetDate, messageText)
         return self.complete(nextModuleName = MenuModuleName.timeRequestHowManyDays.get)
         
     async def handleCallback(self, ctx: CallbackQuery, data: dict, msg: MessageSender) -> Completion:

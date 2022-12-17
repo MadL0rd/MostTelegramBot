@@ -27,14 +27,6 @@ class MessageSender:
             reply_markup=keyboardMarkup
         )
 
-    async def answerUnknown(self, ctx: Message):
-
-        nknownText = textConstant.unknownState.get
-        await ctx.answer(
-            nknownText,
-            parse_mode=ParseMode.MARKDOWN
-        )
-
     async def sendPhoto(self, ctx: Message, url: str):
         await bot.send_photo(chat_id=ctx.chat.id, photo=url)
 
@@ -67,7 +59,7 @@ class CallbackMessageSender(MessageSender):
 
     async def answerUnknown(self, ctx: Message):
 
-        nknownText = textConstant.unknownState.get
+        nknownText = self.storage.getTextConstant(textConstant.unknownState)
         await bot.send_message(
                 chat_id=ctx.message.chat.id,
                 text=nknownText,

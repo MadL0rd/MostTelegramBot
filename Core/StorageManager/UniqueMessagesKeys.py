@@ -1,6 +1,5 @@
 
 import enum
-import Core.StorageManager.StorageManager as storage 
 
 class UniqueMessagesKeys(enum.Enum):
 
@@ -98,21 +97,13 @@ class UniqueMessagesKeys(enum.Enum):
     orderCreationUserText = "orderCreationUserText"
     orderDetailsMessageTitle = "orderDetailsMessageTitle"
 
-    @property
-    def get(self) -> str:
-        messagesKeys = storage.getJsonData(storage.path.botContentUniqueMessages)
-        if self.value in messagesKeys:
-            return messagesKeys[self.value]
-        else:
-            return "Unknown"
-
-    def getAndReplaceOrderMaskWith(self, text: str) -> str:
-        messagesKeys = storage.getJsonData(storage.path.botContentUniqueMessages)
-        if self.value in messagesKeys:
-            value: str = messagesKeys[self.value]
-            mask: str = textConstant.orderNumberMask.get
-            return value.replace(mask, text)
-        else:
-            return "Unknown"
+    # def getAndReplaceOrderMaskWith(self, storage: StorageManager, text: str) -> str:
+    #     messagesKeys = storage.getJsonData(storage.path.botContentUniqueMessages)
+    #     if self.value in messagesKeys:
+    #         value: str = messagesKeys[self.value]
+    #         mask: str = UniqueMessagesKeys.orderNumberMask.get
+    #         return value.replace(mask, text)
+    #     else:
+    #         return "Unknown"
 
 textConstant = UniqueMessagesKeys

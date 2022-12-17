@@ -50,9 +50,9 @@ class RequestCodingKeys(enum.Enum):
     timeRequestMonthWhenSetDate : str = "timeRequestMonthWhenSetDate"
 
     @property
-    def get(self) -> str:
+    def getKey(self) -> str:
         return self.value
 
     @property
     def getTitle(self) -> str:
-        return titles[self.get]
+        return titles[self.getKey]

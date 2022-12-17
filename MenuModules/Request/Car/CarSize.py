@@ -1,9 +1,8 @@
 from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton
 
-import Core.StorageManager.StorageManager as storage
 from Core.StorageManager.StorageManager import UserHistoryEvent as event
-from Core.MessageSender import MessageSender
 from Core.StorageManager.UniqueMessagesKeys import textConstant
+from Core.MessageSender import MessageSender
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
@@ -24,23 +23,23 @@ class CarSize(MenuModuleInterface):
     async def handleModuleStart(self, ctx: Message, msg: MessageSender) -> Completion:
 
         log.debug(f"User: {ctx.from_user.id}")
-        storage.logToUserHistory(ctx.from_user, event.startModuleCarSize, "")
+        self.storage.logToUserHistory(ctx.from_user, event.startModuleCarSize, "")
 
         keyboardMarkup = ReplyKeyboardMarkup(
             resize_keyboard=True
-        ).row(KeyboardButton(textConstant.carButtonSizeSmall.get),KeyboardButton(textConstant.carButtonSizeBig.get)
-        ).row(KeyboardButton(textConstant.carButtonSizeMinivan.get),KeyboardButton(textConstant.carButtonSizePremium.get)
-        ).add(KeyboardButton(textConstant.carButtonSizeShowAll.get))
+        ).row(KeyboardButton(self.storage.getTextConstant(textConstant.carButtonSizeSmall.get),KeyboardButton(textConstant.carButtonSizeBig))
+        ).row(KeyboardButton(self.storage.getTextConstant(textConstant.carButtonSizeMinivan.get),KeyboardButton(textConstant.carButtonSizePremium))
+        ).add(KeyboardButton(self.storage.getTextConstant(textConstant.carButtonSizeShowAll)))
         
         userTg = ctx.from_user
 
         await msg.answer(
             ctx = ctx,
-            text = textConstant.carSize.get,
+            text = self.storage.getTextConstant(textConstant.carSize),
             keyboardMarkup = keyboardMarkup
         )
-        storage.updateUserRequest(userTg, {})
-        storage.logToUserRequest(ctx.from_user,RequestCodingKeys.carCommitment, "Авто")
+        self.storage.updateUserRequest(userTg, {})
+        self.storage.logToUserRequest(ctx.from_user,RequestCodingKeys.carCommitment, "Авто")
 
         return Completion(
             inProgress=True,
@@ -56,7 +55,7 @@ class CarSize(MenuModuleInterface):
             return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
-        storage.logToUserRequest(ctx.from_user, RequestCodingKeys.carSize , messageText)
+        self.storage.logToUserRequest(ctx.from_user, RequestCodingKeys.carSize , messageText)
         if messageText in self.menuDict:
             log.info(messageText)
             return self.complete(nextModuleName = MenuModuleName.carTransmission.get)
@@ -75,9 +74,9 @@ class CarSize(MenuModuleInterface):
     @property
     def menuDict(self) -> dict:
         return {
-            textConstant.carButtonSizeSmall.get: MenuModuleName.carButtonSizeSmall.get,
-            textConstant.carButtonSizeBig.get: MenuModuleName.carButtonSizeBig.get,
-            textConstant.carButtonSizeMinivan.get: MenuModuleName.carButtonSizeMinivan.get,
-            textConstant.carButtonSizePremium.get: MenuModuleName.carButtonSizePremium.get,
-            textConstant.carButtonSizeShowAll.get: MenuModuleName.carButtonSizeShowAll.get,
+            self.storage.getTextConstant(textConstant.carButtonSizeSmall): MenuModuleName.carButtonSizeSmall.get,
+            self.storage.getTextConstant(textConstant.carButtonSizeBig): MenuModuleName.carButtonSizeBig.get,
+            self.storage.getTextConstant(textConstant.carButtonSizeMinivan): MenuModuleName.carButtonSizeMinivan.get,
+            self.storage.getTextConstant(textConstant.carButtonSizePremium): MenuModuleName.carButtonSizePremium.get,
+            self.storage.getTextConstant(textConstant.carButtonSizeShowAll): MenuModuleName.carButtonSizeShowAll.get,
         }

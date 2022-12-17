@@ -1,9 +1,9 @@
 from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
 
-import Core.StorageManager.StorageManager as storage
 from Core.StorageManager.StorageManager import UserHistoryEvent as event
-from Core.MessageSender import MessageSender
 from Core.StorageManager.UniqueMessagesKeys import textConstant
+
+from Core.MessageSender import MessageSender
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
@@ -23,7 +23,7 @@ class MainMenu(MenuModuleInterface):
     async def handleModuleStart(self, ctx: Message, msg: MessageSender) -> Completion:
 
         log.debug(f"User: {ctx.from_user.id}")
-        storage.logToUserHistory(ctx.from_user, event.startModuleMainMenu, "")
+        self.storage.logToUserHistory(ctx.from_user, event.startModuleMainMenu, "")
 
         keyboardMarkup = ReplyKeyboardMarkup(
             resize_keyboard=True
@@ -32,14 +32,14 @@ class MainMenu(MenuModuleInterface):
             keyboardMarkup.add(KeyboardButton(buttonText))
 
         userTg = ctx.from_user
-        userInfo = storage.getUserInfo(userTg)
+        userInfo = self.storage.getUserInfo(userTg)
 
         if "isAdmin" in userInfo and userInfo["isAdmin"] == True:
-            keyboardMarkup.add(KeyboardButton(textConstant.menuButtonAdmin.get))
+            keyboardMarkup.add(KeyboardButton(self.storage.getTextConstant(textConstant.menuButtonAdmin)))
 
         await msg.answer(
             ctx = ctx,
-            text = textConstant.mainMenuText.get,
+            text = self.storage.getTextConstant(textConstant.mainMenuText),
             keyboardMarkup = keyboardMarkup
         )
 
@@ -57,26 +57,26 @@ class MainMenu(MenuModuleInterface):
             return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
-        if messageText == textConstant.menuButtonRentBike.get:
+        if messageText == self.storage.getTextConstant(textConstant.menuButtonRentBike):
             return self.complete(nextModuleName = MenuModuleName.bikeCommitment.get)
 
-        if messageText == textConstant.menuButtonRentCar.get:
+        if messageText == self.storage.getTextConstant(textConstant.menuButtonRentCar):
             return self.complete(nextModuleName = MenuModuleName.carSize.get)
 
-        if messageText == textConstant.menuButtonAdmin.get:
+        if messageText == self.storage.getTextConstant(textConstant.menuButtonAdmin):
             return self.complete(nextModuleName = MenuModuleName.admin.get)
 
-        if messageText == textConstant.menuButtonBuyRights.get:
+        if messageText == self.storage.getTextConstant(textConstant.menuButtonBuyRights):
             await msg.answer(
                 ctx = ctx,
-                text = textConstant.menuTextBuyRights.get,
+                text = self.storage.getTextConstant(textConstant.menuTextBuyRights),
                 keyboardMarkup= ReplyKeyboardRemove()
             )
             return self.complete(nextModuleName= MenuModuleName.mainMenu.get)
-        if messageText == textConstant.menuButtonFindInstructor.get:
+        if messageText == self.storage.getTextConstant(textConstant.menuButtonFindInstructor):
             await msg.answer(
                 ctx = ctx,
-                text = textConstant.menuTextFindInstructor.get,
+                text = self.storage.getTextConstant(textConstant.menuTextFindInstructor),
                 keyboardMarkup= ReplyKeyboardRemove()
             )
             return self.complete(nextModuleName= MenuModuleName.mainMenu.get)
@@ -95,8 +95,8 @@ class MainMenu(MenuModuleInterface):
     @property
     def menuDict(self) -> dict:
         return {
-            textConstant.menuButtonRentBike.get: MenuModuleName.rentBike.get,
-            textConstant.menuButtonRentCar.get: MenuModuleName.rentCar.get,
-            textConstant.menuButtonBuyRights.get: MenuModuleName.mainMenu.get,            
-            textConstant.menuButtonFindInstructor.get: MenuModuleName.mainMenu.get
+            self.storage.getTextConstant(textConstant.menuButtonRentBike): MenuModuleName.rentBike.get,
+            self.storage.getTextConstant(textConstant.menuButtonRentCar): MenuModuleName.rentCar.get,
+            self.storage.getTextConstant(textConstant.menuButtonBuyRights): MenuModuleName.mainMenu.get,            
+            self.storage.getTextConstant(textConstant.menuButtonFindInstructor): MenuModuleName.mainMenu.get
         }

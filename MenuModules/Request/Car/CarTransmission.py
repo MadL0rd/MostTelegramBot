@@ -1,9 +1,8 @@
 from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton
 
-import Core.StorageManager.StorageManager as storage
 from Core.StorageManager.StorageManager import UserHistoryEvent as event
-from Core.MessageSender import MessageSender
 from Core.StorageManager.UniqueMessagesKeys import textConstant
+from Core.MessageSender import MessageSender
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
@@ -24,17 +23,17 @@ class CarTransmission(MenuModuleInterface):
     async def handleModuleStart(self, ctx: Message, msg: MessageSender) -> Completion:
 
         log.debug(f"User: {ctx.from_user.id}")
-        storage.logToUserHistory(ctx.from_user, event.startModuleCarTransmission, "")
+        self.storage.logToUserHistory(ctx.from_user, event.startModuleCarTransmission, "")
 
         keyboardMarkup = ReplyKeyboardMarkup(
             resize_keyboard=True
-        ).row(KeyboardButton(textConstant.carButtonTransmissionAutomatic.get),KeyboardButton(textConstant.carButtonTransmissionManual.get)
-        ).add(KeyboardButton(textConstant.carButtonTransmissionShowAll.get)
+        ).row(KeyboardButton(self.storage.getTextConstant(textConstant.carButtonTransmissionAutomatic.get),KeyboardButton(textConstant.carButtonTransmissionManual))
+        ).add(KeyboardButton(self.storage.getTextConstant(textConstant.carButtonTransmissionShowAll))
         )
 
         await msg.answer(
             ctx = ctx,
-            text = textConstant.carTransmission.get,
+            text = self.storage.getTextConstant(textConstant.carTransmission),
             keyboardMarkup = keyboardMarkup
         )
 
@@ -52,7 +51,7 @@ class CarTransmission(MenuModuleInterface):
             return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
-        storage.logToUserRequest(ctx.from_user, RequestCodingKeys.carTransmission, messageText)
+        self.storage.logToUserRequest(ctx.from_user, RequestCodingKeys.carTransmission, messageText)
         if messageText in self.menuDict:
             return self.complete(nextModuleName = MenuModuleName.carModels.get)
 
@@ -70,7 +69,7 @@ class CarTransmission(MenuModuleInterface):
     @property
     def menuDict(self) -> dict:
         return {
-            textConstant.carButtonTransmissionAutomatic.get: MenuModuleName.carButtonTransmissionAutomatic.get,
-            textConstant.carButtonTransmissionManual.get: MenuModuleName.carButtonTransmissionManual.get,
-            textConstant.carButtonTransmissionShowAll.get: MenuModuleName.carButtonTransmissionShowAll.get
+            self.storage.getTextConstant(textConstant.carButtonTransmissionAutomatic): MenuModuleName.carButtonTransmissionAutomatic.get,
+            self.storage.getTextConstant(textConstant.carButtonTransmissionManual): MenuModuleName.carButtonTransmissionManual.get,
+            self.storage.getTextConstant(textConstant.carButtonTransmissionShowAll): MenuModuleName.carButtonTransmissionShowAll.get
         }

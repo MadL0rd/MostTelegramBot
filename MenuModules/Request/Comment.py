@@ -1,9 +1,9 @@
 from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove, ParseMode
 
-import Core.StorageManager.StorageManager as storage
 from Core.StorageManager.StorageManager import UserHistoryEvent as event
-from Core.MessageSender import MessageSender
 from Core.StorageManager.UniqueMessagesKeys import textConstant
+
+from Core.MessageSender import MessageSender
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
@@ -28,18 +28,18 @@ class Comment(MenuModuleInterface):
     async def handleModuleStart(self, ctx: Message, msg: MessageSender) -> Completion:
 
         log.debug(f"User: {ctx.from_user.id}")
-        storage.logToUserHistory(ctx.from_user, event.startModuleComment, "")
+        self.storage.logToUserHistory(ctx.from_user, event.startModuleComment, "")
 
         keyboardMarkup = ReplyKeyboardMarkup(
             resize_keyboard=True
-        ).add(KeyboardButton(textConstant.commentCompleteOrderButton.get)
-        ).add(KeyboardButton(textConstant.commentUserWishesButton.get))
+        ).add(KeyboardButton(self.storage.getTextConstant(textConstant.commentCompleteOrderButton))
+        ).add(KeyboardButton(self.storage.getTextConstant(textConstant.commentUserWishesButton)))
         
         userRequestString = getUserRequestString(ctx)
 
         await msg.answer(
             ctx = ctx,
-            text = f"{textConstant.commentOrderTextStart.get}\n\n{userRequestString}",
+            text = f"{self.storage.getTextConstant(textConstant.commentOrderTextStart)}\n\n{userRequestString}",
             keyboardMarkup = keyboardMarkup
         )
 
@@ -52,10 +52,10 @@ class Comment(MenuModuleInterface):
     async def handleUserMessage(self, ctx: Message, msg: MessageSender, data: dict) -> Completion:
 
         messageText = ctx.text
-        if messageText == textConstant.commentUserWishesButton.get:
+        if messageText == self.storage.getTextConstant(textConstant.commentUserWishesButton):
             await msg.answer(
                 ctx = ctx,
-                text = textConstant.commentUserWishesText.get,
+                text = self.storage.getTextConstant(textConstant.commentUserWishesText),
                 keyboardMarkup = ReplyKeyboardRemove()
             )
 
@@ -66,20 +66,20 @@ class Comment(MenuModuleInterface):
             )
 
         if "commentMessageDidSent" in data and data["commentMessageDidSent"] == True:
-            storage.logToUserRequest(ctx.from_user, RequestCodingKeys.comment, messageText)
+            self.storage.logToUserRequest(ctx.from_user, RequestCodingKeys.comment, messageText)
 
-        if messageText == textConstant.commentCompleteOrderButton.get or "commentMessageDidSent" in data:
+        if messageText == self.storage.getTextConstant(textConstant.commentCompleteOrderButton) or "commentMessageDidSent" in data:
 
             userRequestString = getUserRequestString(ctx)
             userRequestString = f"{ctx.from_user.full_name} @{ctx.from_user.username}\n{userRequestString}"
 
             await crossDialogMessageSender.setWaitingForOrder(ctx.from_user, userRequestString)
 
-            storage.updateUserRequest(ctx.from_user, {})
+            self.storage.updateUserRequest(ctx.from_user, {})
             
             await msg.answer(
                 ctx = ctx,
-                text = textConstant.messageAfterFillingOutForm.get,
+                text = self.storage.getTextConstant(textConstant.messageAfterFillingOutForm),
                 keyboardMarkup = ReplyKeyboardRemove()
             )
             return self.complete(nextModuleName = MenuModuleName.mainMenu.get)    
@@ -96,7 +96,7 @@ class Comment(MenuModuleInterface):
     # =====================
 
 def getUserRequestString(ctx: Message) -> str:
-    userRequest = storage.getUserRequest(user=ctx.from_user)
+    userRequest = self.storage.getUserRequest(user=ctx.from_user)
     userRequestString = ""
     for line in userRequest.values():
         userRequestString += f"{line['title']}: {line['value']}\n"

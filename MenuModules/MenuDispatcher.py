@@ -2,11 +2,12 @@ import json
 from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, InlineKeyboardMarkup, ReplyKeyboardRemove
 
 from Core.MessageSender import MessageSender, CallbackMessageSender
-import Core.StorageManager.StorageManager as storage
 from Core.StorageManager.StorageManager import UserHistoryEvent as event
+from Core.StorageManager.UniqueMessagesKeys import textConstant
+import Core.StorageManager.StorageFactory as storageFactory
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
-from MenuModules.MenuModules import MenuModules as menu
+from MenuModules.MenuModules import MenuModules as menu, MenuModulesFactory
 
 from logger import logger as log
 
@@ -18,9 +19,14 @@ async def handleUserStart(ctx: Message):
     userTg = ctx.from_user
     log.info(f"Did handle User{userTg.id} start message {ctx.text}")
 
+    userLanguage = storageFactory.getLanguageForUser(userTg)
+    storage = storageFactory.getStorageForLanguage(userLanguage)
+    log.info(userLanguage)
+    menuFactory = MenuModulesFactory(userLanguage)
+    
     userInfo = storage.getUserInfo(userTg)
 
-    module: MenuModuleInterface = menu.onboarding.get
+    module: MenuModuleInterface = menuFactory.generateModuleClass(menu.onboarding)
     log.debug(module.name)
     completion: Completion = await module.handleModuleStart(ctx, msg)
     if completion.inProgress == True:
@@ -37,6 +43,10 @@ async def handleUserMessage(ctx: Message):
     userTg = ctx.from_user
     log.info(f"Did handle User{userTg.id} message: {ctx.text}")
 
+    userLanguage = storageFactory.getLanguageForUser(userTg)
+    storage = storageFactory.getStorageForLanguage(userLanguage)
+    menuFactory = MenuModulesFactory(userLanguage)
+
     userInfo = storage.getUserInfo(userTg)
     menuState = userInfo["state"]
 
@@ -49,7 +59,7 @@ async def handleUserMessage(ctx: Message):
     data = {}
     try:
         menuModuleName = menuState["module"]
-        module = [module.get for module in menu if module.get.name == menuModuleName][0]
+        module = [menuFactory.generateModuleClass(module) for module in menu if module.get.name == menuModuleName][0]
         log.info(f"Founded module: {module.name}")
 
     except:
@@ -66,21 +76,21 @@ async def handleUserMessage(ctx: Message):
     # Start next module if needed
     moduleNext: MenuModuleInterface = None
     if completion is None:
-        moduleNext = menu.mainMenu.get
+        moduleNext = menuFactory.generateModuleClass(menu.mainMenu)
     elif completion.inProgress == False:
         log.info(f"Module {module.name} completed")
         try:
             menuModuleName = completion.nextModuleNameIfCompleted
-            moduleNext = [module.get for module in menu if module.get.name == menuModuleName][0]
+            moduleNext = [menuFactory.generateModuleClass(module) for module in menu if module.get.name == menuModuleName][0]
             log.info(f"Founded module: {module.name}")
 
         except:
             log.info(f"Error while finding module from completion")
-            moduleNext = menu.mainMenu.get
+            moduleNext = menuFactory.generateModuleClass(menu.mainMenu)
 
     # Emergency reboot
     if ctx.text == "/back_to_menu":
-        moduleNext = menu.mainMenu.get
+        moduleNext = menuFactory.generateModuleClass(menu.mainMenu)
 
     if moduleNext is not None:
         module = moduleNext
@@ -111,7 +121,8 @@ async def handleUserMessage(ctx: Message):
                 keyboardMarkup=ReplyKeyboardMarkup()
             )
     elif completion.didHandledUserInteraction == False:
-        await msg.answerUnknown(ctx)
+        unknownText = storage.getTextConstant(textConstant.unknownState)
+        await msg.answer(ctx, unknownText)
 
     menuState = {
         "module": module.name,
@@ -122,38 +133,6 @@ async def handleUserMessage(ctx: Message):
     userInfo["state"] = menuState
     storage.updateUserData(userTg, userInfo)
 
-
 async def handleCallback(ctx: CallbackQuery):
 
-    log.debug("Did handle callback")
-    
-    # ctxData = json.loads(ctx.data)
-    ctxData = ctx.data
-    print(ctxData)
-
-    userTg = ctx.from_user
-    userInfo = storage.getUserInfo(userTg)
-    storage.logToUserHistory(userTg, event.callbackButtonDidTapped, ctxData)
-
-    await ctx.message.edit_reply_markup(InlineKeyboardMarkup())
-
-    module = None
-
-    if ctxData == "StartEveningReflection":
-        module = menu.eveningReflectionQuestions.get
-
-    ctx.message.chat.id
-
-    if module is not None:
-        completion: Completion = await module.handleModuleStart(
-            ctx=ctx,
-            msg=callbackMsg
-        )
-        menuState = {
-            "module": module.name,
-            "data": completion.moduleData 
-        }
-
-        userInfo["state"] = menuState
-        storage.updateUserData(userTg, userInfo)
-    
+    log.debug("Didn't handle callback")

@@ -1,14 +1,13 @@
 from aiogram.types import Message, CallbackQuery
 from main import bot
-import Core.StorageManager.StorageManager as storage
 from logger import logger as log
 import Core.GoogleSheetsService as sheets
 from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton
 
-import Core.StorageManager.StorageManager as storage
 from Core.StorageManager.StorageManager import UserHistoryEvent as event
-from Core.MessageSender import MessageSender
 from Core.StorageManager.UniqueMessagesKeys import textConstant
+
+from Core.MessageSender import MessageSender
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
@@ -30,13 +29,13 @@ class AdminMenu(MenuModuleInterface):
 
         keyboardMarkup = ReplyKeyboardMarkup(
             resize_keyboard=True
-        ).add(KeyboardButton(textConstant.adminMenuButtonReloadData.get)
-        ).add(KeyboardButton(textConstant.adminMenuButtonLoadData.get)
-        ).add(KeyboardButton(textConstant.menuButtonReturnToMainMenu.get))
+        ).add(KeyboardButton(self.storage.getTextConstant(textConstant.adminMenuButtonReloadData))
+        ).add(KeyboardButton(self.storage.getTextConstant(textConstant.adminMenuButtonLoadData))
+        ).add(KeyboardButton(self.storage.getTextConstant(textConstant.menuButtonReturnToMainMenu)))
         
         await msg.answer(
             ctx = ctx,
-            text = textConstant.adminMenuText.get,
+            text = self.storage.getTextConstant(textConstant.adminMenuText),
             keyboardMarkup = keyboardMarkup
         )
 
@@ -50,10 +49,10 @@ class AdminMenu(MenuModuleInterface):
 
         log.debug(f"User: {ctx.from_user.id}")
 
-        if ctx.text == textConstant.menuButtonReturnToMainMenu.get:
+        if ctx.text == self.storage.getTextConstant(textConstant.menuButtonReturnToMainMenu):
             return self.complete(nextModuleName=MenuModuleName.mainMenu.get)
 
-        if ctx.text == textConstant.adminMenuButtonReloadData.get:
+        if ctx.text == self.storage.getTextConstant(textConstant.adminMenuButtonReloadData):
             
             log.info("Bot sheets data update start")
 
@@ -80,17 +79,17 @@ class AdminMenu(MenuModuleInterface):
                 didHandledUserInteraction=True
             )
         
-        if ctx.text == textConstant.adminMenuButtonLoadData.get:
+        if ctx.text == self.storage.getTextConstant(textConstant.adminMenuButtonLoadData):
 
             log.info("Tables creation start")
 
             message = await ctx.answer("⚠️ Подождите, идет подготовка данных\n🔴 Таблица с полной историей\n🔴 Агрегированная таблица")
-            storage.generateTotalTable()
+            self.storage.generateTotalTable()
             await message.edit_text("⚠️ Подождите, идет подготовка данных\n🟢 Таблица с полной историей\n🔴 Агрегированная таблица")
-            storage.generateStatisticTable()
+            self.storage.generateStatisticTable()
             await message.edit_text("Данные готовы и уже выгружаются\n🟢 Таблица с полной историей\n🟢 Агрегированная таблица")
-            await bot.send_document(chat_id = ctx.chat.id, document = storage.path.totalHistoryTableFile.open("rb"),)
-            await bot.send_document(chat_id = ctx.chat.id, document = storage.path.statisticHistoryTableFile.open("rb"),)
+            await bot.send_document(chat_id = ctx.chat.id, document = self.storage.path.totalHistoryTableFile.open("rb"),)
+            await bot.send_document(chat_id = ctx.chat.id, document = self.storage.path.statisticHistoryTableFile.open("rb"),)
             await message.edit_text("❇️ Выгрузка завершена")
 
             log.info("Tables creation complete")
