@@ -1,14 +1,13 @@
 from aiogram.types import Message, CallbackQuery, ReplyKeyboardRemove
 
-import Core.StorageManager.StorageManager as storage
 from Core.StorageManager.StorageManager import UserHistoryEvent as event
-from Core.MessageSender import MessageSender
 from Core.StorageManager.UniqueMessagesKeys import textConstant
+from Core.MessageSender import MessageSender
 from Core.Utils.Utils import dictToList
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
-from MenuModules.Request.RequestCodingKeys import RequestCodingKeys
+
 from logger import logger as log
 
 class BikeMotoCategoryChoice(MenuModuleInterface):
@@ -25,11 +24,11 @@ class BikeMotoCategoryChoice(MenuModuleInterface):
     async def handleModuleStart(self, ctx: Message, msg: MessageSender) -> Completion:
 
         log.debug(f"User: {ctx.from_user.id}")
-        storage.logToUserHistory(ctx.from_user, event.strartModuleBikeMotoCategoryChoice, "")
+        self.storage.logToUserHistory(ctx.from_user, event.strartModuleBikeMotoCategoryChoice, "")
         
         await msg.answer(
             ctx = ctx,
-            text = textConstant.bikeMotoCategoryChoice.get,
+            text = self.getText(textConstant.bikeMotoCategoryChoice),
             keyboardMarkup = ReplyKeyboardRemove()
         )
 
@@ -49,7 +48,7 @@ class BikeMotoCategoryChoice(MenuModuleInterface):
             return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
-        storage.logToUserRequest(ctx.from_user,RequestCodingKeys.bikeMotoCategoryChoice , messageText)
+        self.storage.logToUserRequest(ctx.from_user, textConstant.orderStepKeyBikeMotoCategoryChoice , messageText)
         return self.complete(nextModuleName = MenuModuleName.bikeParameters.get)
         
     async def handleCallback(self, ctx: CallbackQuery, data: dict, msg: MessageSender) -> Completion:

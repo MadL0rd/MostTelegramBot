@@ -1,8 +1,8 @@
 from email import message
 from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton
 
-import Core.StorageManager.StorageManager as storage
 from Core.StorageManager.StorageManager import UserHistoryEvent as event
+from Core.StorageManager.UniqueMessagesKeys import textConstant
 from Core.MessageSender import MessageSender
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
@@ -23,10 +23,10 @@ class Onboarding(MenuModuleInterface):
     async def handleModuleStart(self, ctx: Message, msg: MessageSender) -> Completion:
 
         log.debug(f"User: {ctx.from_user.id}")
-        storage.logToUserHistory(ctx.from_user, event.startModuleOnboarding, "")
+        self.storage.logToUserHistory(ctx.from_user, event.startModuleOnboarding, "")
 
         pageIndex = 0
-        onboardingPages = storage.getJsonData(storage.path.botContentOnboarding)
+        onboardingPages = self.storage.getJsonData(self.storage.path.botContentOnboarding)
         if len(onboardingPages) > pageIndex:
             page = OnboardingPage(onboardingPages[pageIndex])
             await sendOnboardingPage(ctx, msg, page)
@@ -49,7 +49,7 @@ class Onboarding(MenuModuleInterface):
         log.debug(f"User: {ctx.from_user.id}")
 
         pageIndex = data["previousPageIndex"]
-        onboardingPages = storage.getJsonData(storage.path.botContentOnboarding)
+        onboardingPages = self.storage.getJsonData(self.storage.path.botContentOnboarding)
         page = OnboardingPage(onboardingPages[pageIndex])
 
         if ctx.text != page.buttonText:

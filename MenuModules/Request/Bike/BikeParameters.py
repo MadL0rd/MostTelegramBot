@@ -1,9 +1,8 @@
 from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton
 
-import Core.StorageManager.StorageManager as storage
 from Core.StorageManager.StorageManager import UserHistoryEvent as event
-from Core.MessageSender import MessageSender
 from Core.StorageManager.UniqueMessagesKeys import textConstant
+from Core.MessageSender import MessageSender
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
@@ -23,16 +22,16 @@ class BikeParameters(MenuModuleInterface):
     async def handleModuleStart(self, ctx: Message, msg: MessageSender) -> Completion:
 
         log.debug(f"User: {ctx.from_user.id}")
-        storage.logToUserHistory(ctx.from_user, event.startModuleBikeScooterOrMoto, "")
+        self.storage.logToUserHistory(ctx.from_user, event.startModuleBikeScooterOrMoto, "")
 
         keyboardMarkup = ReplyKeyboardMarkup(
             resize_keyboard=True
-        ).add(KeyboardButton(textConstant.bikeButtonCriteria.get)
-        ).add(KeyboardButton(textConstant.bikeButtonShowAll.get))
+        ).add(KeyboardButton(self.getText(textConstant.bikeButtonCriteria))
+        ).add(KeyboardButton(self.getText(textConstant.bikeButtonShowAll)))
         
         await msg.answer(
             ctx = ctx,
-            text = textConstant.bikeParameters.get,
+            text = self.getText(textConstant.bikeParameters),
             keyboardMarkup = keyboardMarkup
         )
 
@@ -51,13 +50,13 @@ class BikeParameters(MenuModuleInterface):
         
         messageText = ctx.text
 
-        if messageText == textConstant.bikeButtonCriteria.get:
+        if messageText == self.getText(textConstant.bikeButtonCriteria):
             return self.complete(nextModuleName = MenuModuleName.bikeCriteriaChoice.get)
         
-        if messageText == textConstant.bikeButtonShowAll.get:
+        if messageText == self.getText(textConstant.bikeButtonShowAll):
             await msg.answer(
             ctx = ctx,
-            text = textConstant.bikeButtonCriteriaShowAllAnswer.get,
+            text = self.getText(textConstant.bikeButtonCriteriaShowAllAnswer),
             keyboardMarkup = ReplyKeyboardMarkup()
         )
             return self.complete(nextModuleName = MenuModuleName.bikeHelmet.get)

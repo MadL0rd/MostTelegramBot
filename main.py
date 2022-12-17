@@ -7,9 +7,10 @@ from aiogram.types import Message, CallbackQuery
 from logger import logger as log
 
 import MenuModules.MenuDispatcher as dispatcher
-import Core.StorageManager.StorageManager as storage
+from Core.StorageManager.StorageManager import LanguageKey, StorageManager
+import Core.StorageManager.StorageFactory as storageFactory
 from Core.CrossDialogMessageSender import CrossDialogMessageSender, crossDialogMessageSenderShared
-import Core.GoogleSheetsService as sheets
+from Core.GoogleSheetsService import GoogleSheetsService 
 import Core.Utils.Utils as utils
 
 # =====================
@@ -39,17 +40,22 @@ allMessagesChat = -1001505950222
 # Channel:          https://t.me/MadL0rdTest
 # AllMessagesChat:  https://t.me/+kEU20mN1KU85NWMy
 # =====================
+
+isProduction = True
 if len(sys.argv) > 1 and sys.argv[1] == "-test":
     apiKey = "5769610401:AAGxxBig9ESUKUP-ctFXb9Z0iGP-9z17PVs"
     channel = "@MadL0rdTest"
     chat = -1001801213740
     allMessagesChat = -815125654
+    isProduction = False
 
 bot = Bot(token=apiKey)
 dp = Dispatcher(bot)
 
-crossDialogMessageSenderShared = CrossDialogMessageSender(bot, channel)
+crossDialogMessageSenderShared = CrossDialogMessageSender(bot, channel, isProduction)
 crossDialogMessageSender = crossDialogMessageSenderShared
+
+storageDefault = storageFactory.storageDefault
 
 # =====================
 # Bot commands
@@ -63,10 +69,6 @@ async def send_welcome_message_handler(ctx: types.Message):
 @dp.message_handler(content_types=["audio", "game", "document", "photo", "sticker", "video", "voice", "video_note", "contact", "location", "venue", "invoice", "text"])
 async def default_message_handler(ctx: Message):
     log.info(f"From {ctx.from_user.full_name} receive: {ctx}")
-
-    if ctx.text == "/start":
-        await dispatcher.handleUserStart(ctx)
-        return
         
     # Message from private chat with user
     if ctx.chat.type == "private":
@@ -79,7 +81,7 @@ async def default_message_handler(ctx: Message):
         )
 
         userTg = ctx.from_user
-        userInfo = storage.getUserInfo(userTg)
+        userInfo = storageDefault.getUserInfo(userTg)
 
         if ctx.text == "/back_to_menu" or "currentOrderDialog" not in userInfo:
             await dispatcher.handleUserMessage(ctx)
@@ -106,7 +108,7 @@ async def default_message_handler(ctx: Message):
     # Manager message to user
     order = {}
     try:
-        order = storage.getOrder(ctx.reply_to_message.message_id)
+        order = storageDefault.getOrder(ctx.reply_to_message.message_id)
     except:
         return
 
@@ -119,11 +121,13 @@ async def default_callback_handler(ctx: CallbackQuery):
 async def on_startup(_):
     crossDialogMessageSender.configureBackgroundTasks()
     asyncio.create_task(crossDialogMessageSender.threadedTasks())
-    sheets.updateUniqueMessages()
-    sheets.updateOnboarding()
-    sheets.updateScooterCategoriesList()
-    sheets.updateMotoCategoriesList()
-    sheets.updateBikeCriteria()
+    for language in LanguageKey:
+        sheets = GoogleSheetsService(language)
+        sheets.updateUniqueMessages()
+        sheets.updateOnboarding()
+        sheets.updateScooterCategoriesList()
+        sheets.updateMotoCategoriesList()
+        sheets.updateBikeCriteria()
     log.info("Bot just started")
 
 if __name__ == "__main__":

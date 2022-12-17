@@ -1,9 +1,10 @@
 from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
 
-import Core.StorageManager.StorageManager as storage
 from Core.StorageManager.StorageManager import UserHistoryEvent as event
-from Core.MessageSender import MessageSender
 from Core.StorageManager.UniqueMessagesKeys import textConstant
+import Core.Utils.Utils as utils
+
+from Core.MessageSender import MessageSender
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
@@ -23,23 +24,20 @@ class MainMenu(MenuModuleInterface):
     async def handleModuleStart(self, ctx: Message, msg: MessageSender) -> Completion:
 
         log.debug(f"User: {ctx.from_user.id}")
-        storage.logToUserHistory(ctx.from_user, event.startModuleMainMenu, "")
-
-        keyboardMarkup = ReplyKeyboardMarkup(
-            resize_keyboard=True
-        )
-        for buttonText in self.menuDict:
-            keyboardMarkup.add(KeyboardButton(buttonText))
+        self.storage.logToUserHistory(ctx.from_user, event.startModuleMainMenu, "")
 
         userTg = ctx.from_user
-        userInfo = storage.getUserInfo(userTg)
+        userInfo = self.storage.getUserInfo(userTg)
 
+        buttons = [button for button in self.menuDict]
         if "isAdmin" in userInfo and userInfo["isAdmin"] == True:
-            keyboardMarkup.add(KeyboardButton(textConstant.menuButtonAdmin.get))
+            buttons.append(self.getText(textConstant.menuButtonAdmin))
+
+        keyboardMarkup = utils.replyMarkupFromListOfButtons(buttons)
 
         await msg.answer(
             ctx = ctx,
-            text = textConstant.mainMenuText.get,
+            text = self.getText(textConstant.mainMenuText),
             keyboardMarkup = keyboardMarkup
         )
 
@@ -55,31 +53,33 @@ class MainMenu(MenuModuleInterface):
 
         if "startMessageDidSent" not in data or data["startMessageDidSent"] != True:
             return self.handleModuleStart(ctx, msg)
-        
+
+        userTg = ctx.from_user
+        userInfo = self.storage.getUserInfo(userTg)
+
         messageText = ctx.text
-        if messageText == textConstant.menuButtonRentBike.get:
-            return self.complete(nextModuleName = MenuModuleName.bikeCommitment.get)
 
-        if messageText == textConstant.menuButtonRentCar.get:
-            return self.complete(nextModuleName = MenuModuleName.carSize.get)
-
-        if messageText == textConstant.menuButtonAdmin.get:
+        if messageText == self.storage.getTextConstant(textConstant.menuButtonAdmin) and "isAdmin" in userInfo and userInfo["isAdmin"] == True:
             return self.complete(nextModuleName = MenuModuleName.admin.get)
+        
+        if messageText in self.menuDict:
+            # TODO: replace with menu modules
+            if messageText == self.getText(textConstant.menuButtonBuyRights):
+                await msg.answer(
+                    ctx = ctx,
+                    text = self.getText(textConstant.menuTextBuyRights),
+                    keyboardMarkup= ReplyKeyboardRemove()
+                )
+                return self.complete(nextModuleName = MenuModuleName.mainMenu.get)
+            if messageText == self.getText(textConstant.menuButtonFindInstructor):
+                await msg.answer(
+                    ctx = ctx,
+                    text = self.getText(textConstant.menuTextFindInstructor),
+                    keyboardMarkup= ReplyKeyboardRemove()
+                )
+                return self.complete(nextModuleName= MenuModuleName.mainMenu.get)
 
-        if messageText == textConstant.menuButtonBuyRights.get:
-            await msg.answer(
-                ctx = ctx,
-                text = textConstant.menuTextBuyRights.get,
-                keyboardMarkup= ReplyKeyboardRemove()
-            )
-            return self.complete(nextModuleName= MenuModuleName.mainMenu.get)
-        if messageText == textConstant.menuButtonFindInstructor.get:
-            await msg.answer(
-                ctx = ctx,
-                text = textConstant.menuTextFindInstructor.get,
-                keyboardMarkup= ReplyKeyboardRemove()
-            )
-            return self.complete(nextModuleName= MenuModuleName.mainMenu.get)
+            return self.complete(nextModuleName = self.menuDict[messageText])
 
         return self.canNotHandle(data)
         
@@ -95,8 +95,9 @@ class MainMenu(MenuModuleInterface):
     @property
     def menuDict(self) -> dict:
         return {
-            textConstant.menuButtonRentBike.get: MenuModuleName.rentBike.get,
-            textConstant.menuButtonRentCar.get: MenuModuleName.rentCar.get,
-            textConstant.menuButtonBuyRights.get: MenuModuleName.mainMenu.get,            
-            textConstant.menuButtonFindInstructor.get: MenuModuleName.mainMenu.get
+            self.getText(textConstant.menuButtonRentBike): MenuModuleName.rentBike.get,
+            self.getText(textConstant.menuButtonRentCar): MenuModuleName.rentCar.get,
+            self.getText(textConstant.menuButtonBuyRights): MenuModuleName.mainMenu.get,            
+            self.getText(textConstant.menuButtonFindInstructor): MenuModuleName.mainMenu.get,
+            self.getText(textConstant.menuButtonLanguageSettings): MenuModuleName.languageSettings.get
         }

@@ -1,13 +1,12 @@
 from aiogram.types import Message, CallbackQuery, ReplyKeyboardRemove
 
-import Core.StorageManager.StorageManager as storage
 from Core.StorageManager.StorageManager import UserHistoryEvent as event
-from Core.MessageSender import MessageSender
 from Core.StorageManager.UniqueMessagesKeys import textConstant
+from Core.MessageSender import MessageSender
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
-from MenuModules.Request.RequestCodingKeys import RequestCodingKeys
+
 from logger import logger as log
 
 class TimeRequestHowManyDays(MenuModuleInterface):
@@ -24,11 +23,11 @@ class TimeRequestHowManyDays(MenuModuleInterface):
     async def handleModuleStart(self, ctx: Message, msg: MessageSender) -> Completion:
 
         log.debug(f"User: {ctx.from_user.id}")
-        storage.logToUserHistory(ctx.from_user, event.startModuleTimeRequestHowManyDays, "")
+        self.storage.logToUserHistory(ctx.from_user, event.startModuleTimeRequestHowManyDays, "")
 
         await msg.answer(
             ctx = ctx,
-            text = textConstant.timeRequestHowManyDays.get,
+            text = self.getText(textConstant.timeRequestHowManyDays),
             keyboardMarkup = ReplyKeyboardRemove()
         )
 
@@ -46,7 +45,7 @@ class TimeRequestHowManyDays(MenuModuleInterface):
             return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
-        storage.logToUserRequest(ctx.from_user,RequestCodingKeys.timeRequestHowManyDays, messageText)
+        self.storage.logToUserRequest(ctx.from_user, textConstant.orderStepKeyTimeRequestHowManyDays, messageText)
         return self.complete(nextModuleName = MenuModuleName.requestGeoposition.get)
         
 
