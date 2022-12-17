@@ -9,6 +9,9 @@ class UserHistoryEvent(enum.Enum):
     startModuleOnboarding = "Начал смотреть онбординг"
     startModuleMainMenu = "Перешел в главное меню" 
 
+    startModuleGetLicense = "Перешёл в модуль покупки прав"
+    startModuleFindInstructor = "Перешёл в модуль поиска инструктора"
+
     startModuleBikeCommitment = "Приступил к выбору байка"
     startModuleBikeScooterOrMoto = "Приступил к выбору скутера или мотоцикла"
     startModuleBikeMotoCategory = "Приступил к выбору категории мотоцикла"

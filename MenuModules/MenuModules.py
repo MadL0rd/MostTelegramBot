@@ -1,5 +1,7 @@
 import enum
 from Core.StorageManager.LanguageKey import LanguageKey
+from MenuModules.MainMenu.FindInstuctor import FindInstructor
+from MenuModules.MainMenu.GetLicense import GetLicense
 from MenuModules.MainMenu.LanguageSettings import LanguageSettings
 from MenuModules.Onboarding.Onboarding import Onboarding
 from MenuModules.MainMenu.MainMenu import MainMenu
@@ -34,6 +36,8 @@ class MenuModules(enum.Enum):
 
     onboarding: MenuModuleInterface = Onboarding
     mainMenu: MenuModuleInterface = MainMenu
+    getLicense: MenuModuleInterface = GetLicense
+    findInstructor: MenuModuleInterface = FindInstructor
     languageSettings: MenuModuleInterface = LanguageSettings
     adminMenu: MenuModuleInterface = AdminMenu
     bikeCommitment: MenuModuleInterface = BikeCommitment

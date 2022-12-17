@@ -63,22 +63,6 @@ class MainMenu(MenuModuleInterface):
             return self.complete(nextModuleName = MenuModuleName.admin.get)
         
         if messageText in self.menuDict:
-            # TODO: replace with menu modules
-            if messageText == self.getText(textConstant.menuButtonBuyRights):
-                await msg.answer(
-                    ctx = ctx,
-                    text = self.getText(textConstant.menuTextBuyRights),
-                    keyboardMarkup= ReplyKeyboardRemove()
-                )
-                return self.complete(nextModuleName = MenuModuleName.mainMenu.get)
-            if messageText == self.getText(textConstant.menuButtonFindInstructor):
-                await msg.answer(
-                    ctx = ctx,
-                    text = self.getText(textConstant.menuTextFindInstructor),
-                    keyboardMarkup= ReplyKeyboardRemove()
-                )
-                return self.complete(nextModuleName= MenuModuleName.mainMenu.get)
-
             return self.complete(nextModuleName = self.menuDict[messageText])
 
         return self.canNotHandle(data)
@@ -97,7 +81,7 @@ class MainMenu(MenuModuleInterface):
         return {
             self.getText(textConstant.menuButtonRentBike): MenuModuleName.bikeCommitment.get,
             self.getText(textConstant.menuButtonRentCar): MenuModuleName.carSize.get,
-            self.getText(textConstant.menuButtonBuyRights): MenuModuleName.mainMenu.get,            
-            self.getText(textConstant.menuButtonFindInstructor): MenuModuleName.mainMenu.get,
+            self.getText(textConstant.menuButtonGetLicense): MenuModuleName.getLicense.get,            
+            self.getText(textConstant.menuButtonFindInstructor): MenuModuleName.findInstructor.get,
             self.getText(textConstant.menuButtonLanguageSettings): MenuModuleName.languageSettings.get
         }
