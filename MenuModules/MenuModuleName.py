@@ -6,8 +6,6 @@ class MenuModuleName(enum.Enum):
     mainMenu: str = "mainMenu"
     languageSettings: str = "languageSettings"
     menuButtonAdmin: str = "menuButtonAdmin"
-    rentBike: str = "rentBike"
-    rentCar: str = "rentCar"
     myOrders: str = "myOrders"
     admin: str = "admin"
     bikeCommitment: str = "bikeCommitment"

@@ -95,8 +95,8 @@ class MainMenu(MenuModuleInterface):
     @property
     def menuDict(self) -> dict:
         return {
-            self.getText(textConstant.menuButtonRentBike): MenuModuleName.rentBike.get,
-            self.getText(textConstant.menuButtonRentCar): MenuModuleName.rentCar.get,
+            self.getText(textConstant.menuButtonRentBike): MenuModuleName.bikeCommitment.get,
+            self.getText(textConstant.menuButtonRentCar): MenuModuleName.carSize.get,
             self.getText(textConstant.menuButtonBuyRights): MenuModuleName.mainMenu.get,            
             self.getText(textConstant.menuButtonFindInstructor): MenuModuleName.mainMenu.get,
             self.getText(textConstant.menuButtonLanguageSettings): MenuModuleName.languageSettings.get
