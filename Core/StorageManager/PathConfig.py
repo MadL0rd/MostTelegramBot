@@ -12,6 +12,7 @@ class PathConfig:
         initFolders = [
             self.baseDir,
             self.usersDir,
+            self.botContentBaseDir,
             self.botContentDir,
             self.channelOrdersDir
         ]
@@ -30,8 +31,11 @@ class PathConfig:
         return self.baseDir / "Users"
 
     @property
+    def botContentBaseDir(self):
+        return self.baseDir / "BotContent"
+    @property
     def botContentDir(self):
-        return self.baseDir / "BotContent" / self.languageKey
+        return self.botContentBaseDir / self.languageKey
     @property
     def botContentOnboarding(self):
         return self.botContentDir / "Onboarding.json"
@@ -65,7 +69,10 @@ class PathConfig:
         return self.channelOrdersDir / f"{orderId}.json"
 
     def userFolder(self, user: User):
-        return self.usersDir / f"{user.id}"
+        try:
+            return self.usersDir / f"{user.id}"
+        except:
+            return self.usersDir / f"{user}"
 
     def userInfoFile(self, user: User):
         return self.userFolder(user) / "info.json"

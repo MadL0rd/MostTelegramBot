@@ -1,9 +1,10 @@
 import enum
 from Core.StorageManager.LanguageKey import LanguageKey
+from MenuModules.MainMenu.LanguageSettings import LanguageSettings
 from MenuModules.Onboarding.Onboarding import Onboarding
 from MenuModules.MainMenu.MainMenu import MainMenu
 from MenuModules.MenuModuleInterface import MenuModuleInterface
-from MenuModules.AdminMenu.AdminMenu import AdminMenu
+from MenuModules.MainMenu.AdminMenu import AdminMenu
 from MenuModules.Request.Bike.BikeCommitment import BikeCommitment
 from MenuModules.Request.Bike.BikeMotoCategory import BikeMotoCategory
 from MenuModules.Request.Bike.BikeParameters import BikeParameters
@@ -33,6 +34,7 @@ class MenuModules(enum.Enum):
 
     onboarding: MenuModuleInterface = Onboarding
     mainMenu: MenuModuleInterface = MainMenu
+    languageSettings: MenuModuleInterface = LanguageSettings
     adminMenu: MenuModuleInterface = AdminMenu
     bikeCommitment: MenuModuleInterface = BikeCommitment
     bikeScooterOrMoto: MenuModuleInterface = BikeScooterOrMoto

@@ -7,7 +7,7 @@ from Core.MessageSender import MessageSender
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
-from MenuModules.Request.RequestCodingKeys import RequestCodingKeys
+
 from logger import logger as log
 
 class RequestGeoposition(MenuModuleInterface):
@@ -28,7 +28,7 @@ class RequestGeoposition(MenuModuleInterface):
 
         await msg.answer(
             ctx = ctx,
-            text = self.storage.getTextConstant(textConstant.requestGeoposition),
+            text = self.getText(textConstant.requestGeoposition),
             keyboardMarkup = ReplyKeyboardRemove()
         )
 
@@ -52,7 +52,7 @@ class RequestGeoposition(MenuModuleInterface):
             locationText = googleMapsLink
         
         if locationText != "" and locationText != None:
-            self.storage.logToUserRequest(ctx.from_user, RequestCodingKeys.requestGeoposition, locationText)
+            self.storage.logToUserRequest(ctx.from_user, textConstant.orderStepKeyRequestGeoposition, locationText)
             return self.complete(nextModuleName = MenuModuleName.comment.get)
 
         return self.canNotHandle(data)

@@ -6,7 +6,7 @@ from Core.MessageSender import MessageSender
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
-from MenuModules.Request.RequestCodingKeys import RequestCodingKeys
+
 from logger import logger as log
 
 class CarTransmission(MenuModuleInterface):
@@ -27,13 +27,13 @@ class CarTransmission(MenuModuleInterface):
 
         keyboardMarkup = ReplyKeyboardMarkup(
             resize_keyboard=True
-        ).row(KeyboardButton(self.storage.getTextConstant(textConstant.carButtonTransmissionAutomatic.get),KeyboardButton(textConstant.carButtonTransmissionManual))
-        ).add(KeyboardButton(self.storage.getTextConstant(textConstant.carButtonTransmissionShowAll))
+        ).row(KeyboardButton(self.getText(textConstant.carButtonTransmissionAutomatic)), KeyboardButton(self.storage.getTextConstant(textConstant.carButtonTransmissionManual))
+        ).add(KeyboardButton(self.getText(textConstant.carButtonTransmissionShowAll))
         )
 
         await msg.answer(
             ctx = ctx,
-            text = self.storage.getTextConstant(textConstant.carTransmission),
+            text = self.getText(textConstant.carTransmission),
             keyboardMarkup = keyboardMarkup
         )
 
@@ -51,7 +51,7 @@ class CarTransmission(MenuModuleInterface):
             return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
-        self.storage.logToUserRequest(ctx.from_user, RequestCodingKeys.carTransmission, messageText)
+        self.storage.logToUserRequest(ctx.from_user, textConstant.orderStepKeyCarTransmission, messageText)
         if messageText in self.menuDict:
             return self.complete(nextModuleName = MenuModuleName.carModels.get)
 
@@ -69,7 +69,7 @@ class CarTransmission(MenuModuleInterface):
     @property
     def menuDict(self) -> dict:
         return {
-            self.storage.getTextConstant(textConstant.carButtonTransmissionAutomatic): MenuModuleName.carButtonTransmissionAutomatic.get,
-            self.storage.getTextConstant(textConstant.carButtonTransmissionManual): MenuModuleName.carButtonTransmissionManual.get,
-            self.storage.getTextConstant(textConstant.carButtonTransmissionShowAll): MenuModuleName.carButtonTransmissionShowAll.get
+            self.getText(textConstant.carButtonTransmissionAutomatic): MenuModuleName.carButtonTransmissionAutomatic.get,
+            self.getText(textConstant.carButtonTransmissionManual): MenuModuleName.carButtonTransmissionManual.get,
+            self.getText(textConstant.carButtonTransmissionShowAll): MenuModuleName.carButtonTransmissionShowAll.get
         }

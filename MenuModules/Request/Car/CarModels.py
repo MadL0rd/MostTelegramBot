@@ -6,7 +6,7 @@ from Core.MessageSender import MessageSender
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
-from MenuModules.Request.RequestCodingKeys import RequestCodingKeys
+
 from logger import logger as log
 
 class CarModels(MenuModuleInterface):
@@ -27,34 +27,30 @@ class CarModels(MenuModuleInterface):
 
         keyboardMarkup = ReplyKeyboardMarkup(
             resize_keyboard=True
-        ).add(KeyboardButton(self.storage.getTextConstant(textConstant.carModelsFurther)))
+        ).add(KeyboardButton(self.getText(textConstant.carModelsFurther)))
     
         await msg.answer(
             ctx = ctx,
-            text = self.storage.getTextConstant(textConstant.carModels),
+            text = self.getText(textConstant.carModels),
             keyboardMarkup = keyboardMarkup
         )
 
         return Completion(
             inProgress=True,
-            didHandledUserInteraction=True,
-            moduleData={ "carModelsMessageDidSent" : True }
+            didHandledUserInteraction=True
         )
 
     async def handleUserMessage(self, ctx: Message, msg: MessageSender, data: dict) -> Completion:
 
         log.debug(f"User: {ctx.from_user.id}")
 
-        if "carModelsMessageDidSent" not in data or data["carModelsMessageDidSent"] != True:
-            return self.handleModuleStart(ctx, msg)
-        
         messageText = ctx.text
-        if messageText == self.storage.getTextConstant(textConstant.carModelsFurther):
-            self.storage.logToUserRequest(ctx.from_user, RequestCodingKeys.carModels, "Модель авто: не выбрана")
+        if messageText == self.getText(textConstant.carModelsFurther):
+            self.storage.logToUserRequest(ctx.from_user, textConstant.orderStepKeyCarModels, self.getText(textConstant.orderStepValueCarCustomModelDoesNotSelected))
             return self.complete(nextModuleName = MenuModuleName.timeRequest.get)
 
         else:
-            self.storage.logToUserRequest(ctx.from_user, RequestCodingKeys.carModels, messageText)
+            self.storage.logToUserRequest(ctx.from_user, textConstant.orderStepKeyCarModels, messageText)
             return self.complete(nextModuleName = MenuModuleName.timeRequest.get)
 
     async def handleCallback(self, ctx: CallbackQuery, data: dict, msg: MessageSender) -> Completion:

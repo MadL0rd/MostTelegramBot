@@ -6,7 +6,7 @@ from Core.MessageSender import MessageSender
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
-from MenuModules.Request.RequestCodingKeys import RequestCodingKeys
+
 from logger import logger as log
 
 class TimeRequestMonthWhen(MenuModuleInterface):
@@ -27,15 +27,15 @@ class TimeRequestMonthWhen(MenuModuleInterface):
 
         keyboardMarkup = ReplyKeyboardMarkup(
             resize_keyboard=True
-        ).add(KeyboardButton(self.storage.getTextConstant(textConstant.timeButtonRequestMonthWhenToday)),
-        ).add(KeyboardButton(self.storage.getTextConstant(textConstant.timeButtonRequestMonthWhenTomorrow)),
-        ).add(KeyboardButton(self.storage.getTextConstant(textConstant.timeButtonRequestMonthWhenComingDays)),
-        ).add(KeyboardButton(self.storage.getTextConstant(textConstant.timeButtonRequestMonthWhenSetDate))
+        ).add(KeyboardButton(self.getText(textConstant.timeButtonRequestMonthWhenToday)),
+        ).add(KeyboardButton(self.getText(textConstant.timeButtonRequestMonthWhenTomorrow)),
+        ).add(KeyboardButton(self.getText(textConstant.timeButtonRequestMonthWhenComingDays)),
+        ).add(KeyboardButton(self.getText(textConstant.timeButtonRequestMonthWhenSetDate))
         )
 
         await msg.answer(
             ctx = ctx,
-            text = self.storage.getTextConstant(textConstant.timeRequestMonthWhen),
+            text = self.getText(textConstant.timeRequestMonthWhen),
             keyboardMarkup = keyboardMarkup
         )
 
@@ -54,14 +54,14 @@ class TimeRequestMonthWhen(MenuModuleInterface):
         
         messageText = ctx.text
         if messageText in [
-            self.storage.getTextConstant(textConstant.timeButtonRequestMonthWhenToday),
-            self.storage.getTextConstant(textConstant.timeButtonRequestMonthWhenTomorrow), 
-            self.storage.getTextConstant(textConstant.timeButtonRequestMonthWhenComingDays)
+            self.getText(textConstant.timeButtonRequestMonthWhenToday),
+            self.getText(textConstant.timeButtonRequestMonthWhenTomorrow), 
+            self.getText(textConstant.timeButtonRequestMonthWhenComingDays)
         ]:
-            self.storage.logToUserRequest(ctx.from_user, RequestCodingKeys.timeRequestMonthWhen, messageText)
+            self.storage.logToUserRequest(ctx.from_user, textConstant.orderStepKeyTimeRequestMonthWhen, messageText)
             return self.complete(nextModuleName = MenuModuleName.requestGeoposition.get)
 
-        if messageText == (self.storage.getTextConstant(textConstant.timeButtonRequestMonthWhenSetDate)):
+        if messageText == (self.getText(textConstant.timeButtonRequestMonthWhenSetDate)):
             return self.complete(nextModuleName = MenuModuleName.timeRequestMonthWhenSetDate.get)
         
         return self.canNotHandle(data)        

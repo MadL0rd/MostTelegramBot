@@ -40,16 +40,19 @@ allMessagesChat = -1001505950222
 # Channel:          https://t.me/MadL0rdTest
 # AllMessagesChat:  https://t.me/+kEU20mN1KU85NWMy
 # =====================
+
+isProduction = True
 if len(sys.argv) > 1 and sys.argv[1] == "-test":
     apiKey = "5769610401:AAGxxBig9ESUKUP-ctFXb9Z0iGP-9z17PVs"
     channel = "@MadL0rdTest"
     chat = -1001801213740
     allMessagesChat = -815125654
+    isProduction = False
 
 bot = Bot(token=apiKey)
 dp = Dispatcher(bot)
 
-crossDialogMessageSenderShared = CrossDialogMessageSender(bot, channel)
+crossDialogMessageSenderShared = CrossDialogMessageSender(bot, channel, isProduction)
 crossDialogMessageSender = crossDialogMessageSenderShared
 
 storageDefault = storageFactory.storageDefault

@@ -7,7 +7,7 @@ import Core.Utils.Utils as utils
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
-from MenuModules.Request.RequestCodingKeys import RequestCodingKeys
+
 from logger import logger as log
 
 class BikeMotoCategory(MenuModuleInterface):
@@ -32,7 +32,7 @@ class BikeMotoCategory(MenuModuleInterface):
 
         await msg.answer(
             ctx = ctx,
-            text = self.storage.getTextConstant(textConstant.bikeMotoCategory),
+            text = self.getText(textConstant.bikeMotoCategory),
             keyboardMarkup = keyboardMarkup
         )
 
@@ -51,12 +51,12 @@ class BikeMotoCategory(MenuModuleInterface):
 
         messageText = ctx.text
 
-        if messageText in data["categoryList"] and messageText != "Другое":
-            self.storage.logToUserRequest(ctx.from_user, RequestCodingKeys.bikeMotoCategory, messageText)
+        if messageText in data["categoryList"] and messageText != self.getText(textConstant.orderStepValueOther):
+            self.storage.logToUserRequest(ctx.from_user, textConstant.orderStepKeyBikeMotoCategory, messageText)
             return self.complete(nextModuleName = MenuModuleName.bikeParameters.get)
 
-        if messageText == "Другое":
-            self.storage.logToUserRequest(ctx.from_user, RequestCodingKeys.bikeMotoCategory, messageText)
+        if messageText == self.getText(textConstant.orderStepValueOther):
+            self.storage.logToUserRequest(ctx.from_user, textConstant.orderStepKeyBikeMotoCategory, messageText)
             return self.complete(nextModuleName = MenuModuleName.bikeMotoCategoryChoice.get)
 
         return self.canNotHandle(data)

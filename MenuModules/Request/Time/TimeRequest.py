@@ -6,7 +6,7 @@ from Core.MessageSender import MessageSender
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
-from MenuModules.Request.RequestCodingKeys import RequestCodingKeys
+
 from logger import logger as log
 
 class TimeRequest(MenuModuleInterface):
@@ -27,14 +27,14 @@ class TimeRequest(MenuModuleInterface):
 
         keyboardMarkup = ReplyKeyboardMarkup(
             resize_keyboard=True
-        ).add(KeyboardButton(self.storage.getTextConstant(textConstant.timeButtonRequestDay)),
-        ).add(KeyboardButton(self.storage.getTextConstant(textConstant.timeButtonRequestWeek)),
-        ).add(KeyboardButton(self.storage.getTextConstant(textConstant.timeButtonRequestMonth))
+        ).add(KeyboardButton(self.getText(textConstant.timeButtonRequestDay)),
+        ).add(KeyboardButton(self.getText(textConstant.timeButtonRequestWeek)),
+        ).add(KeyboardButton(self.getText(textConstant.timeButtonRequestMonth))
         )
 
         await msg.answer(
             ctx = ctx,
-            text = self.storage.getTextConstant(textConstant.timeRequest),
+            text = self.getText(textConstant.timeRequest),
             keyboardMarkup = keyboardMarkup
         )
 
@@ -52,15 +52,15 @@ class TimeRequest(MenuModuleInterface):
             return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
-        self.storage.logToUserRequest(ctx.from_user, RequestCodingKeys.timeRequest, messageText)
+        self.storage.logToUserRequest(ctx.from_user, textConstant.orderStepKeyTimeRequest, messageText)
 
-        if messageText == self.storage.getTextConstant(textConstant.timeButtonRequestDay):
+        if messageText == self.getText(textConstant.timeButtonRequestDay):
             return self.complete(nextModuleName = MenuModuleName.timeRequestDayWeekWhen.get)
         
-        if messageText == self.storage.getTextConstant(textConstant.timeButtonRequestWeek):
+        if messageText == self.getText(textConstant.timeButtonRequestWeek):
             return self.complete(nextModuleName = MenuModuleName.timeRequestDayWeekWhen.get)
 
-        if messageText == self.storage.getTextConstant(textConstant.timeButtonRequestMonth):
+        if messageText == self.getText(textConstant.timeButtonRequestMonth):
             return self.complete(nextModuleName = MenuModuleName.timeRequestHowManyMonths.get)
 
         return self.canNotHandle(data)

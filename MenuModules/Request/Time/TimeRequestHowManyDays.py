@@ -6,7 +6,7 @@ from Core.MessageSender import MessageSender
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
-from MenuModules.Request.RequestCodingKeys import RequestCodingKeys
+
 from logger import logger as log
 
 class TimeRequestHowManyDays(MenuModuleInterface):
@@ -27,7 +27,7 @@ class TimeRequestHowManyDays(MenuModuleInterface):
 
         await msg.answer(
             ctx = ctx,
-            text = self.storage.getTextConstant(textConstant.timeRequestHowManyDays),
+            text = self.getText(textConstant.timeRequestHowManyDays),
             keyboardMarkup = ReplyKeyboardRemove()
         )
 
@@ -45,7 +45,7 @@ class TimeRequestHowManyDays(MenuModuleInterface):
             return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
-        self.storage.logToUserRequest(ctx.from_user,RequestCodingKeys.timeRequestHowManyDays, messageText)
+        self.storage.logToUserRequest(ctx.from_user, textConstant.orderStepKeyTimeRequestHowManyDays, messageText)
         return self.complete(nextModuleName = MenuModuleName.requestGeoposition.get)
         
 

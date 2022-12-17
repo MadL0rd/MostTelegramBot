@@ -7,7 +7,7 @@ import Core.Utils.Utils as utils
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
-from MenuModules.Request.RequestCodingKeys import RequestCodingKeys
+
 from logger import logger as log
 
 class BikeCriteriaChoice(MenuModuleInterface):
@@ -33,11 +33,11 @@ class BikeCriteriaChoice(MenuModuleInterface):
         log.debug(f"User: {ctx.from_user.id}")
         
         messageText = ctx.text
-        pull = self.storage.getJsonData(self.storage.PathConfig.botContentBikeCriteria)
+        pull = self.storage.getJsonData(self.storage.path.botContentBikeCriteria)
         request = self.storage.getUserRequest(ctx.from_user)
-        if RequestCodingKeys.bikeScooterCategory.getKey in request:
-            bikeName = request[RequestCodingKeys.bikeScooterCategory.getKey]["value"]
-            pull = [criteria for criteria in pull if "Все" in criteria["bikes"] or bikeName in criteria["bikes"]]
+        if textConstant.orderStepKeyBikeScooterCategory.value in request:
+            bikeName = request[textConstant.orderStepKeyBikeScooterCategory.value]["value"]
+            pull = [criteria for criteria in pull if self.getText(textConstant.orderStepValueAll) in criteria["bikes"] or bikeName in criteria["bikes"]]
 
         pullPrevious = [criteria for criteria in pull if criteria["id"] in data and data[criteria["id"]] == False]
         if len(pullPrevious) > 0:
@@ -49,7 +49,7 @@ class BikeCriteriaChoice(MenuModuleInterface):
             if prevCriteria["customTextEnable"] == True or messageText in prevCriteria["values"]:
                 self.storage.logToUserRequestCustom(
                     user = ctx.from_user,
-                    codingKey = f"{RequestCodingKeys.bikeCriteriaChoice.getKey}.{prevCriteriaId}",
+                    codingKey = f"{textConstant.bikeCriteriaChoice.value}.{prevCriteriaId}",
                     title = prevCriteriaTitle,
                     value = messageText
                 )
@@ -85,7 +85,7 @@ class BikeCriteriaChoice(MenuModuleInterface):
 
         await msg.answer(
                 ctx = ctx,
-                text = self.storage.getTextConstant(textConstant.bikeButtonCriteriaFinal),
+                text = self.getText(textConstant.bikeButtonCriteriaFinal),
                 keyboardMarkup = ReplyKeyboardMarkup()
             ) 
         return self.complete(nextModuleName = MenuModuleName.bikeHelmet.get)

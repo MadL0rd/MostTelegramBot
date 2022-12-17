@@ -6,7 +6,7 @@ from Core.MessageSender import MessageSender
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
-from MenuModules.Request.RequestCodingKeys import RequestCodingKeys
+
 from logger import logger as log
 
 class TimeRequestHowManyMonths(MenuModuleInterface):
@@ -27,10 +27,10 @@ class TimeRequestHowManyMonths(MenuModuleInterface):
 
         keyboardMarkup = ReplyKeyboardMarkup(
             resize_keyboard=True
-        ).add(KeyboardButton(self.storage.getTextConstant(textConstant.timeButtonRequestHowManyMonths1)),
-        ).add(KeyboardButton(self.storage.getTextConstant(textConstant.timeButtonRequestHowManyMonths2)),
-        ).add(KeyboardButton(self.storage.getTextConstant(textConstant.timeButtonRequestHowManyMonths3)),
-        ).add(KeyboardButton(self.storage.getTextConstant(textConstant.timeButtonRequestHowManyMonthsMore))
+        ).add(KeyboardButton(self.getText(textConstant.timeButtonRequestHowManyMonths1)),
+        ).add(KeyboardButton(self.getText(textConstant.timeButtonRequestHowManyMonths2)),
+        ).add(KeyboardButton(self.getText(textConstant.timeButtonRequestHowManyMonths3)),
+        ).add(KeyboardButton(self.getText(textConstant.timeButtonRequestHowManyMonthsMore))
         )
             
         userTg = ctx.from_user
@@ -38,7 +38,7 @@ class TimeRequestHowManyMonths(MenuModuleInterface):
 
         await msg.answer(
             ctx = ctx,
-            text = self.storage.getTextConstant(textConstant.timeRequestHowManyMonths),
+            text = self.getText(textConstant.timeRequestHowManyMonths),
             keyboardMarkup = keyboardMarkup
         )
 
@@ -58,14 +58,14 @@ class TimeRequestHowManyMonths(MenuModuleInterface):
         messageText = ctx.text
 
         if messageText in [
-            self.storage.getTextConstant(textConstant.timeButtonRequestHowManyMonths1), 
-            self.storage.getTextConstant(textConstant.timeButtonRequestHowManyMonths2), 
-            self.storage.getTextConstant(textConstant.timeButtonRequestHowManyMonths3)
+            self.getText(textConstant.timeButtonRequestHowManyMonths1), 
+            self.getText(textConstant.timeButtonRequestHowManyMonths2), 
+            self.getText(textConstant.timeButtonRequestHowManyMonths3)
         ]:
-            self.storage.logToUserRequest(ctx.from_user, RequestCodingKeys.timeRequestHowManyMonths, messageText)
+            self.storage.logToUserRequest(ctx.from_user, textConstant.orderStepKeyTimeRequestHowManyMonths, messageText)
             return self.complete(nextModuleName = MenuModuleName.timeRequestMonthWhen.get)
 
-        if messageText in (self.storage.getTextConstant(textConstant.timeButtonRequestHowManyMonthsMore)):
+        if messageText in (self.getText(textConstant.timeButtonRequestHowManyMonthsMore)):
             return self.complete(nextModuleName = MenuModuleName.timeRequestHowManyMonthsSet.get)    
 
         return self.canNotHandle(data)     

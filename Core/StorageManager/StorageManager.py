@@ -9,7 +9,6 @@ import xlsxwriter
 
 from aiogram.types import User
 from Core.StorageManager.UniqueMessagesKeys import UniqueMessagesKeys
-from MenuModules.Request.RequestCodingKeys import RequestCodingKeys
 from Core.StorageManager.LanguageKey import LanguageKey
 from Core.StorageManager.PathConfig import PathConfig
 from Core.StorageManager.UserHistoryEvent import UserHistoryEvent
@@ -68,6 +67,15 @@ class StorageManager:
         else:
             return "Unknown"
 
+    def getAndReplaceOrderMaskWith(self, messageKey: UniqueMessagesKeys, text: str) -> str:
+        messagesKeys = self.getJsonData(self.path.botContentUniqueMessages)
+        if messageKey.value in messagesKeys:
+            value: str = messagesKeys[messageKey.value]
+            mask: str = self.getTextConstant(UniqueMessagesKeys.orderNumberMask)
+            return value.replace(mask, text)
+        else:
+            return "Unknown"
+
     def getOrder(self, orderId: int) -> dict:
         orderFile = self.path.orderDir(orderId)
 
@@ -111,11 +119,11 @@ class StorageManager:
 
         return self.getJsonData(userRequestFile)
 
-    def logToUserRequest(self, user: User, codingKey: RequestCodingKeys, value: str):
+    def logToUserRequest(self, user: User, codingKey: UniqueMessagesKeys, value: str):
         request = self.getUserRequest(user)
         log.info(type(request))
-        request[codingKey.getKey] = {
-            "title": codingKey.getTitle,
+        request[codingKey.value] = {
+            "title": self.getTextConstant(codingKey),
             "value": value
         }
         self.updateUserRequest(user, request)
@@ -133,15 +141,13 @@ class StorageManager:
 
         userFolder = self.path.userFolder(user)
         userFolder.mkdir(parents=True, exist_ok=True)
-
-        # notoficationsConfig = self.getJsonData(self.path.botContentNotificationTimes)
         
         userData = json.loads(user.as_json())
         userData = {
             "info": userData,
             "isAdmin": False,
             "state": {},
-            # "notifications": notoficationsConfig["userDefault"]
+            "language": user.language_code
         }
         self.updateUserRequest(user,[])
         self.updateUserData(user, userData)

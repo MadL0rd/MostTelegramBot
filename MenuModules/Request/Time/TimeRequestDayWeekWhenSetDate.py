@@ -6,7 +6,7 @@ from Core.MessageSender import MessageSender
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
-from MenuModules.Request.RequestCodingKeys import RequestCodingKeys
+
 from logger import logger as log
 
 class TimeRequestDayWeekWhenSetDate(MenuModuleInterface):
@@ -27,7 +27,7 @@ class TimeRequestDayWeekWhenSetDate(MenuModuleInterface):
 
         await msg.answer(
             ctx = ctx,
-            text = self.storage.getTextConstant(textConstant.timeRequestDayWeekWhenSetDate),
+            text = self.getText(textConstant.timeRequestDayWeekWhenSetDate),
             keyboardMarkup = ReplyKeyboardRemove()
         )
 
@@ -45,7 +45,7 @@ class TimeRequestDayWeekWhenSetDate(MenuModuleInterface):
             return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
-        self.storage.logToUserRequest(ctx.from_user,RequestCodingKeys.timeRequestDayWeekWhenSetDate, messageText)
+        self.storage.logToUserRequest(ctx.from_user, textConstant.orderStepKeyTimeRequestDayWeekWhenSetDate, messageText)
         return self.complete(nextModuleName = MenuModuleName.timeRequestHowManyDays.get)
         
     async def handleCallback(self, ctx: CallbackQuery, data: dict, msg: MessageSender) -> Completion:

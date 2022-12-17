@@ -18,7 +18,7 @@ class MessageSender:
             reply_markup=inlineMarkup
         )
 
-    async def answer(self, ctx: Message, text: str, keyboardMarkup: ReplyKeyboardMarkup, parse_mode = ParseMode.MARKDOWN):
+    async def answer(self, ctx: Message, text: str, keyboardMarkup: ReplyKeyboardMarkup = None, parse_mode = ParseMode.MARKDOWN):
         
         # log.debug(f"MessageSender sends: {text}")
         await ctx.answer(
@@ -59,9 +59,9 @@ class CallbackMessageSender(MessageSender):
 
     async def answerUnknown(self, ctx: Message):
 
-        nknownText = self.storage.getTextConstant(textConstant.unknownState)
+        unknownText = self.getText(textConstant.unknownState)
         await bot.send_message(
                 chat_id=ctx.message.chat.id,
-                text=nknownText,
+                text=unknownText,
                 parse_mode=ParseMode.MARKDOWN
             )

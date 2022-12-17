@@ -36,6 +36,9 @@ class MenuModuleInterface:
     def name(self) -> str:
         return self.namePrivate.value
 
+    def getText(self, textConstant: UniqueMessagesKeys) -> str:
+        return self.storage.getTextConstant(textConstant)
+
     def callbackData(self, data: dict, msg: MessageSender) -> str:
         data = {
             "module": self.name,

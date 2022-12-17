@@ -6,7 +6,7 @@ from Core.MessageSender import MessageSender
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
-from MenuModules.Request.RequestCodingKeys import RequestCodingKeys
+
 from logger import logger as log
 
 class BikeScooterOrMoto(MenuModuleInterface):
@@ -27,13 +27,13 @@ class BikeScooterOrMoto(MenuModuleInterface):
 
         keyboardMarkup = ReplyKeyboardMarkup(
             resize_keyboard=True
-        ).add(KeyboardButton(self.storage.getTextConstant(textConstant.bikeButtonScooterOrMotoScooter)),
-        ).add(KeyboardButton(self.storage.getTextConstant(textConstant.bikeButtonScooterOrMotoMoto))
+        ).add(KeyboardButton(self.getText(textConstant.bikeButtonScooterOrMotoScooter)),
+        ).add(KeyboardButton(self.getText(textConstant.bikeButtonScooterOrMotoMoto))
         )
 
         await msg.answer(
             ctx = ctx,
-            text = self.storage.getTextConstant(textConstant.bikeScooterOrMoto),
+            text = self.getText(textConstant.bikeScooterOrMoto),
             keyboardMarkup = keyboardMarkup
         )
 
@@ -51,12 +51,12 @@ class BikeScooterOrMoto(MenuModuleInterface):
             return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
-        self.storage.logToUserRequest(ctx.from_user,RequestCodingKeys.bikeScooterOrMoto , messageText)
+        self.storage.logToUserRequest(ctx.from_user, textConstant.orderStepKeyBikeScooterOrMoto, messageText)
 
-        if messageText == self.storage.getTextConstant(textConstant.bikeButtonScooterOrMotoMoto):
+        if messageText == self.getText(textConstant.bikeButtonScooterOrMotoMoto):
             return self.complete(nextModuleName = MenuModuleName.bikeMotoCategory.get)
         
-        if messageText == self.storage.getTextConstant(textConstant.bikeButtonScooterOrMotoScooter):
+        if messageText == self.getText(textConstant.bikeButtonScooterOrMotoScooter):
             return self.complete(nextModuleName = MenuModuleName.bikeScooterCategory.get)
 
         return self.canNotHandle(data)        

@@ -7,7 +7,7 @@ from Core.Utils.Utils import dictToList
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
-from MenuModules.Request.RequestCodingKeys import RequestCodingKeys
+
 from logger import logger as log
 
 class BikeMotoCategoryChoice(MenuModuleInterface):
@@ -28,7 +28,7 @@ class BikeMotoCategoryChoice(MenuModuleInterface):
         
         await msg.answer(
             ctx = ctx,
-            text = self.storage.getTextConstant(textConstant.bikeMotoCategoryChoice),
+            text = self.getText(textConstant.bikeMotoCategoryChoice),
             keyboardMarkup = ReplyKeyboardRemove()
         )
 
@@ -48,7 +48,7 @@ class BikeMotoCategoryChoice(MenuModuleInterface):
             return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
-        self.storage.logToUserRequest(ctx.from_user,RequestCodingKeys.bikeMotoCategoryChoice , messageText)
+        self.storage.logToUserRequest(ctx.from_user, textConstant.orderStepKeyBikeMotoCategoryChoice , messageText)
         return self.complete(nextModuleName = MenuModuleName.bikeParameters.get)
         
     async def handleCallback(self, ctx: CallbackQuery, data: dict, msg: MessageSender) -> Completion:

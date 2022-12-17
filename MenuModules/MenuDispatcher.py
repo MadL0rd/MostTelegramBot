@@ -59,7 +59,7 @@ async def handleUserMessage(ctx: Message):
     data = {}
     try:
         menuModuleName = menuState["module"]
-        module = [menuFactory.generateModuleClass(module) for module in menu if module.get.name == menuModuleName][0]
+        module = [menuFactory.generateModuleClass(module) for module in menu if menuFactory.generateModuleClass(module).name == menuModuleName][0]
         log.info(f"Founded module: {module.name}")
 
     except:
@@ -73,6 +73,10 @@ async def handleUserMessage(ctx: Message):
             data=data
         )
 
+    userLanguage = storageFactory.getLanguageForUser(userTg)
+    storage = storageFactory.getStorageForLanguage(userLanguage)
+    menuFactory = MenuModulesFactory(userLanguage)
+
     # Start next module if needed
     moduleNext: MenuModuleInterface = None
     if completion is None:
@@ -81,7 +85,7 @@ async def handleUserMessage(ctx: Message):
         log.info(f"Module {module.name} completed")
         try:
             menuModuleName = completion.nextModuleNameIfCompleted
-            moduleNext = [menuFactory.generateModuleClass(module) for module in menu if module.get.name == menuModuleName][0]
+            moduleNext = [menuFactory.generateModuleClass(module) for module in menu if menuFactory.generateModuleClass(module).name == menuModuleName][0]
             log.info(f"Founded module: {module.name}")
 
         except:

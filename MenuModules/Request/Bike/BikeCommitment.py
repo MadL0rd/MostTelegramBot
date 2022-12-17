@@ -7,7 +7,7 @@ from Core.MessageSender import MessageSender
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
-from MenuModules.Request.RequestCodingKeys import RequestCodingKeys
+
 from logger import logger as log
 
 class BikeCommitment(MenuModuleInterface):
@@ -28,15 +28,15 @@ class BikeCommitment(MenuModuleInterface):
 
         keyboardMarkup = ReplyKeyboardMarkup(
             resize_keyboard=True
-        ).add(KeyboardButton(self.storage.getTextConstant(textConstant.bikeButtonCommitmentYes)),
-        ).add(KeyboardButton(self.storage.getTextConstant(textConstant.bikeButtonCommitmentNo))
+        ).add(KeyboardButton(self.getText(textConstant.bikeButtonCommitmentYes)),
+        ).add(KeyboardButton(self.getText(textConstant.bikeButtonCommitmentNo))
         )
         
         userTg = ctx.from_user
 
         await msg.answer(
             ctx = ctx,
-            text = self.storage.getTextConstant(textConstant.bikeCommitment),
+            text = self.getText(textConstant.bikeCommitment),
             keyboardMarkup = keyboardMarkup
         )
 
@@ -57,18 +57,18 @@ class BikeCommitment(MenuModuleInterface):
         
         messageText = ctx.text
 
-        self.storage.logToUserRequest(ctx.from_user,RequestCodingKeys.bikeCommitment, "Байк")
+        self.storage.logToUserRequest(ctx.from_user, textConstant.orderStepKeyBikeCommitment, self.getText(textConstant.orderStepValueBikeCommitment))
 
-        if messageText == self.storage.getTextConstant(textConstant.bikeButtonCommitmentNo):
+        if messageText == self.getText(textConstant.bikeButtonCommitmentNo):
             await msg.answer(
                 ctx = ctx,
-                text = self.storage.getTextConstant(textConstant.bikeModelsDescription),
+                text = self.getText(textConstant.bikeModelsDescription),
                 keyboardMarkup=ReplyKeyboardMarkup(
                 resize_keyboard=True)
             )
             return self.complete(nextModuleName = MenuModuleName.bikeScooterOrMoto.get)
 
-        if messageText == self.storage.getTextConstant(textConstant.bikeButtonCommitmentYes):
+        if messageText == self.getText(textConstant.bikeButtonCommitmentYes):
             return self.complete(nextModuleName = MenuModuleName.bikeScooterOrMoto.get)
 
         return self.canNotHandle(data)        

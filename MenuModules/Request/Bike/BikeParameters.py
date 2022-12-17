@@ -26,12 +26,12 @@ class BikeParameters(MenuModuleInterface):
 
         keyboardMarkup = ReplyKeyboardMarkup(
             resize_keyboard=True
-        ).add(KeyboardButton(self.storage.getTextConstant(textConstant.bikeButtonCriteria))
-        ).add(KeyboardButton(self.storage.getTextConstant(textConstant.bikeButtonShowAll)))
+        ).add(KeyboardButton(self.getText(textConstant.bikeButtonCriteria))
+        ).add(KeyboardButton(self.getText(textConstant.bikeButtonShowAll)))
         
         await msg.answer(
             ctx = ctx,
-            text = self.storage.getTextConstant(textConstant.bikeParameters),
+            text = self.getText(textConstant.bikeParameters),
             keyboardMarkup = keyboardMarkup
         )
 
@@ -50,13 +50,13 @@ class BikeParameters(MenuModuleInterface):
         
         messageText = ctx.text
 
-        if messageText == self.storage.getTextConstant(textConstant.bikeButtonCriteria):
+        if messageText == self.getText(textConstant.bikeButtonCriteria):
             return self.complete(nextModuleName = MenuModuleName.bikeCriteriaChoice.get)
         
-        if messageText == self.storage.getTextConstant(textConstant.bikeButtonShowAll):
+        if messageText == self.getText(textConstant.bikeButtonShowAll):
             await msg.answer(
             ctx = ctx,
-            text = self.storage.getTextConstant(textConstant.bikeButtonCriteriaShowAllAnswer),
+            text = self.getText(textConstant.bikeButtonCriteriaShowAllAnswer),
             keyboardMarkup = ReplyKeyboardMarkup()
         )
             return self.complete(nextModuleName = MenuModuleName.bikeHelmet.get)

@@ -7,7 +7,7 @@ from Core.MessageSender import MessageSender
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
-from MenuModules.Request.RequestCodingKeys import RequestCodingKeys
+
 from logger import logger as log
 
 from main import crossDialogMessageSender
@@ -32,14 +32,14 @@ class Comment(MenuModuleInterface):
 
         keyboardMarkup = ReplyKeyboardMarkup(
             resize_keyboard=True
-        ).add(KeyboardButton(self.storage.getTextConstant(textConstant.commentCompleteOrderButton))
-        ).add(KeyboardButton(self.storage.getTextConstant(textConstant.commentUserWishesButton)))
+        ).add(KeyboardButton(self.getText(textConstant.commentCompleteOrderButton))
+        ).add(KeyboardButton(self.getText(textConstant.commentUserWishesButton)))
         
-        userRequestString = getUserRequestString(ctx)
+        userRequestString = self.getUserRequestString(ctx)
 
         await msg.answer(
             ctx = ctx,
-            text = f"{self.storage.getTextConstant(textConstant.commentOrderTextStart)}\n\n{userRequestString}",
+            text = f"{self.getText(textConstant.commentOrderTextStart)}\n\n{userRequestString}",
             keyboardMarkup = keyboardMarkup
         )
 
@@ -52,10 +52,10 @@ class Comment(MenuModuleInterface):
     async def handleUserMessage(self, ctx: Message, msg: MessageSender, data: dict) -> Completion:
 
         messageText = ctx.text
-        if messageText == self.storage.getTextConstant(textConstant.commentUserWishesButton):
+        if messageText == self.getText(textConstant.commentUserWishesButton):
             await msg.answer(
                 ctx = ctx,
-                text = self.storage.getTextConstant(textConstant.commentUserWishesText),
+                text = self.getText(textConstant.commentUserWishesText),
                 keyboardMarkup = ReplyKeyboardRemove()
             )
 
@@ -66,11 +66,11 @@ class Comment(MenuModuleInterface):
             )
 
         if "commentMessageDidSent" in data and data["commentMessageDidSent"] == True:
-            self.storage.logToUserRequest(ctx.from_user, RequestCodingKeys.comment, messageText)
+            self.storage.logToUserRequest(ctx.from_user, textConstant.orderStepKeyComment, messageText)
 
-        if messageText == self.storage.getTextConstant(textConstant.commentCompleteOrderButton) or "commentMessageDidSent" in data:
+        if messageText == self.getText(textConstant.commentCompleteOrderButton) or "commentMessageDidSent" in data:
 
-            userRequestString = getUserRequestString(ctx)
+            userRequestString = self.getUserRequestString(ctx)
             userRequestString = f"{ctx.from_user.full_name} @{ctx.from_user.username}\n{userRequestString}"
 
             await crossDialogMessageSender.setWaitingForOrder(ctx.from_user, userRequestString)
@@ -79,7 +79,7 @@ class Comment(MenuModuleInterface):
             
             await msg.answer(
                 ctx = ctx,
-                text = self.storage.getTextConstant(textConstant.messageAfterFillingOutForm),
+                text = self.getText(textConstant.messageAfterFillingOutForm),
                 keyboardMarkup = ReplyKeyboardRemove()
             )
             return self.complete(nextModuleName = MenuModuleName.mainMenu.get)    
@@ -95,10 +95,10 @@ class Comment(MenuModuleInterface):
     # Custom stuff
     # =====================
 
-def getUserRequestString(ctx: Message) -> str:
-    userRequest = self.storage.getUserRequest(user=ctx.from_user)
-    userRequestString = ""
-    for line in userRequest.values():
-        userRequestString += f"{line['title']}: {line['value']}\n"
+    def getUserRequestString(self, ctx: Message) -> str:
+        userRequest = self.storage.getUserRequest(user=ctx.from_user)
+        userRequestString = ""
+        for line in userRequest.values():
+            userRequestString += f"{line['title']}: {line['value']}\n"
 
-    return userRequestString
+        return userRequestString

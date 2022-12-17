@@ -6,7 +6,7 @@ from Core.MessageSender import MessageSender
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
-from MenuModules.Request.RequestCodingKeys import RequestCodingKeys
+
 from logger import logger as log
 
 class TimeRequestMonthWhenSetDate(MenuModuleInterface):
@@ -27,7 +27,7 @@ class TimeRequestMonthWhenSetDate(MenuModuleInterface):
         
         await msg.answer(
             ctx = ctx,
-            text = self.storage.getTextConstant(textConstant.timeRequestMonthWhenSetDate),
+            text = self.getText(textConstant.timeRequestMonthWhenSetDate),
             keyboardMarkup = ReplyKeyboardRemove()
         )
 
@@ -45,7 +45,7 @@ class TimeRequestMonthWhenSetDate(MenuModuleInterface):
             return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
-        self.storage.logToUserRequest(ctx.from_user, RequestCodingKeys.timeRequestMonthWhenSetDate, messageText)
+        self.storage.logToUserRequest(ctx.from_user, textConstant.orderStepKeyTimeRequestMonthWhenSetDate, messageText)
         log.info(f"Транспорт нужен на {messageText}")
         return self.complete(nextModuleName = MenuModuleName.requestGeoposition.get)
 

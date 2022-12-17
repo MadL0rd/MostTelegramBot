@@ -7,7 +7,7 @@ from Core.MessageSender import MessageSender
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
-from MenuModules.Request.RequestCodingKeys import RequestCodingKeys
+
 from logger import logger as log
 
 class BikeHelmet(MenuModuleInterface):
@@ -28,13 +28,13 @@ class BikeHelmet(MenuModuleInterface):
 
         keyboardMarkup = ReplyKeyboardMarkup(
             resize_keyboard=True
-        ).add(KeyboardButton(self.storage.getTextConstant(textConstant.bikeHelmet1)),
-        ).add(KeyboardButton(self.storage.getTextConstant(textConstant.bikeHelmet2)),
-        ).add(KeyboardButton(self.storage.getTextConstant(textConstant.bikeHelmet0)))
+        ).add(KeyboardButton(self.getText(textConstant.bikeHelmet1)),
+        ).add(KeyboardButton(self.getText(textConstant.bikeHelmet2)),
+        ).add(KeyboardButton(self.getText(textConstant.bikeHelmet0)))
         
         await msg.answer(
             ctx = ctx,
-            text = self.storage.getTextConstant(textConstant.bikeHelmet),
+            text = self.getText(textConstant.bikeHelmet),
             keyboardMarkup = keyboardMarkup
         )
 
@@ -52,12 +52,12 @@ class BikeHelmet(MenuModuleInterface):
             return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
-        self.storage.logToUserRequest(ctx.from_user, RequestCodingKeys.bikeHelmet, messageText)
+        self.storage.logToUserRequest(ctx.from_user, textConstant.orderStepKeyBikeHelmet, messageText)
 
         if messageText in [
-            self.storage.getTextConstant(textConstant.bikeHelmet1), 
-            self.storage.getTextConstant(textConstant.bikeHelmet2), 
-            self.storage.getTextConstant(textConstant.bikeHelmet0)
+            self.getText(textConstant.bikeHelmet1), 
+            self.getText(textConstant.bikeHelmet2), 
+            self.getText(textConstant.bikeHelmet0)
             ]:
             log.info(messageText)
             return self.complete(nextModuleName = MenuModuleName.timeRequest.get) 

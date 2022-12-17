@@ -1,7 +1,8 @@
 from aiogram.types import Message, CallbackQuery
+from Core.StorageManager.LanguageKey import LanguageKey
 from main import bot
 from logger import logger as log
-import Core.GoogleSheetsService as sheets
+from Core.GoogleSheetsService import GoogleSheetsService
 from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton
 
 from Core.StorageManager.StorageManager import UserHistoryEvent as event
@@ -29,13 +30,13 @@ class AdminMenu(MenuModuleInterface):
 
         keyboardMarkup = ReplyKeyboardMarkup(
             resize_keyboard=True
-        ).add(KeyboardButton(self.storage.getTextConstant(textConstant.adminMenuButtonReloadData))
-        ).add(KeyboardButton(self.storage.getTextConstant(textConstant.adminMenuButtonLoadData))
-        ).add(KeyboardButton(self.storage.getTextConstant(textConstant.menuButtonReturnToMainMenu)))
+        ).add(KeyboardButton(self.getText(textConstant.adminMenuButtonReloadData))
+        ).add(KeyboardButton(self.getText(textConstant.adminMenuButtonLoadData))
+        ).add(KeyboardButton(self.getText(textConstant.menuButtonReturnToMainMenu)))
         
         await msg.answer(
             ctx = ctx,
-            text = self.storage.getTextConstant(textConstant.adminMenuText),
+            text = self.getText(textConstant.adminMenuText),
             keyboardMarkup = keyboardMarkup
         )
 
@@ -49,28 +50,32 @@ class AdminMenu(MenuModuleInterface):
 
         log.debug(f"User: {ctx.from_user.id}")
 
-        if ctx.text == self.storage.getTextConstant(textConstant.menuButtonReturnToMainMenu):
+        if ctx.text == self.getText(textConstant.menuButtonReturnToMainMenu):
             return self.complete(nextModuleName=MenuModuleName.mainMenu.get)
 
-        if ctx.text == self.storage.getTextConstant(textConstant.adminMenuButtonReloadData):
+        if ctx.text == self.getText(textConstant.adminMenuButtonReloadData):
             
             log.info("Bot sheets data update start")
 
-            message = await ctx.answer(updateStateReloadDataMessage(0))
+            for language in LanguageKey:
+                langMsgText = f"Язык: {language.value}\n"
+                message = await ctx.answer(langMsgText + updateStateReloadDataMessage(0))
 
-            functions = [
-                sheets.updateUniqueMessages,
-                sheets.updateOnboarding,
-                sheets.updateScooterCategoriesList,
-                sheets.updateMotoCategoriesList,
-                sheets.updateBikeCriteria
-            ]
+                sheets = GoogleSheetsService(language)
+                    
+                functions = [
+                    sheets.updateUniqueMessages,
+                    sheets.updateOnboarding,
+                    sheets.updateScooterCategoriesList,
+                    sheets.updateMotoCategoriesList,
+                    sheets.updateBikeCriteria
+                ]
 
-            for index, func in enumerate(functions):
-                func()
-                await message.edit_text(updateStateReloadDataMessage(index + 1))
+                for index, func in enumerate(functions):
+                    func()
+                    await message.edit_text(langMsgText + updateStateReloadDataMessage(index + 1))
 
-            await message.edit_text("❇️ Тексты обновлены")
+                await message.edit_text(langMsgText + "❇️ Тексты обновлены")
 
             log.info("Bot sheets data update complete")
 
@@ -79,7 +84,7 @@ class AdminMenu(MenuModuleInterface):
                 didHandledUserInteraction=True
             )
         
-        if ctx.text == self.storage.getTextConstant(textConstant.adminMenuButtonLoadData):
+        if ctx.text == self.getText(textConstant.adminMenuButtonLoadData):
 
             log.info("Tables creation start")
 

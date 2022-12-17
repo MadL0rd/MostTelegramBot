@@ -3,8 +3,8 @@ from logger import logger as log
 
 class LanguageKey(enum.Enum):
 
-    ru = "RU"
-    en = "EN"
+    ru = "ru"
+    en = "en"
     
     @staticmethod
     def values() -> list:

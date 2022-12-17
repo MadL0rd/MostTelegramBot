@@ -6,7 +6,7 @@ from Core.MessageSender import MessageSender
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
-from MenuModules.Request.RequestCodingKeys import RequestCodingKeys
+
 from logger import logger as log
 
 class TimeRequestDayWeekWhen(MenuModuleInterface):
@@ -27,14 +27,14 @@ class TimeRequestDayWeekWhen(MenuModuleInterface):
 
         keyboardMarkup = ReplyKeyboardMarkup(
             resize_keyboard=True
-        ).add(KeyboardButton(self.storage.getTextConstant(textConstant.timeButtonRequestWhenToday)),
-        ).add(KeyboardButton(self.storage.getTextConstant(textConstant.timeButtonRequestWhenTomorrow)),
-        ).add(KeyboardButton(self.storage.getTextConstant(textConstant.timeButtonRequestWhenSetDate))
+        ).add(KeyboardButton(self.getText(textConstant.timeButtonRequestWhenToday)),
+        ).add(KeyboardButton(self.getText(textConstant.timeButtonRequestWhenTomorrow)),
+        ).add(KeyboardButton(self.getText(textConstant.timeButtonRequestWhenSetDate))
         )
 
         await msg.answer(
             ctx = ctx,
-            text = self.storage.getTextConstant(textConstant.timeRequestDayWeekWhen),
+            text = self.getText(textConstant.timeRequestDayWeekWhen),
             keyboardMarkup = keyboardMarkup
         )
 
@@ -53,15 +53,15 @@ class TimeRequestDayWeekWhen(MenuModuleInterface):
         
         messageText = ctx.text
 
-        if messageText == self.storage.getTextConstant(textConstant.timeButtonRequestWhenToday):
-            self.storage.logToUserRequest(ctx.from_user, RequestCodingKeys.timeRequestDayWeekWhen, messageText)
+        if messageText == self.getText(textConstant.timeButtonRequestWhenToday):
+            self.storage.logToUserRequest(ctx.from_user, textConstant.orderStepKeyTimeRequestDayWeekWhen, messageText)
             return self.complete(nextModuleName = MenuModuleName.timeRequestHowManyDays.get)
         
-        if messageText == self.storage.getTextConstant(textConstant.timeButtonRequestWhenTomorrow):
-            self.storage.logToUserRequest(ctx.from_user, RequestCodingKeys.timeRequestDayWeekWhen, messageText)
+        if messageText == self.getText(textConstant.timeButtonRequestWhenTomorrow):
+            self.storage.logToUserRequest(ctx.from_user, textConstant.orderStepKeyTimeRequestDayWeekWhen, messageText)
             return self.complete(nextModuleName = MenuModuleName.timeRequestHowManyDays.get)
 
-        if messageText == self.storage.getTextConstant(textConstant.timeButtonRequestWhenSetDate):
+        if messageText == self.getText(textConstant.timeButtonRequestWhenSetDate):
             return self.complete(nextModuleName = MenuModuleName.timeRequestDayWeekWhenSetDate.get)
             
         return self.canNotHandle(data)

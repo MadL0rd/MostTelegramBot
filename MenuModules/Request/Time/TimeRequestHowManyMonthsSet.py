@@ -6,7 +6,7 @@ from Core.MessageSender import MessageSender
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
-from MenuModules.Request.RequestCodingKeys import RequestCodingKeys
+
 from logger import logger as log
 
 class TimeRequestHowManyMonthsSet(MenuModuleInterface):
@@ -27,7 +27,7 @@ class TimeRequestHowManyMonthsSet(MenuModuleInterface):
 
         await msg.answer(
             ctx = ctx,
-            text = self.storage.getTextConstant(textConstant.timeRequestHowManyMonthsSet),
+            text = self.getText(textConstant.timeRequestHowManyMonthsSet),
             keyboardMarkup = ReplyKeyboardRemove()
         )
 
@@ -45,7 +45,7 @@ class TimeRequestHowManyMonthsSet(MenuModuleInterface):
             return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
-        self.storage.logToUserRequest(ctx.from_user, RequestCodingKeys.timeRequestHowManyMonthsSet, messageText)
+        self.storage.logToUserRequest(ctx.from_user, textConstant.orderStepKeyTimeRequestHowManyMonthsSet, messageText)
         return self.complete(nextModuleName = MenuModuleName.timeRequestMonthWhen.get)
         
     async def handleCallback(self, ctx: CallbackQuery, data: dict, msg: MessageSender) -> Completion:
