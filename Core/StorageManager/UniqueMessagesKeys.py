@@ -13,15 +13,17 @@ class UniqueMessagesKeys(enum.Enum):
     menuButtonMyOrders = "menuButtonMyOrders"
     menuButtonLanguageSettings = "menuButtonLanguageSettings"
     menuButtonAdmin = "menuButtonAdmin"
-    menuButtonBuyRights = "menuButtonBuyRights"
+    menuButtonGetLicense = "menuButtonGetLicense"
     menuButtonFindInstructor = "menuButtonFindInstructor"
 
     languageSettingsMessageText = "languageSettingsMessageText"
     languageSettingsButtonRu = "languageSettingsButtonRu"
     languageSettingsButtonEn = "languageSettingsButtonEn"
 
-    menuTextBuyRights = "menuTextBuyRights"
-    menuTextFindInstructor = "menuTextFindInstructor"
+    getLicenseText = "getLicenseText"
+    getLicenseButtonCreateOrder = "getLicenseButtonCreateOrder"
+    findInstructorText = "findInstructorText"
+    findInstructorButtonCreateOrder = "findInstructorButtonCreateOrder"
 
     adminMenuText = "adminMenuText"
     adminMenuButtonLoadData = "adminMenuButtonLoadData"
@@ -101,6 +103,10 @@ class UniqueMessagesKeys(enum.Enum):
     orderNumberMask = "orderNumberMask"
     orderCreationUserText = "orderCreationUserText"
     orderDetailsMessageTitle = "orderDetailsMessageTitle"
+
+    orderStepOrder = "orderStepOrder"
+    orderStepGetLicense = "orderStepGetLicense"
+    orderStepFindInstructor = "orderStepFindInstructor"
 
     orderStepValueBikeCommitment = "orderStepValueBikeCommitment"
     orderStepValueCarCommitment = "orderStepValueCarCommitment"

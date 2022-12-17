@@ -4,6 +4,8 @@ class MenuModuleName(enum.Enum):
 
     onboarding: str = "onboarding"
     mainMenu: str = "mainMenu"
+    getLicense: str = "getLicense"
+    findInstructor: str = "findInstructor"
     languageSettings: str = "languageSettings"
     menuButtonAdmin: str = "menuButtonAdmin"
     myOrders: str = "myOrders"
