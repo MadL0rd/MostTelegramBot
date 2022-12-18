@@ -70,6 +70,10 @@ class Comment(MenuModuleInterface):
         if messageText == self.getText(textConstant.commentCompleteOrderButton) or "commentMessageDidSent" in data:
 
             userRequestString = self.getUserRequestString(ctx)
+
+            if userRequestString == None:
+                return self.complete(nextModuleName = MenuModuleName.mainMenu.get)
+
             userRequestString = f"{ctx.from_user.full_name} @{ctx.from_user.username}\n{userRequestString}"
 
             await crossDialogMessageSender.setWaitingForOrder(ctx.from_user, userRequestString)
@@ -82,9 +86,9 @@ class Comment(MenuModuleInterface):
                 keyboardMarkup = ReplyKeyboardRemove()
             )
             self.storage.logToUserHistory(ctx.from_user, event.orderHasBeenCreated, "")
-            return self.complete(nextModuleName = MenuModuleName.mainMenu.get)    
+            return self.complete(nextModuleName = MenuModuleName.mainMenu.get)
 
-        return self.canNotHandle(data=data)    
+        return self.canNotHandle(data=data)
 
     async def handleCallback(self, ctx: CallbackQuery, data: dict, msg: MessageSender) -> Completion:
 
@@ -97,6 +101,10 @@ class Comment(MenuModuleInterface):
 
     def getUserRequestString(self, ctx: Message) -> str:
         userRequest = self.storage.getUserRequest(user=ctx.from_user)
+
+        if len(userRequest.values()) == 0:
+            return None
+
         userRequestString = ""
         for line in userRequest.values():
             userRequestString += f"{line['title']}: {line['value']}\n"
