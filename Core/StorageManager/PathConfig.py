@@ -52,6 +52,9 @@ class PathConfig:
     def statisticHistoryTableFile(self):
         return self.baseDir / "StatisticalHistory.xlsx"
     @property
+    def specHistoryTableFile(self):
+        return self.baseDir / "SpecHistory.xlsx"
+    @property
     def botContentScooterCategoriesSmallList(self):
         return self.botContentDir / "ScooterCategoriesSmall.json"
     @property

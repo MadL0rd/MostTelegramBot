@@ -276,6 +276,87 @@ class StorageManager:
 
         worksheet.set_column(0, usersCount, 15)
 
+    def generateSpecTable(self):
+
+        log.info("Spec table generation start")
+
+        specEvents = [
+            UserHistoryEvent.start.value,
+            UserHistoryEvent.startModuleOnboarding.value,
+            UserHistoryEvent.startModuleGetLicense.value,
+            UserHistoryEvent.startModuleFindInstructor.value,
+            UserHistoryEvent.startModuleBikeCommitment.value,
+            UserHistoryEvent.startModuleBikeMotoCategory.value,
+            UserHistoryEvent.startModuleBikeScooterCategory.value,
+            UserHistoryEvent.startModuleCarSize.value,
+            UserHistoryEvent.orderHasBeenCreated.value
+        ]
+
+        dateConfig = self.getJsonData(self.path.botContentPrivateConfig)["startDate"]
+        startDate = date(dateConfig["year"], dateConfig["month"], dateConfig["day"])
+        
+        workbook = xlsxwriter.Workbook(self.path.specHistoryTableFile)
+
+        self.generateSpecPage(workbook, specEvents, startDate)
+
+        workbook.close()
+
+        log.info("Spec table generation completed")
+
+    def generateSpecPage(self, workbook: xlsxwriter.Workbook, eventsList: list, startDate: date, operation: StatisticPageOperation = StatisticPageOperation.count):
+
+        cell_format = workbook.add_format()
+        cell_format.set_text_wrap()
+
+        worksheet = workbook.add_worksheet("Page1")
+        row = 1
+        col = 0
+
+        startRow = 3
+
+        worksheet.write(row, col, "Тип агрегирования:")
+        worksheet.write(row, col + 1, operation.value)
+
+        row = startRow
+        worksheet.write(row, col, "Дата / Событие")
+        row += 1
+
+        dates = [strDate.strftime("%d.%m.%Y") for strDate in daterange(startDate, date.today())]
+        for single_date in dates:
+            worksheet.write(row, col, single_date)
+            row += 1
+        col += 1
+
+        dict = {}
+        for specEvent in eventsList:
+            dict[specEvent] = {
+                "name" : specEvent
+            }
+            for single_date in dates:
+                dict[specEvent][single_date] = 0
+
+        for userFolder in self.path.usersDir.iterdir():
+            history = self.getJsonData(userFolder / "history.json")
+            for userEvent in history:
+                if userEvent["event"] in eventsList:
+                    dict[userEvent["event"]][userEvent["timestamp"]["date"]] += 1
+
+        col = 1
+        for event in dict:
+            row = startRow
+            worksheet.write(row, col, dict[event]["name"], cell_format)
+            row +=1
+            for single_date in dates:
+                if single_date in dict[event]:
+                    worksheet.write(row, col, dict[event][single_date])
+                else:
+                    worksheet.write(row, col, "0")
+                row += 1
+            col += 1
+
+        usersCount = 0
+        worksheet.set_column(0, usersCount, 15)
+
     def generateTotalTable(self):
         log.info("Total table generation start")
 

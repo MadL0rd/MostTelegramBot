@@ -28,7 +28,6 @@ class Comment(MenuModuleInterface):
     async def handleModuleStart(self, ctx: Message, msg: MessageSender) -> Completion:
 
         log.debug(f"User: {ctx.from_user.id}")
-        self.storage.logToUserHistory(ctx.from_user, event.startModuleComment, "")
 
         keyboardMarkup = ReplyKeyboardMarkup(
             resize_keyboard=True
@@ -82,6 +81,7 @@ class Comment(MenuModuleInterface):
                 text = self.getText(textConstant.messageAfterFillingOutForm),
                 keyboardMarkup = ReplyKeyboardRemove()
             )
+            self.storage.logToUserHistory(ctx.from_user, event.orderHasBeenCreated, "")
             return self.complete(nextModuleName = MenuModuleName.mainMenu.get)    
 
         return self.canNotHandle(data=data)    
