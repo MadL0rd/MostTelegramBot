@@ -36,4 +36,4 @@ class UserHistoryEvent(enum.Enum):
     startModuleCarSize = "Приступил к выбору размера машины"
     startModuleCarTransmission = "Приступил к выбору коробки передач"
     startModuleCarModels = "Приступил к выбору моделей"
-    startModuleComment = "Приступил к написанию комментария к заказу"
+    orderHasBeenCreated = "Заказ был создан"
