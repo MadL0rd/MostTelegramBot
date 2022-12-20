@@ -2,11 +2,12 @@ import asyncio
 import aioschedule
 from aiogram import Bot
 from aiogram.types import User, Message, ParseMode
+import time
 
-from Core.StorageManager.UniqueMessagesKeys import textConstant
-import Core.StorageManager.StorageManager as storage
+from Core.StorageManager.UniqueMessagesKeys import UniqueMessagesKeys as textConstant
+import Core.StorageManager.StorageFactory as storageFactory
 import Core.TrelloService as trello
-from MenuModules.Request.RequestCodingKeys import RequestCodingKeys
+
 from logger import logger as log
 
 class OrderCreationEntities:
@@ -33,16 +34,18 @@ class OrderCreationEntities:
 
 orderCreationEntities = {}
 telegramServiceMessagesToReply = {}
-sleepTime = 6
+sleepTime = 5
 
 class CrossDialogMessageSender:
 
     bot: Bot
     channel: str
+    needToCreateTrelloCard: bool
 
-    def __init__(self, bot: Bot, channel: str):
+    def __init__(self, bot: Bot, channel: str, needToCreateTrelloCard: bool):
         self.bot = bot
         self.channel = channel
+        self.needToCreateTrelloCard = needToCreateTrelloCard
 
     def configureBackgroundTasks(self):
         aioschedule.every(sleepTime).seconds.do(self.orderCreationRegularTask)
@@ -54,32 +57,40 @@ class CrossDialogMessageSender:
             await asyncio.sleep(sleepTime)
 
     async def setWaitingForOrder(self, userTg: User, msgText: str):
+
+        language = storageFactory.getLanguageForUser(userTg)
+        storage = storageFactory.getStorageForLanguage(language)
+
+        msgText = f"{language.value}\n{msgText}"
+        
         message = await self.bot.send_message(
             chat_id = self.channel,
-            text=msgText
+            text = msgText,
+            parse_mode = ParseMode.HTML
         )
 
         userRequest = storage.getUserRequest(userTg)
         bikeName = "None"
-        if RequestCodingKeys.bikeMotoCategory.get in userRequest:
-            bikeName = userRequest[RequestCodingKeys.bikeMotoCategory.get]["value"]
-        if RequestCodingKeys.bikeScooterCategory.get in userRequest:
-            bikeName = userRequest[RequestCodingKeys.bikeScooterCategory.get]["value"]
-        if RequestCodingKeys.carCommitment.get in userRequest:
-            bikeName = userRequest[RequestCodingKeys.carCommitment.get]["value"]
+        if textConstant.bikeMotoCategory.value in userRequest:
+            bikeName = userRequest[textConstant.bikeMotoCategory.value]["value"]
+        if textConstant.bikeScooterCategory.value in userRequest:
+            bikeName = userRequest[textConstant.bikeScooterCategory.value]["value"]
 
-        # TODO: implement test env to evoid terllo card creation while testing
         trelloCardTitle = f"@{userTg.username}: {bikeName}"
-        response = trello.createCard(
-            title = trelloCardTitle,
-            description = f"https://t.me/{userTg.username}\n{msgText}"
-        )
+        response = { 
+            "id": None
+        }
+        if self.needToCreateTrelloCard == True:
+            response = trello.createCard(
+                title = trelloCardTitle,
+                description = f"https://t.me/{userTg.username}\n{msgText}"
+            )
+        
         orderCreationEntities[message.text] = OrderCreationEntities(
             user = userTg,
             channelPost = message,
             treloCard = {
                 "id": response["id"],
-                # "id": 228,
                 "title": trelloCardTitle
             },
             userRequest = userRequest
@@ -89,21 +100,24 @@ class CrossDialogMessageSender:
         telegramServiceMessagesToReply[ctx.text] = ctx
 
     async def orderCreationRegularTask(self):
-        log.info(f"len orderCreationEntities: {len(orderCreationEntities)}; len telegramServiceMessagesToReply: {len(telegramServiceMessagesToReply)}")
+        aioschedule.clear()
+        while True:
+            await asyncio.sleep(sleepTime)
 
-        if len(telegramServiceMessagesToReply) == 0:
-            return
+            if len(telegramServiceMessagesToReply) == 0:
+                continue
 
-        orders = [messageText for messageText in telegramServiceMessagesToReply if messageText in orderCreationEntities]
-        for messageText in orders:
+            log.info(f"len orderCreationEntities: {len(orderCreationEntities)}; len telegramServiceMessagesToReply: {len(telegramServiceMessagesToReply)}")
 
-            orderCreationEntity: OrderCreationEntities = orderCreationEntities[messageText]
-            telegramServiceMessage: Message = telegramServiceMessagesToReply[messageText]
+            orders = [messageText for messageText in telegramServiceMessagesToReply if messageText in orderCreationEntities]
+            for messageText in orders:
 
-            channelChatId = telegramServiceMessage.chat.id
-            channelChatMessageId = telegramServiceMessage.message_id
-            orderId = channelChatMessageId
+                orderCreationEntity: OrderCreationEntities = orderCreationEntities[messageText]
+                telegramServiceMessage: Message = telegramServiceMessagesToReply[messageText]
 
+                channelChatId = telegramServiceMessage.chat.id
+                channelChatMessageId = telegramServiceMessage.message_id
+                orderId = channelChatMessageId
             text = messageText
             userTg = orderCreationEntity.user
             channelMessage: Message = orderCreationEntity.channelPost
@@ -117,56 +131,73 @@ class CrossDialogMessageSender:
                 log.error("ChannelMessage order text already updated!")
                 continue
 
-            orderData = {
-                "id": orderId,
-                "orderVersion": "1.1.0",
-                "channelMessageId": channelMessage.message_id,
-                "channelChatId": channelChatId,
-                "channelChatMessageId": channelChatMessageId,
-                "status": "Создан",
-                "trelloCard": orderCreationEntity.treloCard,
-                "text": text
-            }
+                text = messageText
+                userTg = orderCreationEntity.user
+                channelMessage: Message = orderCreationEntity.channelPost
+                try:
+                    newText = f"<b>id{orderId}</b> - {text}"
+                    await channelMessage.edit_text(
+                        text=newText,
+                        parse_mode=ParseMode.HTML
+                    )
+                except:
+                    log.error("ChannelMessage order text already updated!")
+                    continue
 
-            userInfo = storage.getUserInfo(userTg)
-            if "orders" in userInfo:
-                userInfo["orders"].append(orderData)
-            else:
-                userInfo["orders"] = [orderData]
-            storage.updateUserData(userTg, userInfo)
+                orderData = {
+                    "id": orderId,
+                    "orderVersion": "1.1.0",
+                    "channelMessageId": channelMessage.message_id,
+                    "channelChatId": channelChatId,
+                    "channelChatMessageId": channelChatMessageId,
+                    "status": "Создан",
+                    "trelloCard": orderCreationEntity.treloCard,
+                    "text": text
+                }
 
-            orderData["userInfo"] = userInfo["info"]
-            storage.updateOrderData(
-                orderId=orderId,
-                data=orderData
-            )
+                storage = storageFactory.getStorageForUser(userTg)
+                userInfo = storage.getUserInfo(userTg)
+                if "orders" in userInfo:
+                    userInfo["orders"].append(orderData)
+                else:
+                    userInfo["orders"] = [orderData]
+                storage.updateUserData(userTg, userInfo)
 
-            await self.bot.send_message(
-                chat_id = channelChatId,
-                text=f"Пользователь завершил создание заказа",
-                reply_to_message_id=channelChatMessageId
-            )
+                orderData["userInfo"] = userInfo["info"]
+                storage.updateOrderData(
+                    orderId=orderId,
+                    data=orderData
+                )
 
-            text = textConstant.orderCreationUserText.getAndReplaceOrderMaskWith(f'{orderId}')
-            await self.bot.send_message(
-                chat_id = userTg.id,
-                text=text,
-                parse_mode=ParseMode.MARKDOWN
-            )
+                await self.bot.send_message(
+                    chat_id = channelChatId,
+                    text=f"Пользователь завершил создание заказа",
+                    reply_to_message_id=channelChatMessageId
+                )
 
-            trello.updateCardTitle(
-                id=orderCreationEntity.treloCard["id"],
-                title=f"id{orderId} {orderCreationEntity.treloCard['title']}"
-            )
+                text = storage.getAndReplaceOrderMaskWith(textConstant.orderCreationUserText, f'{orderId}')
+                await self.bot.send_message(
+                    chat_id = userTg.id,
+                    text=text,
+                    parse_mode=ParseMode.MARKDOWN
+                )
 
-            del orderCreationEntities[messageText]
-            del telegramServiceMessagesToReply[messageText]
+                if orderCreationEntity.treloCard["id"] != None:
+                    trello.updateCardTitle(
+                        id=orderCreationEntity.treloCard["id"],
+                        title=f"id{orderId} {orderCreationEntity.treloCard['title']}"
+                    )
+
+                del orderCreationEntities[messageText]
+                del telegramServiceMessagesToReply[messageText]
 
     async def forwardMessageFromManagerToUser(self, ctx, order):
 
         channelChatId = order["userInfo"]["id"]
+        storage = storageFactory.getStorageForUser(channelChatId)
         orderId = order["id"]
-        text = textConstant.orderDetailsMessageTitle.getAndReplaceOrderMaskWith(f'{orderId}')
+
+        text = storage.getAndReplaceOrderMaskWith(textConstant.orderDetailsMessageTitle, f'{orderId}')
         if ctx.text != None:
             await self.bot.send_message(
                 chat_id = channelChatId,

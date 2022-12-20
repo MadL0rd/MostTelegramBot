@@ -1,21 +1,22 @@
-from aiogram.types import Message, CallbackQuery, ReplyKeyboardRemove
+from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
+from Core.StorageManager.LanguageKey import LanguageKey
 
 from Core.StorageManager.StorageManager import UserHistoryEvent as event
 from Core.StorageManager.UniqueMessagesKeys import textConstant
+
 from Core.MessageSender import MessageSender
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
-
 from logger import logger as log
 
-class BikeScooterCategoryChoice(MenuModuleInterface):
+class LanguageSettings(MenuModuleInterface):
 
     # =====================
     # Interface implementation
     # =====================
 
-    namePrivate = MenuModuleName.bikeScooterCategoryChoice
+    namePrivate = MenuModuleName.languageSettings
 
     # Use default implementation
     # def callbackData(self, data: dict, msg: MessageSender) -> str:
@@ -23,12 +24,17 @@ class BikeScooterCategoryChoice(MenuModuleInterface):
     async def handleModuleStart(self, ctx: Message, msg: MessageSender) -> Completion:
 
         log.debug(f"User: {ctx.from_user.id}")
-        self.storage.logToUserHistory(ctx.from_user, event.startModuleBikeScooterCategoryChoice, "")
-        
+
+        keyboardMarkup = ReplyKeyboardMarkup(
+            resize_keyboard=True
+        )
+        for buttonText in self.menuDict:
+            keyboardMarkup.add(KeyboardButton(buttonText))
+
         await msg.answer(
             ctx = ctx,
-            text = self.getText(textConstant.bikeScooterCategoryChoice),
-            keyboardMarkup = ReplyKeyboardRemove()
+            text = self.getText(textConstant.languageSettingsMessageText),
+            keyboardMarkup = keyboardMarkup
         )
 
         return Completion(
@@ -42,10 +48,17 @@ class BikeScooterCategoryChoice(MenuModuleInterface):
         log.debug(f"User: {ctx.from_user.id}")
 
         messageText = ctx.text
-        self.storage.logToUserRequest(ctx.from_user, textConstant.orderStepKeyBikeScooterCategoryChoice, messageText)  
-        return self.complete(nextModuleName = MenuModuleName.bikeParameters.get)
-        
+        if messageText in self.menuDict:
 
+            userTg = ctx.from_user
+            userInfo = self.storage.getUserInfo(userTg)
+            userInfo["language"] = self.menuDict[messageText]
+            self.storage.updateUserData(userTg, userInfo)
+
+            return self.complete(nextModuleName = MenuModuleName.mainMenu.get)
+
+        return self.canNotHandle(data)
+        
     async def handleCallback(self, ctx: CallbackQuery, data: dict, msg: MessageSender) -> Completion:
 
         log.debug(f"User: {ctx.from_user.id}")
@@ -54,3 +67,10 @@ class BikeScooterCategoryChoice(MenuModuleInterface):
     # =====================
     # Custom stuff
     # =====================
+    
+    @property
+    def menuDict(self) -> dict:
+        return {
+            self.getText(textConstant.languageSettingsButtonEn): LanguageKey.en.value,
+            self.getText(textConstant.languageSettingsButtonRu): LanguageKey.ru.value
+        }

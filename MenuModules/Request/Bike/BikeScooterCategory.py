@@ -1,14 +1,13 @@
 from aiogram.types import Message, CallbackQuery
 
-import Core.StorageManager.StorageManager as storage
 from Core.StorageManager.StorageManager import UserHistoryEvent as event
-from Core.MessageSender import MessageSender
 from Core.StorageManager.UniqueMessagesKeys import textConstant
+from Core.MessageSender import MessageSender
 from Core.Utils.Utils import doubleListToButton
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
-from MenuModules.Request.RequestCodingKeys import RequestCodingKeys
+
 from logger import logger as log
 
 class BikeScooterCategory(MenuModuleInterface):
@@ -25,18 +24,18 @@ class BikeScooterCategory(MenuModuleInterface):
     async def handleModuleStart(self, ctx: Message, msg: MessageSender) -> Completion:
 
         log.debug(f"User: {ctx.from_user.id}")
-        storage.logToUserHistory(ctx.from_user, event.startModuleBikeScooterCategory, "")
+        self.storage.logToUserHistory(ctx.from_user, event.startModuleBikeScooterCategory, "")
 
-        categoryListSmall = storage.getJsonData(storage.path.botContentScooterCategoriesSmallList)
-        categoryListBig = storage.getJsonData(storage.path.botContentScooterCategoriesBigList)
+        categoryListSmall = self.storage.getJsonData(self.storage.path.botContentScooterCategoriesSmallList)
+        categoryListBig = self.storage.getJsonData(self.storage.path.botContentScooterCategoriesBigList)
         categoryList = categoryListSmall + categoryListBig
-        textAnything = "Другое"
+        textAnything = self.getText(textConstant.orderStepValueOther)
         textSomething = "---------"
         keyboardMarkup = doubleListToButton(categoryListSmall, categoryListBig, textAnything, textSomething)
 
         await msg.answer(
             ctx = ctx,
-            text = textConstant.bikeScooterCategory.get,
+            text = self.getText(textConstant.bikeScooterCategory),
             keyboardMarkup = keyboardMarkup
         )
 
@@ -60,11 +59,11 @@ class BikeScooterCategory(MenuModuleInterface):
         messageText = ctx.text
 
         if messageText in data["categoryList"] and messageText != data["textAnything"]:
-            storage.logToUserRequest(ctx.from_user,RequestCodingKeys.bikeScooterCategory, messageText)
+            self.storage.logToUserRequest(ctx.from_user, textConstant.orderStepKeyBikeScooterCategory, messageText)
             return self.complete(nextModuleName = MenuModuleName.bikeParameters.get)
         
         if messageText == data["textAnything"]:
-            storage.logToUserRequest(ctx.from_user,RequestCodingKeys.bikeScooterCategory, messageText)
+            self.storage.logToUserRequest(ctx.from_user, textConstant.orderStepKeyBikeScooterCategory, messageText)
             return self.complete(nextModuleName = MenuModuleName.bikeScooterCategoryChoice.get)
         
         return self.canNotHandle(data)        

@@ -1,13 +1,13 @@
 from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove, ParseMode
 
-import Core.StorageManager.StorageManager as storage
 from Core.StorageManager.StorageManager import UserHistoryEvent as event
-from Core.MessageSender import MessageSender
 from Core.StorageManager.UniqueMessagesKeys import textConstant
+
+from Core.MessageSender import MessageSender
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
-from MenuModules.Request.RequestCodingKeys import RequestCodingKeys
+
 from logger import logger as log
 
 from main import crossDialogMessageSender
@@ -28,20 +28,18 @@ class Comment(MenuModuleInterface):
     async def handleModuleStart(self, ctx: Message, msg: MessageSender) -> Completion:
 
         log.debug(f"User: {ctx.from_user.id}")
-        storage.logToUserHistory(ctx.from_user, event.startModuleComment, "")
 
         keyboardMarkup = ReplyKeyboardMarkup(
             resize_keyboard=True
-        ).add(KeyboardButton(textConstant.commentCompleteOrderButton.get)
-        ).add(KeyboardButton(textConstant.commentUserWishesButton.get))
+        ).add(KeyboardButton(self.getText(textConstant.commentCompleteOrderButton))
+        ).add(KeyboardButton(self.getText(textConstant.commentUserWishesButton)))
         
-        userRequestString = getUserRequestString(ctx)
+        userRequestString = self.getUserRequestString(ctx)
 
         await msg.answer(
             ctx = ctx,
-            text = f"{textConstant.commentOrderTextStart.get}\n\n{userRequestString}",
-            keyboardMarkup = keyboardMarkup,
-            parse_mode = None
+            text = f"{self.getText(textConstant.commentOrderTextStart)}\n\n{userRequestString}",
+            keyboardMarkup = keyboardMarkup
         )
 
         return Completion(
@@ -53,10 +51,10 @@ class Comment(MenuModuleInterface):
     async def handleUserMessage(self, ctx: Message, msg: MessageSender, data: dict) -> Completion:
 
         messageText = ctx.text
-        if messageText == textConstant.commentUserWishesButton.get:
+        if messageText == self.getText(textConstant.commentUserWishesButton):
             await msg.answer(
                 ctx = ctx,
-                text = textConstant.commentUserWishesText.get,
+                text = self.getText(textConstant.commentUserWishesText),
                 keyboardMarkup = ReplyKeyboardRemove()
             )
 
@@ -67,25 +65,30 @@ class Comment(MenuModuleInterface):
             )
 
         if "commentMessageDidSent" in data and data["commentMessageDidSent"] == True:
-            storage.logToUserRequest(ctx.from_user, RequestCodingKeys.comment, messageText)
+            self.storage.logToUserRequest(ctx.from_user, textConstant.orderStepKeyComment, messageText)
 
-        if messageText == textConstant.commentCompleteOrderButton.get or "commentMessageDidSent" in data:
+        if messageText == self.getText(textConstant.commentCompleteOrderButton) or "commentMessageDidSent" in data:
 
-            userRequestString = getUserRequestString(ctx)
+            userRequestString = self.getUserRequestString(ctx)
+
+            if userRequestString == None:
+                return self.complete(nextModuleName = MenuModuleName.mainMenu.get)
+
             userRequestString = f"{ctx.from_user.full_name} @{ctx.from_user.username}\n{userRequestString}"
 
             await crossDialogMessageSender.setWaitingForOrder(ctx.from_user, userRequestString)
 
-            storage.updateUserRequest(ctx.from_user, {})
+            self.storage.updateUserRequest(ctx.from_user, {})
             
             await msg.answer(
                 ctx = ctx,
-                text = textConstant.messageAfterFillingOutForm.get,
+                text = self.getText(textConstant.messageAfterFillingOutForm),
                 keyboardMarkup = ReplyKeyboardRemove()
             )
-            return self.complete(nextModuleName = MenuModuleName.mainMenu.get)    
+            self.storage.logToUserHistory(ctx.from_user, event.orderHasBeenCreated, "")
+            return self.complete(nextModuleName = MenuModuleName.mainMenu.get)
 
-        return self.canNotHandle(data=data)    
+        return self.canNotHandle(data=data)
 
     async def handleCallback(self, ctx: CallbackQuery, data: dict, msg: MessageSender) -> Completion:
 
@@ -96,10 +99,14 @@ class Comment(MenuModuleInterface):
     # Custom stuff
     # =====================
 
-def getUserRequestString(ctx: Message) -> str:
-    userRequest = storage.getUserRequest(user=ctx.from_user)
-    userRequestString = ""
-    for line in userRequest.values():
-        userRequestString += f"{line['title']}: {line['value']}\n"
+    def getUserRequestString(self, ctx: Message) -> str:
+        userRequest = self.storage.getUserRequest(user=ctx.from_user)
 
-    return userRequestString
+        if len(userRequest.values()) == 0:
+            return None
+
+        userRequestString = ""
+        for line in userRequest.values():
+            userRequestString += f"{line['title']}: {line['value']}\n"
+
+        return userRequestString

@@ -1,13 +1,13 @@
 from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton
 
-import Core.StorageManager.StorageManager as storage
 from Core.StorageManager.StorageManager import UserHistoryEvent as event
-from Core.MessageSender import MessageSender
 from Core.StorageManager.UniqueMessagesKeys import textConstant
+
+from Core.MessageSender import MessageSender
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
-from MenuModules.Request.RequestCodingKeys import RequestCodingKeys
+
 from logger import logger as log
 
 class BikeCommitment(MenuModuleInterface):
@@ -24,23 +24,23 @@ class BikeCommitment(MenuModuleInterface):
     async def handleModuleStart(self, ctx: Message, msg: MessageSender) -> Completion:
 
         log.debug(f"User: {ctx.from_user.id}")
-        storage.logToUserHistory(ctx.from_user, event.startModuleBikeCommitment, "")
+        self.storage.logToUserHistory(ctx.from_user, event.startModuleBikeCommitment, "")
 
         keyboardMarkup = ReplyKeyboardMarkup(
             resize_keyboard=True
-        ).add(KeyboardButton(textConstant.bikeButtonCommitmentYes.get),
-        ).add(KeyboardButton(textConstant.bikeButtonCommitmentNo.get)
+        ).add(KeyboardButton(self.getText(textConstant.bikeButtonCommitmentYes)),
+        ).add(KeyboardButton(self.getText(textConstant.bikeButtonCommitmentNo))
         )
         
         userTg = ctx.from_user
 
         await msg.answer(
             ctx = ctx,
-            text = textConstant.bikeCommitment.get,
+            text = self.getText(textConstant.bikeCommitment),
             keyboardMarkup = keyboardMarkup
         )
 
-        storage.updateUserRequest(userTg, {})
+        self.storage.updateUserRequest(userTg, {})
 
         return Completion(
             inProgress=True,
@@ -57,18 +57,18 @@ class BikeCommitment(MenuModuleInterface):
         
         messageText = ctx.text
 
-        storage.logToUserRequest(ctx.from_user,RequestCodingKeys.bikeCommitment, "Байк")
+        self.storage.logToUserRequest(ctx.from_user, textConstant.orderStepKeyBikeCommitment, self.getText(textConstant.orderStepValueBikeCommitment))
 
-        if messageText == textConstant.bikeButtonCommitmentNo.get:
+        if messageText == self.getText(textConstant.bikeButtonCommitmentNo):
             await msg.answer(
                 ctx = ctx,
-                text = textConstant.bikeModelsDescription.get,
+                text = self.getText(textConstant.bikeModelsDescription),
                 keyboardMarkup=ReplyKeyboardMarkup(
                 resize_keyboard=True)
             )
             return self.complete(nextModuleName = MenuModuleName.bikeScooterOrMoto.get)
 
-        if messageText == textConstant.bikeButtonCommitmentYes.get:
+        if messageText == self.getText(textConstant.bikeButtonCommitmentYes):
             return self.complete(nextModuleName = MenuModuleName.bikeScooterOrMoto.get)
 
         return self.canNotHandle(data)        
