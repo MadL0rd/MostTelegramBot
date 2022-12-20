@@ -70,11 +70,7 @@ class CrossDialogMessageSender:
         )
 
         userRequest = storage.getUserRequest(userTg)
-        bikeName = "None"
-        if textConstant.bikeMotoCategory.value in userRequest:
-            bikeName = userRequest[textConstant.bikeMotoCategory.value]["value"]
-        if textConstant.bikeScooterCategory.value in userRequest:
-            bikeName = userRequest[textConstant.bikeScooterCategory.value]["value"]
+        bikeName = storage.getUserRequestObjectName(userTg)
 
         trelloCardTitle = f"@{userTg.username}: {bikeName}"
         response = { 
