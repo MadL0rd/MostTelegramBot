@@ -118,6 +118,18 @@ class CrossDialogMessageSender:
                 channelChatId = telegramServiceMessage.chat.id
                 channelChatMessageId = telegramServiceMessage.message_id
                 orderId = channelChatMessageId
+            text = messageText
+            userTg = orderCreationEntity.user
+            channelMessage: Message = orderCreationEntity.channelPost
+            try:
+                newText = f"<b>id{orderId}</b>\n{text}"
+                await channelMessage.edit_text(
+                    text=newText,
+                    parse_mode=ParseMode.HTML
+                )
+            except:
+                log.error("ChannelMessage order text already updated!")
+                continue
 
                 text = messageText
                 userTg = orderCreationEntity.user

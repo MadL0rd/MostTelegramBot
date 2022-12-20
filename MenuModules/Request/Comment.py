@@ -40,6 +40,7 @@ class Comment(MenuModuleInterface):
             ctx = ctx,
             text = f"{self.getText(textConstant.commentOrderTextStart)}\n\n{userRequestString}",
             keyboardMarkup = keyboardMarkup
+            parse_mode = None
         )
 
         return Completion(
