@@ -30,10 +30,27 @@ class MainMenu(MenuModuleInterface):
         userInfo = self.storage.getUserInfo(userTg)
 
         buttons = [button for button in self.menuDict]
+        # if "isAdmin" in userInfo and userInfo["isAdmin"] == True:
+        #     buttons.append(self.getText(textConstant.menuButtonAdmin))
+
+        # keyboardMarkup = utils.replyMarkupFromListOfButtons(buttons)
+
+        keyboardMarkup = ReplyKeyboardMarkup(
+            resize_keyboard=True
+        )
+
+        for buttonText in buttons[:-2]:
+            keyboardMarkup.row(
+                KeyboardButton(buttonText)
+            )
+        keyboardMarkup.row(
+                KeyboardButton(buttons[-2]), KeyboardButton(buttons[-1])
+            )
         if "isAdmin" in userInfo and userInfo["isAdmin"] == True:
             buttons.append(self.getText(textConstant.menuButtonAdmin))
-
-        keyboardMarkup = utils.replyMarkupFromListOfButtons(buttons)
+            keyboardMarkup.row(
+                KeyboardButton(buttons[-1])
+            )
 
         await msg.answer(
             ctx = ctx,
