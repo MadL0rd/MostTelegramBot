@@ -106,7 +106,7 @@ class StorageManager:
 
         return self.getJsonData(userInfoFile)
 
-    def getUserRequest(self, user: User)->list: 
+    def getUserRequest(self, user: User) -> list: 
         
         userRequestFile = self.path.userRequestFile(user)
 
@@ -118,6 +118,17 @@ class StorageManager:
         userRequestFile = self.path.userRequestFile(user)
 
         return self.getJsonData(userRequestFile)
+
+    def getUserRequestObjectName(self, user: User) -> str:
+        request = self.getUserRequest(user)
+        vehicleNameKeys = [
+            UniqueMessagesKeys.orderStepKeyBikeScooterCategory,
+            UniqueMessagesKeys.orderStepKeyBikeMotoCategory,
+            UniqueMessagesKeys.orderStepKeyCarCommitment,
+            UniqueMessagesKeys.orderStepOrder
+        ]
+
+        return next((request[key.value]["value"] for key in vehicleNameKeys if key.value in request), None)
 
     def logToUserRequest(self, user: User, codingKey: UniqueMessagesKeys, value: str):
         request = self.getUserRequest(user)
