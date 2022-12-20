@@ -1,13 +1,12 @@
 from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton
 
-import Core.StorageManager.StorageManager as storage
 from Core.StorageManager.StorageManager import UserHistoryEvent as event
-from Core.MessageSender import MessageSender
 from Core.StorageManager.UniqueMessagesKeys import textConstant
+from Core.MessageSender import MessageSender
 
 from MenuModules.MenuModuleInterface import MenuModuleInterface, MenuModuleHandlerCompletion as Completion
 from MenuModules.MenuModuleName import MenuModuleName
-from MenuModules.Request.RequestCodingKeys import RequestCodingKeys
+
 from logger import logger as log
 
 class BikeScooterOrMoto(MenuModuleInterface):
@@ -24,17 +23,17 @@ class BikeScooterOrMoto(MenuModuleInterface):
     async def handleModuleStart(self, ctx: Message, msg: MessageSender) -> Completion:
 
         log.debug(f"User: {ctx.from_user.id}")
-        storage.logToUserHistory(ctx.from_user, event.startModuleBikeScooterOrMoto, "")
+        self.storage.logToUserHistory(ctx.from_user, event.startModuleBikeScooterOrMoto, "")
 
         keyboardMarkup = ReplyKeyboardMarkup(
             resize_keyboard=True
-        ).add(KeyboardButton(textConstant.bikeButtonScooterOrMotoScooter.get),
-        ).add(KeyboardButton(textConstant.bikeButtonScooterOrMotoMoto.get)
+        ).add(KeyboardButton(self.getText(textConstant.bikeButtonScooterOrMotoScooter)),
+        ).add(KeyboardButton(self.getText(textConstant.bikeButtonScooterOrMotoMoto))
         )
 
         await msg.answer(
             ctx = ctx,
-            text = textConstant.bikeScooterOrMoto.get,
+            text = self.getText(textConstant.bikeScooterOrMoto),
             keyboardMarkup = keyboardMarkup
         )
 
@@ -52,12 +51,12 @@ class BikeScooterOrMoto(MenuModuleInterface):
             return self.handleModuleStart(ctx, msg)
         
         messageText = ctx.text
-        storage.logToUserRequest(ctx.from_user,RequestCodingKeys.bikeScooterOrMoto , messageText)
+        self.storage.logToUserRequest(ctx.from_user, textConstant.orderStepKeyBikeScooterOrMoto, messageText)
 
-        if messageText == textConstant.bikeButtonScooterOrMotoMoto.get:
+        if messageText == self.getText(textConstant.bikeButtonScooterOrMotoMoto):
             return self.complete(nextModuleName = MenuModuleName.bikeMotoCategory.get)
         
-        if messageText == textConstant.bikeButtonScooterOrMotoScooter.get:
+        if messageText == self.getText(textConstant.bikeButtonScooterOrMotoScooter):
             return self.complete(nextModuleName = MenuModuleName.bikeScooterCategory.get)
 
         return self.canNotHandle(data)        

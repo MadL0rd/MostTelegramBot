@@ -18,21 +18,13 @@ class MessageSender:
             reply_markup=inlineMarkup
         )
 
-    async def answer(self, ctx: Message, text: str, keyboardMarkup: ReplyKeyboardMarkup, parse_mode = ParseMode.MARKDOWN):
+    async def answer(self, ctx: Message, text: str, keyboardMarkup: ReplyKeyboardMarkup = None, parse_mode = ParseMode.MARKDOWN):
         
         # log.debug(f"MessageSender sends: {text}")
         await ctx.answer(
             text,
             parse_mode=parse_mode,
             reply_markup=keyboardMarkup
-        )
-
-    async def answerUnknown(self, ctx: Message):
-
-        nknownText = textConstant.unknownState.get
-        await ctx.answer(
-            nknownText,
-            parse_mode=ParseMode.MARKDOWN
         )
 
     async def sendPhoto(self, ctx: Message, url: str):
@@ -67,9 +59,9 @@ class CallbackMessageSender(MessageSender):
 
     async def answerUnknown(self, ctx: Message):
 
-        nknownText = textConstant.unknownState.get
+        unknownText = self.getText(textConstant.unknownState)
         await bot.send_message(
                 chat_id=ctx.message.chat.id,
-                text=nknownText,
+                text=unknownText,
                 parse_mode=ParseMode.MARKDOWN
             )

@@ -1,6 +1,5 @@
 
 import enum
-import Core.StorageManager.StorageManager as storage 
 
 class UniqueMessagesKeys(enum.Enum):
 
@@ -12,7 +11,19 @@ class UniqueMessagesKeys(enum.Enum):
     menuButtonRentBike = "menuButtonRentBike"
     menuButtonRentCar = "menuButtonRentCar"
     menuButtonMyOrders = "menuButtonMyOrders"
+    menuButtonLanguageSettings = "menuButtonLanguageSettings"
     menuButtonAdmin = "menuButtonAdmin"
+    menuButtonGetLicense = "menuButtonGetLicense"
+    menuButtonFindInstructor = "menuButtonFindInstructor"
+
+    languageSettingsMessageText = "languageSettingsMessageText"
+    languageSettingsButtonRu = "languageSettingsButtonRu"
+    languageSettingsButtonEn = "languageSettingsButtonEn"
+
+    getLicenseText = "getLicenseText"
+    getLicenseButtonCreateOrder = "getLicenseButtonCreateOrder"
+    findInstructorText = "findInstructorText"
+    findInstructorButtonCreateOrder = "findInstructorButtonCreateOrder"
 
     adminMenuText = "adminMenuText"
     adminMenuButtonLoadData = "adminMenuButtonLoadData"
@@ -93,21 +104,37 @@ class UniqueMessagesKeys(enum.Enum):
     orderCreationUserText = "orderCreationUserText"
     orderDetailsMessageTitle = "orderDetailsMessageTitle"
 
-    @property
-    def get(self) -> str:
-        messagesKeys = storage.getJsonData(storage.path.botContentUniqueMessages)
-        if self.value in messagesKeys:
-            return messagesKeys[self.value]
-        else:
-            return "Unknown"
+    orderStepOrder = "orderStepOrder"
+    orderStepGetLicense = "orderStepGetLicense"
+    orderStepFindInstructor = "orderStepFindInstructor"
 
-    def getAndReplaceOrderMaskWith(self, text: str) -> str:
-        messagesKeys = storage.getJsonData(storage.path.botContentUniqueMessages)
-        if self.value in messagesKeys:
-            value: str = messagesKeys[self.value]
-            mask: str = textConstant.orderNumberMask.get
-            return value.replace(mask, text)
-        else:
-            return "Unknown"
+    orderStepValueBikeCommitment = "orderStepValueBikeCommitment"
+    orderStepValueCarCommitment = "orderStepValueCarCommitment"
+    orderStepValueOther = "orderStepValueOther"
+    orderStepValueAll = "orderStepValueAll"
+    orderStepValueCarCustomModelDoesNotSelected = "orderStepValueCarCustomModelDoesNotSelected"
+
+    orderStepKeyBikeHelmet: str = "orderStepKeyBikeHelmet"
+    orderStepKeyComment: str = "orderStepKeyComment"
+    orderStepKeyRequestGeoposition: str = "orderStepKeyRequestGeoposition"
+    orderStepKeyBikeCommitment: str = "orderStepKeyBikeCommitment"
+    orderStepKeyCarCommitment: str = "orderStepKeyCarCommitment"
+    orderStepKeyBikeCriteriaChoice: str = "orderStepKeyBikeCriteriaChoice"
+    orderStepKeyBikeMotoCategory: str = "orderStepKeyBikeMotoCategory"
+    orderStepKeyBikeMotoCategoryChoice: str = "orderStepKeyBikeMotoCategoryChoice"
+    orderStepKeyBikeScooterCategory: str = "orderStepKeyBikeScooterCategory"
+    orderStepKeyBikeScooterCategoryChoice: str = "orderStepKeyBikeScooterCategoryChoice"
+    orderStepKeyBikeScooterOrMoto: str = "orderStepKeyBikeScooterOrMoto"
+    orderStepKeyCarModels: str = "orderStepKeyCarModels"
+    orderStepKeyCarSize: str = "orderStepKeyCarSize"
+    orderStepKeyCarTransmission: str = "orderStepKeyCarTransmission"
+    orderStepKeyTimeRequest: str = "orderStepKeyTimeRequest"
+    orderStepKeyTimeRequestDayWeekWhen: str = "orderStepKeyTimeRequestDayWeekWhen"
+    orderStepKeyTimeRequestDayWeekWhenSetDate: str = "orderStepKeyTimeRequestDayWeekWhenSetDate"
+    orderStepKeyTimeRequestHowManyDays: str = "orderStepKeyTimeRequestHowManyDays"
+    orderStepKeyTimeRequestHowManyMonths: str = "orderStepKeyTimeRequestHowManyMonths"
+    orderStepKeyTimeRequestHowManyMonthsSet: str = "orderStepKeyTimeRequestHowManyMonthsSet"
+    orderStepKeyTimeRequestMonthWhen: str = "orderStepKeyTimeRequestMonthWhen"
+    orderStepKeyTimeRequestMonthWhenSetDate: str = "orderStepKeyTimeRequestMonthWhenSetDate"
 
 textConstant = UniqueMessagesKeys

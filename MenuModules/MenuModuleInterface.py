@@ -1,8 +1,10 @@
-from unicodedata import name
 from aiogram.types import Message, CallbackQuery
-import enum
 import json
+import Core.StorageManager.StorageFactory as storageFactory
 from Core.MessageSender import MessageSender
+from Core.StorageManager.LanguageKey import LanguageKey
+from Core.StorageManager.StorageManager import StorageManager
+from Core.StorageManager.UniqueMessagesKeys import UniqueMessagesKeys
 from MenuModules.MenuModuleName import MenuModuleName
 
 from logger import logger as log
@@ -23,10 +25,19 @@ class MenuModuleHandlerCompletion:
 class MenuModuleInterface:
 
     namePrivate: MenuModuleName
+    languageKey: str
+    storage: StorageManager
+
+    def __init__(self, language: LanguageKey):
+        self.languageKey = language.value
+        self.storage = storageFactory.getStorageForLanguage(language)
 
     @property
     def name(self) -> str:
         return self.namePrivate.value
+
+    def getText(self, textConstant: UniqueMessagesKeys) -> str:
+        return self.storage.getTextConstant(textConstant)
 
     def callbackData(self, data: dict, msg: MessageSender) -> str:
         data = {
