@@ -131,65 +131,65 @@ class CrossDialogMessageSender:
                 log.error("ChannelMessage order text already updated!")
                 continue
 
-                text = messageText
-                userTg = orderCreationEntity.user
-                channelMessage: Message = orderCreationEntity.channelPost
-                try:
-                    newText = f"<b>id{orderId}</b> - {text}"
-                    await channelMessage.edit_text(
-                        text=newText,
-                        parse_mode=ParseMode.HTML
-                    )
-                except:
-                    log.error("ChannelMessage order text already updated!")
-                    continue
+            text = messageText
+            userTg = orderCreationEntity.user
+            channelMessage: Message = orderCreationEntity.channelPost
+            try:
+                newText = f"<b>id{orderId}</b> - {text}"
+                await channelMessage.edit_text(
+                    text=newText,
+                    parse_mode=ParseMode.HTML
+                )
+            except:
+                log.error("ChannelMessage order text already updated!")
+                continue
 
-                orderData = {
-                    "id": orderId,
-                    "orderVersion": "1.1.0",
-                    "channelMessageId": channelMessage.message_id,
-                    "channelChatId": channelChatId,
-                    "channelChatMessageId": channelChatMessageId,
-                    "status": "Создан",
-                    "trelloCard": orderCreationEntity.treloCard,
-                    "text": text
-                }
+            orderData = {
+                "id": orderId,
+                "orderVersion": "1.1.0",
+                "channelMessageId": channelMessage.message_id,
+                "channelChatId": channelChatId,
+                "channelChatMessageId": channelChatMessageId,
+                "status": "Создан",
+                "trelloCard": orderCreationEntity.treloCard,
+                "text": text
+            }
 
-                storage = storageFactory.getStorageForUser(userTg)
-                userInfo = storage.getUserInfo(userTg)
-                if "orders" in userInfo:
-                    userInfo["orders"].append(orderData)
-                else:
-                    userInfo["orders"] = [orderData]
-                storage.updateUserData(userTg, userInfo)
+            storage = storageFactory.getStorageForUser(userTg)
+            userInfo = storage.getUserInfo(userTg)
+            if "orders" in userInfo:
+                userInfo["orders"].append(orderData)
+            else:
+                userInfo["orders"] = [orderData]
+            storage.updateUserData(userTg, userInfo)
 
-                orderData["userInfo"] = userInfo["info"]
-                storage.updateOrderData(
-                    orderId=orderId,
-                    data=orderData
+            orderData["userInfo"] = userInfo["info"]
+            storage.updateOrderData(
+                orderId=orderId,
+                data=orderData
+            )
+
+            await self.bot.send_message(
+                chat_id = channelChatId,
+                text=f"Пользователь завершил создание заказа",
+                reply_to_message_id=channelChatMessageId
+            )
+
+            text = storage.getAndReplaceOrderMaskWith(textConstant.orderCreationUserText, f'{orderId}')
+            await self.bot.send_message(
+                chat_id = userTg.id,
+                text=text,
+                parse_mode=ParseMode.MARKDOWN
+            )
+
+            if orderCreationEntity.treloCard["id"] != None:
+                trello.updateCardTitle(
+                    id=orderCreationEntity.treloCard["id"],
+                    title=f"id{orderId} {orderCreationEntity.treloCard['title']}"
                 )
 
-                await self.bot.send_message(
-                    chat_id = channelChatId,
-                    text=f"Пользователь завершил создание заказа",
-                    reply_to_message_id=channelChatMessageId
-                )
-
-                text = storage.getAndReplaceOrderMaskWith(textConstant.orderCreationUserText, f'{orderId}')
-                await self.bot.send_message(
-                    chat_id = userTg.id,
-                    text=text,
-                    parse_mode=ParseMode.MARKDOWN
-                )
-
-                if orderCreationEntity.treloCard["id"] != None:
-                    trello.updateCardTitle(
-                        id=orderCreationEntity.treloCard["id"],
-                        title=f"id{orderId} {orderCreationEntity.treloCard['title']}"
-                    )
-
-                del orderCreationEntities[messageText]
-                del telegramServiceMessagesToReply[messageText]
+            del orderCreationEntities[messageText]
+            del telegramServiceMessagesToReply[messageText]
 
     async def forwardMessageFromManagerToUser(self, ctx, order):
 
