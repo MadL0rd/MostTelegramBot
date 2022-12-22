@@ -7,6 +7,7 @@ class MenuModuleName(enum.Enum):
     getLicense: str = "getLicense"
     findInstructor: str = "findInstructor"
     languageSettings: str = "languageSettings"
+    languageSettingsFirstLaunch:str = "languageSettingsFirstLaunch"
     menuButtonAdmin: str = "menuButtonAdmin"
     myOrders: str = "myOrders"
     admin: str = "admin"
