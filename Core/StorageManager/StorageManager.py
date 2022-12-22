@@ -302,18 +302,23 @@ class StorageManager:
             UserHistoryEvent.orderHasBeenCreated
         ]
 
+        legacyEventsList = [
+            UserHistoryEvent.startModuleBikeCommitment,
+            UserHistoryEvent.startModuleCarSize
+        ]
+
         dateConfig = self.getJsonData(self.path.botContentPrivateConfig)["startDate"]
         startDate = date(dateConfig["year"], dateConfig["month"], dateConfig["day"])
         
         workbook = xlsxwriter.Workbook(self.path.specHistoryTableFile)
 
-        self.generateSpecPage(workbook, specEvents, startDate)
+        self.generateSpecPage(workbook, specEvents, legacyEventsList, startDate)
 
         workbook.close()
 
         log.info("Spec table generation completed")
 
-    def generateSpecPage(self, workbook: xlsxwriter.Workbook, eventsList: list, startDate: date, operation: StatisticPageOperation = StatisticPageOperation.count):
+    def generateSpecPage(self, workbook: xlsxwriter.Workbook, eventsList: list, legacyEventsList: list, startDate: date, operation: StatisticPageOperation = StatisticPageOperation.count):
 
         cell_format = workbook.add_format()
         cell_format.set_text_wrap()
@@ -350,6 +355,8 @@ class StorageManager:
             for userEvent in history:
                 if userEvent["event"] in [specEvent.value for specEvent in eventsList]:
                     dict[userEvent["event"]][userEvent["timestamp"]["date"]] += 1
+                if userEvent["event"] in [legacyEvent.value for legacyEvent in legacyEventsList]:
+                    dict[UserHistoryEvent.startModuleStartBikeOrCarChoice.value][userEvent["timestamp"]["date"]] += 1
 
         dict["reachedGeoposition"] = {
             "name" : "% дохода до гео"
