@@ -24,7 +24,6 @@ class BikeCommitment(MenuModuleInterface):
     async def handleModuleStart(self, ctx: Message, msg: MessageSender) -> Completion:
 
         log.debug(f"User: {ctx.from_user.id}")
-        self.storage.logToUserHistory(ctx.from_user, event.startModuleBikeCommitment, "")
         self.storage.logToUserHistory(ctx.from_user, event.startModuleStartBikeOrCarChoice, "")
 
         keyboardMarkup = ReplyKeyboardMarkup(
