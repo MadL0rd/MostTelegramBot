@@ -26,7 +26,7 @@ async def handleUserStart(ctx: Message):
     
     userInfo = storage.getUserInfo(userTg)
 
-    module: MenuModuleInterface = menuFactory.generateModuleClass(menu.onboarding)
+    module: MenuModuleInterface = menuFactory.generateModuleClass(menu.languageSettingsFirstLaunch)
     log.debug(module.name)
     completion: Completion = await module.handleModuleStart(ctx, msg)
     if completion.inProgress == True:

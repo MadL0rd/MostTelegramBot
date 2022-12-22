@@ -53,6 +53,7 @@ class RequestGeoposition(MenuModuleInterface):
         
         if locationText != "" and locationText != None:
             self.storage.logToUserRequest(ctx.from_user, textConstant.orderStepKeyRequestGeoposition, locationText)
+            self.storage.logToUserHistory(ctx.from_user, event.geopositionHasBeenSpecified, "")
             return self.complete(nextModuleName = MenuModuleName.comment.get)
 
         return self.canNotHandle(data)

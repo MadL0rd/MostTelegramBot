@@ -292,15 +292,19 @@ class StorageManager:
         log.info("Spec table generation start")
 
         specEvents = [
-            UserHistoryEvent.start.value,
-            UserHistoryEvent.startModuleOnboarding.value,
-            UserHistoryEvent.startModuleGetLicense.value,
-            UserHistoryEvent.startModuleFindInstructor.value,
-            UserHistoryEvent.startModuleBikeCommitment.value,
-            UserHistoryEvent.startModuleBikeMotoCategory.value,
-            UserHistoryEvent.startModuleBikeScooterCategory.value,
-            UserHistoryEvent.startModuleCarSize.value,
-            UserHistoryEvent.orderHasBeenCreated.value
+            UserHistoryEvent.start,
+            UserHistoryEvent.startModuleOnboarding,
+            UserHistoryEvent.startModuleGetLicense,
+            UserHistoryEvent.startModuleFindInstructor,
+            UserHistoryEvent.startModuleStartBikeOrCarChoice,
+            UserHistoryEvent.startModuleRequestGeoposition,
+            UserHistoryEvent.geopositionHasBeenSpecified,
+            UserHistoryEvent.orderHasBeenCreated
+        ]
+
+        legacyEventsList = [
+            UserHistoryEvent.startModuleBikeCommitment,
+            UserHistoryEvent.startModuleCarSize
         ]
 
         dateConfig = self.getJsonData(self.path.botContentPrivateConfig)["startDate"]
@@ -308,13 +312,13 @@ class StorageManager:
         
         workbook = xlsxwriter.Workbook(self.path.specHistoryTableFile)
 
-        self.generateSpecPage(workbook, specEvents, startDate)
+        self.generateSpecPage(workbook, specEvents, legacyEventsList, startDate)
 
         workbook.close()
 
         log.info("Spec table generation completed")
 
-    def generateSpecPage(self, workbook: xlsxwriter.Workbook, eventsList: list, startDate: date, operation: StatisticPageOperation = StatisticPageOperation.count):
+    def generateSpecPage(self, workbook: xlsxwriter.Workbook, eventsList: list, legacyEventsList: list, startDate: date, operation: StatisticPageOperation = StatisticPageOperation.count):
 
         cell_format = workbook.add_format()
         cell_format.set_text_wrap()
@@ -340,17 +344,43 @@ class StorageManager:
 
         dict = {}
         for specEvent in eventsList:
-            dict[specEvent] = {
-                "name" : specEvent
+            dict[specEvent.value] = {
+                "name" : specEvent.value
             }
             for single_date in dates:
-                dict[specEvent][single_date] = 0
+                dict[specEvent.value][single_date] = 0
 
         for userFolder in self.path.usersDir.iterdir():
             history = self.getJsonData(userFolder / "history.json")
             for userEvent in history:
-                if userEvent["event"] in eventsList:
+                if userEvent["event"] in [specEvent.value for specEvent in eventsList]:
                     dict[userEvent["event"]][userEvent["timestamp"]["date"]] += 1
+                if userEvent["event"] in [legacyEvent.value for legacyEvent in legacyEventsList]:
+                    dict[UserHistoryEvent.startModuleStartBikeOrCarChoice.value][userEvent["timestamp"]["date"]] += 1
+
+        dict["reachedGeoposition"] = {
+            "name" : "% дохода до гео"
+        }
+        dict["sendedGeoposition"] = {
+            "name" : "% отправки ГЕО"
+        }
+        dict["fromApplicationToOrder"] = {
+            "name" : "% из заявки в заказ"
+        }
+
+        for single_date in dates:
+            dict["reachedGeoposition"][single_date] = self.reachedGeoposition(
+                dict[UserHistoryEvent.startModuleRequestGeoposition.value][single_date], 
+                dict[UserHistoryEvent.startModuleStartBikeOrCarChoice.value][single_date]
+            )
+            dict["sendedGeoposition"][single_date] = self.sendedGeoposition(
+                dict[UserHistoryEvent.geopositionHasBeenSpecified.value][single_date], 
+                dict[UserHistoryEvent.startModuleRequestGeoposition.value][single_date]
+            )
+            dict["fromApplicationToOrder"][single_date] = self.fromApplicationToOrder(
+                dict[UserHistoryEvent.orderHasBeenCreated.value][single_date], 
+                dict[UserHistoryEvent.startModuleStartBikeOrCarChoice.value][single_date]
+            )
 
         col = 1
         for event in dict:
@@ -367,6 +397,27 @@ class StorageManager:
 
         usersCount = 0
         worksheet.set_column(0, usersCount, 15)
+
+    def persentage(self, arg1: str, arg2: str):
+        arg1 = int(arg1)
+        arg2 = int(arg2)
+        if arg2 == 0:
+            return "none%"
+        result = arg1 / arg2 * 100
+        result = str(result) + "%"
+        return result
+
+    def reachedGeoposition(self, arg1: str, arg2: str):
+        result = self.persentage(arg1, arg2)
+        return result
+
+    def sendedGeoposition(self, arg1: str, arg2: str):
+        result = self.persentage(arg1, arg2)
+        return result
+
+    def fromApplicationToOrder(self, arg1: str, arg2: str):
+        result = self.persentage(arg1, arg2)
+        return result
 
     def generateTotalTable(self):
         log.info("Total table generation start")

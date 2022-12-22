@@ -17,6 +17,7 @@ class LanguageSettings(MenuModuleInterface):
     # =====================
 
     namePrivate = MenuModuleName.languageSettings
+    nextModule: MenuModuleName = MenuModuleName.mainMenu
 
     # Use default implementation
     # def callbackData(self, data: dict, msg: MessageSender) -> str:
@@ -55,7 +56,7 @@ class LanguageSettings(MenuModuleInterface):
             userInfo["language"] = self.menuDict[messageText]
             self.storage.updateUserData(userTg, userInfo)
 
-            return self.complete(nextModuleName = MenuModuleName.mainMenu.get)
+            return self.complete(nextModuleName = self.nextModule.get)
 
         return self.canNotHandle(data)
         
