@@ -3,6 +3,7 @@ from Core.StorageManager.LanguageKey import LanguageKey
 from MenuModules.MainMenu.FindInstuctor import FindInstructor
 from MenuModules.MainMenu.GetLicense import GetLicense
 from MenuModules.MainMenu.LanguageSettings import LanguageSettings
+from MenuModules.MainMenu.LanguageSettingsFirstLaunch import LanguageSettingsFirstLaunch
 from MenuModules.Onboarding.Onboarding import Onboarding
 from MenuModules.MainMenu.MainMenu import MainMenu
 from MenuModules.MenuModuleInterface import MenuModuleInterface
@@ -39,6 +40,7 @@ class MenuModules(enum.Enum):
     getLicense: MenuModuleInterface = GetLicense
     findInstructor: MenuModuleInterface = FindInstructor
     languageSettings: MenuModuleInterface = LanguageSettings
+    languageSettingsFirstLaunch: MenuModuleInterface = LanguageSettingsFirstLaunch
     adminMenu: MenuModuleInterface = AdminMenu
     bikeCommitment: MenuModuleInterface = BikeCommitment
     bikeScooterOrMoto: MenuModuleInterface = BikeScooterOrMoto
