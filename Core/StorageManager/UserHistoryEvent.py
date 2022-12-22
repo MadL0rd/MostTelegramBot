@@ -11,6 +11,7 @@ class UserHistoryEvent(enum.Enum):
 
     startModuleGetLicense = "Перешёл в модуль покупки прав"
     startModuleFindInstructor = "Перешёл в модуль поиска инструктора"
+    startModuleStartBikeOrCarChoice = "Приступил к выбору байка или машины"
 
     startModuleBikeCommitment = "Приступил к выбору байка"
     startModuleBikeScooterOrMoto = "Приступил к выбору скутера или мотоцикла"
@@ -36,4 +37,5 @@ class UserHistoryEvent(enum.Enum):
     startModuleCarSize = "Приступил к выбору размера машины"
     startModuleCarTransmission = "Приступил к выбору коробки передач"
     startModuleCarModels = "Приступил к выбору моделей"
+    geopositionHasBeenSpecified = "Указал геопозицию и оказался в меню продолжить или оставить коммент"
     orderHasBeenCreated = "Заказ был создан"

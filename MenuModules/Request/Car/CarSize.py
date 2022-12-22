@@ -24,6 +24,7 @@ class CarSize(MenuModuleInterface):
 
         log.debug(f"User: {ctx.from_user.id}")
         self.storage.logToUserHistory(ctx.from_user, event.startModuleCarSize, "")
+        self.storage.logToUserHistory(ctx.from_user, event.startModuleStartBikeOrCarChoice, "")
 
         keyboardMarkup = ReplyKeyboardMarkup(
             resize_keyboard=True

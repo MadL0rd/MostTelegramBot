@@ -25,6 +25,7 @@ class BikeCommitment(MenuModuleInterface):
 
         log.debug(f"User: {ctx.from_user.id}")
         self.storage.logToUserHistory(ctx.from_user, event.startModuleBikeCommitment, "")
+        self.storage.logToUserHistory(ctx.from_user, event.startModuleStartBikeOrCarChoice, "")
 
         keyboardMarkup = ReplyKeyboardMarkup(
             resize_keyboard=True
