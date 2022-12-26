@@ -1,6 +1,6 @@
 from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove, ParseMode
 
-from Core.StorageManager.StorageManager import UserHistoryEvent as event
+from Core.StorageManager.StorageManager import StorageManager, UserHistoryEvent as event
 from Core.StorageManager.UniqueMessagesKeys import textConstant
 
 from Core.MessageSender import MessageSender
@@ -39,7 +39,8 @@ class Comment(MenuModuleInterface):
         await msg.answer(
             ctx = ctx,
             text = f"{self.getText(textConstant.commentOrderTextStart)}\n\n{userRequestString}",
-            keyboardMarkup = keyboardMarkup
+            keyboardMarkup = keyboardMarkup,
+            parse_mode=ParseMode.HTML
         )
 
         return Completion(
@@ -78,6 +79,10 @@ class Comment(MenuModuleInterface):
 
             await crossDialogMessageSender.setWaitingForOrder(ctx.from_user, userRequestString)
 
+            request = self.storage.getUserRequest(ctx.from_user)
+            if textConstant.orderStepKeyBikeCommitment.value in request or textConstant.orderStepKeyCarCommitment.value in request:          
+                self.storage.logToUserHistory(ctx.from_user, event.orderHasBeenCreated, "")
+
             self.storage.updateUserRequest(ctx.from_user, {})
             
             await msg.answer(
@@ -85,7 +90,6 @@ class Comment(MenuModuleInterface):
                 text = self.getText(textConstant.messageAfterFillingOutForm),
                 keyboardMarkup = ReplyKeyboardRemove()
             )
-            self.storage.logToUserHistory(ctx.from_user, event.orderHasBeenCreated, "")
             return self.complete(nextModuleName = MenuModuleName.mainMenu.get)
 
         return self.canNotHandle(data=data)
