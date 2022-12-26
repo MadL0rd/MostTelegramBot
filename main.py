@@ -14,7 +14,7 @@ from Core.GoogleSheetsService import GoogleSheetsService
 import Core.Utils.Utils as utils
 
 # =====================
-# Version 1.1.5
+# Version 1.1.6
 # MostBaliBot
 # https://api.telegram.org/bot5278616125:AAH65CfKVC7pCiWZyPTGQQY442l4C4tBB8E/sendMessage?chat_id=@MadL0rdTest&text=Text
 # =====================
