@@ -11,6 +11,7 @@ class MenuModuleName(enum.Enum):
     menuButtonAdmin: str = "menuButtonAdmin"
     myOrders: str = "myOrders"
     admin: str = "admin"
+    adminNewsletter: str = "adminNewsletter"
     bikeCommitment: str = "bikeCommitment"
     bikeButtonCommitmentYes: str = "bikeButtonCommitmentYes"
     bikeButtonCommitmentNo: str = "bikeButtonCommitmentNo"

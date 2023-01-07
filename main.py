@@ -14,7 +14,7 @@ from Core.GoogleSheetsService import GoogleSheetsService
 import Core.Utils.Utils as utils
 
 # =====================
-# Version 1.1.6
+# Version 1.1.7
 # MostBaliBot
 # https://api.telegram.org/bot5278616125:AAH65CfKVC7pCiWZyPTGQQY442l4C4tBB8E/sendMessage?chat_id=@MadL0rdTest&text=Text
 # =====================
@@ -73,12 +73,13 @@ async def default_message_handler(ctx: Message):
     # Message from private chat with user
     if ctx.chat.type == "private":
 
-        # Forward user message to all messages chat
-        await bot.forward_message(
-            chat_id=allMessagesChat,
-            from_chat_id=ctx.chat.id,
-            message_id=ctx.message_id
-        )
+        if isProduction == True:
+            # Forward user message to all messages chat
+            await bot.forward_message(
+                chat_id=allMessagesChat,
+                from_chat_id=ctx.chat.id,
+                message_id=ctx.message_id
+            )
 
         userTg = ctx.from_user
         userInfo = storageDefault.getUserInfo(userTg)

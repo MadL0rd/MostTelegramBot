@@ -32,6 +32,7 @@ class AdminMenu(MenuModuleInterface):
             resize_keyboard=True
         ).add(KeyboardButton(self.getText(textConstant.adminMenuButtonReloadData))
         ).add(KeyboardButton(self.getText(textConstant.adminMenuButtonLoadData))
+        ).add(KeyboardButton(self.getText(textConstant.adminMenuButtonSendMessageToAllUsers))
         ).add(KeyboardButton(self.getText(textConstant.menuButtonReturnToMainMenu)))
         
         await msg.answer(
@@ -52,6 +53,9 @@ class AdminMenu(MenuModuleInterface):
 
         if ctx.text == self.getText(textConstant.menuButtonReturnToMainMenu):
             return self.complete(nextModuleName=MenuModuleName.mainMenu.get)
+
+        if ctx.text == self.getText(textConstant.adminMenuButtonSendMessageToAllUsers):
+            return self.complete(nextModuleName=MenuModuleName.adminNewsletter.get)
 
         if ctx.text == self.getText(textConstant.adminMenuButtonReloadData):
             
