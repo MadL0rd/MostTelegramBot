@@ -51,6 +51,11 @@ async def handleUserMessage(ctx: Message):
     menuState = userInfo["state"]
 
     storage.logToUserHistory(userTg, event.sendMessage, ctx.text)
+
+    if "ban" in userInfo and userInfo["ban"] == True:
+        unknownText = storage.getTextConstant(textConstant.unknownState)
+        await msg.answer(ctx, unknownText)
+        return
     
     # Try to find current menu module
     menuState = userInfo["state"]
