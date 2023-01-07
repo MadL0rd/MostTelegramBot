@@ -28,6 +28,7 @@ class UniqueMessagesKeys(enum.Enum):
     adminMenuText = "adminMenuText"
     adminMenuButtonLoadData = "adminMenuButtonLoadData"
     adminMenuButtonReloadData = "adminMenuButtonReloadData"
+    adminMenuButtonSendMessageToAllUsers = "adminMenuButtonSendMessageToAllUsers"
     adminMenuButtonEveningReflectionStart = "adminMenuButtonEveningReflectionStart"
 
     bikeCommitment = "bikeCommitment"

@@ -73,12 +73,13 @@ async def default_message_handler(ctx: Message):
     # Message from private chat with user
     if ctx.chat.type == "private":
 
-        # Forward user message to all messages chat
-        await bot.forward_message(
-            chat_id=allMessagesChat,
-            from_chat_id=ctx.chat.id,
-            message_id=ctx.message_id
-        )
+        if isProduction == True:
+            # Forward user message to all messages chat
+            await bot.forward_message(
+                chat_id=allMessagesChat,
+                from_chat_id=ctx.chat.id,
+                message_id=ctx.message_id
+            )
 
         userTg = ctx.from_user
         userInfo = storageDefault.getUserInfo(userTg)
