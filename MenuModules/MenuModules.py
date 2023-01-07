@@ -1,5 +1,6 @@
 import enum
 from Core.StorageManager.LanguageKey import LanguageKey
+from MenuModules.MainMenu.AdminMenuNewsletter import AdminMenuNewsletter
 from MenuModules.MainMenu.FindInstuctor import FindInstructor
 from MenuModules.MainMenu.GetLicense import GetLicense
 from MenuModules.MainMenu.LanguageSettings import LanguageSettings
@@ -42,6 +43,7 @@ class MenuModules(enum.Enum):
     languageSettings: MenuModuleInterface = LanguageSettings
     languageSettingsFirstLaunch: MenuModuleInterface = LanguageSettingsFirstLaunch
     adminMenu: MenuModuleInterface = AdminMenu
+    adminMenuNewsletter: MenuModuleInterface = AdminMenuNewsletter
     bikeCommitment: MenuModuleInterface = BikeCommitment
     bikeScooterOrMoto: MenuModuleInterface = BikeScooterOrMoto
     bikeMotoCategory: MenuModuleInterface = BikeMotoCategory
