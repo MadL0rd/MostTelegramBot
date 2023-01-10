@@ -68,14 +68,14 @@ class Comment(MenuModuleInterface):
         if "commentMessageDidSent" in data and data["commentMessageDidSent"] == True:
             self.storage.logToUserRequest(ctx.from_user, textConstant.orderStepKeyComment, messageText)
 
-        if messageText == self.getText(textConstant.commentCompleteOrderButton) or "commentMessageDidSent" in data:
+        if "orderCreated" not in data and (messageText == self.getText(textConstant.commentCompleteOrderButton) or "commentMessageDidSent" in data):
 
             userRequestString = self.getUserRequestString(ctx)
 
             if userRequestString == None:
                 return self.complete(nextModuleName = MenuModuleName.mainMenu.get)
 
-            userRequestString = f"{ctx.from_user.full_name} @{ctx.from_user.username}\n{userRequestString}"
+            userRequestString = f"{ctx.from_user.full_name} @{ctx.from_user.username}\nUser id: {ctx.from_user.id}\n\n{userRequestString}"
 
             await crossDialogMessageSender.setWaitingForOrder(ctx.from_user, userRequestString)
 
@@ -84,13 +84,13 @@ class Comment(MenuModuleInterface):
                 self.storage.logToUserHistory(ctx.from_user, event.orderHasBeenCreated, "")
 
             self.storage.updateUserRequest(ctx.from_user, {})
-            
-            await msg.answer(
-                ctx = ctx,
-                text = self.getText(textConstant.messageAfterFillingOutForm),
-                keyboardMarkup = ReplyKeyboardRemove()
+
+            data["orderCreated"] = True
+            return Completion(
+                inProgress=True,
+                didHandledUserInteraction=True,
+                moduleData=data
             )
-            return self.complete(nextModuleName = MenuModuleName.mainMenu.get)
 
         return self.canNotHandle(data=data)
 
