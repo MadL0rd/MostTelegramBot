@@ -1,7 +1,7 @@
 import asyncio
 import aioschedule
 from aiogram import Bot
-from aiogram.types import User, Message, ParseMode
+from aiogram.types import User, Message, ParseMode, InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardRemove
 import time
 
 from Core.StorageManager.UniqueMessagesKeys import UniqueMessagesKeys as textConstant
@@ -12,7 +12,7 @@ from logger import logger as log
 
 class OrderCreationEntities:
 
-    # userLoadingMessage: Message = None
+    userLoadingMessages: list = []
     user: User = None
     channelPost: Message = None
     treloCard: dict
@@ -20,13 +20,13 @@ class OrderCreationEntities:
 
     def __init__(
         self,
-        # userLoadingMessage: Message,
+        userLoadingMessages: list,
         user: User,
         channelPost: Message,
         treloCard: dict,
         userRequest:dict
     ):
-        # self.userLoadingMessage = userLoadingMessage
+        self.userLoadingMessages = userLoadingMessages
         self.user = user
         self.channelPost = channelPost
         self.treloCard = treloCard
@@ -61,6 +61,21 @@ class CrossDialogMessageSender:
         language = storageFactory.getLanguageForUser(userTg)
         storage = storageFactory.getStorageForLanguage(language)
 
+        userLoadingMessages = []
+
+        userLoadingMessage = await self.bot.send_message(
+            chat_id = userTg.id,
+            text = storage.getTextConstant(textConstant.messageAfterFillingOutForm),
+            reply_markup = ReplyKeyboardRemove()
+        )
+        userLoadingMessages.append(userLoadingMessage)
+
+        userLoadingMessage = await self.bot.send_message(
+            chat_id = userTg.id,
+            text = "⏳",
+        )
+        userLoadingMessages.append(userLoadingMessage)
+
         msgText = f"{language.value}\n{msgText}"
         
         message = await self.bot.send_message(
@@ -83,6 +98,7 @@ class CrossDialogMessageSender:
             )
         
         orderCreationEntities[message.text] = OrderCreationEntities(
+            userLoadingMessages = userLoadingMessages,
             user = userTg,
             channelPost = message,
             treloCard = {
@@ -165,17 +181,23 @@ class CrossDialogMessageSender:
                 data=orderData
             )
 
-            await self.bot.send_message(
-                chat_id = channelChatId,
-                text=f"Пользователь завершил создание заказа",
-                reply_to_message_id=channelChatMessageId
-            )
+            # await self.bot.send_message(
+            #     chat_id = channelChatId,
+            #     text=f"Пользователь завершил создание заказа",
+            #     reply_to_message_id=channelChatMessageId
+            # )
+
+            for message in orderCreationEntity.userLoadingMessages:
+                await message.delete()
 
             text = storage.getAndReplaceOrderMaskWith(textConstant.orderCreationUserText, f'{orderId}')
             await self.bot.send_message(
                 chat_id = userTg.id,
                 text=text,
-                parse_mode=ParseMode.MARKDOWN
+                parse_mode=ParseMode.MARKDOWN,
+                reply_markup=InlineKeyboardMarkup(
+                    inline_keyboard=[[InlineKeyboardButton(text=storage.getTextConstant(textConstant.menuButtonReturnToMainMenu), callback_data='returnToMainMenu')]]
+                )
             )
 
             if orderCreationEntity.treloCard["id"] != None:
