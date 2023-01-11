@@ -144,4 +144,27 @@ async def handleUserMessage(ctx: Message):
 
 async def handleCallback(ctx: CallbackQuery):
 
-    log.debug("Didn't handle callback")
+    await ctx.message.edit_reply_markup(InlineKeyboardMarkup())
+
+    userTg = ctx.from_user
+    log.info(f"Did handle User{userTg.id} CallbackQuery: {ctx.data}")
+
+    userLanguage = storageFactory.getLanguageForUser(userTg)
+    storage = storageFactory.getStorageForLanguage(userLanguage)
+    menuFactory = MenuModulesFactory(userLanguage)
+
+    module = menuFactory.generateModuleClass(menu.mainMenu)
+
+    completion: Completion = await module.handleModuleStart(
+        ctx = ctx,
+        msg = callbackMsg
+    )
+
+    menuState = {
+        "module": module.name,
+        "data": completion.moduleData 
+    }
+
+    userInfo = storage.getUserInfo(userTg)
+    userInfo["state"] = menuState
+    storage.updateUserData(userTg, userInfo)
