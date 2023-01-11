@@ -16,6 +16,9 @@ import Core.Utils.Utils as utils
 
 from logger import logger as log
 
+timeZoneName = 'Asia/Makassar'
+timeZone = tz = pytz.timezone('Asia/Makassar')
+
 class StatisticPageOperation(enum.Enum):
     count = "Количество"
     sum = "Сумма"
@@ -27,8 +30,7 @@ def daterange(start_date, end_date):
 
 def getTimestamp():
 
-    tz = pytz.timezone('Europe/Moscow')
-    now = datetime.now(tz)
+    now = datetime.now(timeZone)
     return {
         "date": now.strftime("%d.%m.%Y"),
         "time": now.strftime("%H:%M:%S"),
@@ -243,7 +245,7 @@ class StorageManager:
         worksheet.write(row, col, "Дата / Пользователь")
         row += 1
 
-        dates = [strDate.strftime("%d.%m.%Y") for strDate in daterange(startDate, date.today())]
+        dates = [strDate.strftime("%d.%m.%Y") for strDate in daterange(startDate, datetime.now(timeZone).date())]
         for single_date in dates:
             worksheet.write(row, col, single_date)
             row += 1
@@ -352,17 +354,26 @@ class StorageManager:
 
         for userFolder in self.path.usersDir.iterdir():
             history = self.getJsonData(userFolder / "history.json")
+            userEventCountDict = {}
             for userEvent in history:
+
                 if userEvent["event"] in [specEvent.value for specEvent in eventsList]:
-                    dict[userEvent["event"]][userEvent["timestamp"]["date"]] += 1
+                    userEventCountDict[userEvent["event"]] = {}
+                    userEventCountDict[userEvent["event"]][userEvent["timestamp"]["date"]] = 1
+
                 if userEvent["event"] in [legacyEvent.value for legacyEvent in legacyEventsList]:
-                    dict[UserHistoryEvent.startModuleStartBikeOrCarChoice.value][userEvent["timestamp"]["date"]] += 1
+                    userEventCountDict[UserHistoryEvent.startModuleStartBikeOrCarChoice.value] = {}
+                    userEventCountDict[UserHistoryEvent.startModuleStartBikeOrCarChoice.value][userEvent["timestamp"]["date"]] = 1
+
+            for eventKey in userEventCountDict:
+                for timestampKey in userEventCountDict[eventKey]:
+                    dict[eventKey][timestampKey] += userEventCountDict[eventKey][timestampKey]
 
         dict["reachedGeoposition"] = {
-            "name" : "% дохода до гео"
+            "name" : "% дохода до геопозиции"
         }
         dict["sendedGeoposition"] = {
-            "name" : "% отправки ГЕО"
+            "name" : "% отправки геопозиции"
         }
         dict["fromApplicationToOrder"] = {
             "name" : "% из заявки в заказ"
@@ -396,15 +407,15 @@ class StorageManager:
             col += 1
 
         usersCount = 0
-        worksheet.set_column(0, usersCount, 15)
+        worksheet.set_column(0, len(dict) + 1, 17)
 
     def persentage(self, arg1: str, arg2: str):
         arg1 = int(arg1)
         arg2 = int(arg2)
         if arg2 == 0:
-            return "none%"
+            return "-"
         result = arg1 / arg2 * 100
-        result = str(result) + "%"
+        result = "{:10.2f}".format(result) + "%"
         return result
 
     def reachedGeoposition(self, arg1: str, arg2: str):
